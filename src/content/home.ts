@@ -7,6 +7,9 @@ export class Home extends LitElement
 {
 	render() 
 	{
+		const event = new CustomEvent('pageNav', { detail: "home", bubbles: true, composed: true } );
+		this.dispatchEvent( event );
+
 		return html`
 			<h2>This is HOME</h2>
 		`;

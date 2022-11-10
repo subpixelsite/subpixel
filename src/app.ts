@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { LitElement, html, customElement, css } from 'lit-element';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { property } from 'lit/decorators.js';
 
 @customElement('lit-app')
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,12 +40,36 @@ export class App extends LitElement {
 	}
 	`;
 
+	@property() homeClass: string = '';
+
+	@property() postsClass: string = '';
+	
+	@property() aboutClass: string = '';
+
+	constructor()
+	{
+		super();
+
+		this.addEventListener('pageNav', (e: Event) => 
+		{
+			// Ugly and evil but TS is broken like this
+			const {detail} = (e as CustomEvent);
+
+			const active = 'active';
+			const inactive = '';
+
+			this.homeClass = (detail === 'home') ? active : inactive;
+			this.postsClass = (detail === 'posts') ? active : inactive;
+			this.aboutClass = (detail === 'about') ? active : inactive;
+		});
+	}
+
 	render() {
 		return html`
 		<div class="topnav">
-			<a class="active" href="/">Home</a>
-			<a href="posts">Posts</a>
-			<a href="about">About</a>
+			<a class=${this.homeClass} name="Home" href="/">Home</a>
+			<a class=${this.postsClass} name="Posts" href="posts">Posts</a>
+			<a class=${this.aboutClass} name="About" href="about">About</a>
 		</div>
 		<div class="header">
 			<h2>Lambert on Shading</h2>

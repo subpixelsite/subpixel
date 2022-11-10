@@ -7,6 +7,9 @@ export class Posts extends LitElement
 {
 	render() 
 	{
+		const event = new CustomEvent('pageNav', { detail: "posts", bubbles: true, composed: true } );
+		this.dispatchEvent( event );
+
 		return html`
 			<h2>Posts</h2>
 			<ul>
