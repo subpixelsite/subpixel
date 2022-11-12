@@ -38,7 +38,7 @@ const routes =
 						path: 'posts/:id',
 						component: 'lit-post',
 						action: async() => {
-							await import('./content/post.js');
+							await import('./content/postelement.js');
 						}
 					}
 				]
