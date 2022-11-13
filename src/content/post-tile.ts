@@ -70,7 +70,7 @@ export class PostTile extends LitElement
 
 	private handleClick()
 	{
-		const event = new CustomEvent('readMore', { detail: "readMore", bubbles: true, composed: true } );
+		const event = new CustomEvent('readMore', { detail: this.post, bubbles: true, composed: true } );
 		this.dispatchEvent( event );
 	}
 }
