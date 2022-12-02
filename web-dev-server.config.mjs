@@ -23,4 +23,6 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   ],
 
   // See documentation for all available options
+
+  port: 8010,
 });
