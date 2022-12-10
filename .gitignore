@@ -1,6 +1,8 @@
 ## editors
 /.idea
-/.vscode
+/.vscode/extensions.json
+/.vscode/settings.json
+/.vscode/launch.json
 
 ## system files
 .DS_Store
