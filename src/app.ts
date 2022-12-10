@@ -2,12 +2,16 @@
 import { LitElement, html, customElement, css } from 'lit-element';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { property } from 'lit/decorators.js';
+import baseStyles from '@shoelace-style/shoelace/dist/themes/light.styles.js';
+import '@shoelace-style/shoelace/dist/components/alert/alert.js';
+import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 
 @customElement( 'lit-app' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class App extends LitElement
 {
 	static styles = [
+		baseStyles,
 		css`
 	`];
 
@@ -17,14 +21,11 @@ export class App extends LitElement
 
 	@property() aboutClass: string = '';
 
-	createRenderRoot()
-	{
-		return this;
-	}
-
 	constructor()
 	{
 		super();
+
+		setBasePath( '/dist/shoelace' );
 
 		this.addEventListener( 'pageNav', ( e: Event ) => 
 		{

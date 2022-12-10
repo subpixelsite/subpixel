@@ -4,6 +4,8 @@ import html from '@web/rollup-plugin-html';
 import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
 import { terser } from 'rollup-plugin-terser';
 import { generateSW } from 'rollup-plugin-workbox';
+import css from 'rollup-plugin-css-only';
+import copy from 'rollup-plugin-copy';
 import path from 'path';
 
 export default {
@@ -28,6 +30,18 @@ export default {
     nodeResolve(),
     /** Minify JS */
     terser(),
+    css({
+      output: 'bundle.css',
+    }),
+    copy({
+      copyOnce: true,
+      targets: [
+        {
+          src: 'node_modules/@shoelace-style/shoelace/dist/assets',
+          dest: 'dist/shoelace'
+        }
+      ]
+    }),
     /** Bundle assets references via import.meta.url */
     importMetaAssets(),
     /** Compile JS to a lower language target */
