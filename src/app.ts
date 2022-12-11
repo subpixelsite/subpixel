@@ -14,30 +14,39 @@ export class App extends LitElement
 	static styles = [
 		baseStyles,
 		css`
-			.topnav {
+			* {
+			}
+
+			.flex {
 				display: flex;
 				flex-wrap: wrap;
-				justify-content: space-evenly ;// + safe;
+			}
+
+			.topNav {
+				background-image: linear-gradient(to top right, rgb(191 201 241), var(--sl-color-neutral-0));
+			}
+
+			.navContent {
+				justify-content: space-evenly;
 				align-items: center;
 				/* align-content: center; */
-				gap: 0 10px;
+				gap: 10px 10px;
 				/* padding-left: 10px;
 				padding-right: 10px; */
 				/* padding-top: 10px;
 				padding-bottom: 10px; */
-				background-image: linear-gradient(to top right, rgb(191 201 241), var(--sl-color-neutral-0));
 				margin: 0 auto;
 				max-width: 1200px;
 				overflow: visible;
 			}
 
-			.topnav > sl-button::part(label) {
+			.navContent > sl-button::part(label) {
 				font-weight: var(--sl-font-weight-semibold);
 				font-size: var(--sl-font-size-large);
 				margin: 0 20px;
 			}
 			
-			.topnav > sl-button::part(base) {
+			.navContent > sl-button::part(base) {
 				border-radius: var(--sl-border-radius-large);
 				border-width: 2px;
 				align-items: center;
@@ -45,35 +54,56 @@ export class App extends LitElement
 				transition: var(--sl-transition-medium) transform ease, var(--sl-transition-medium) border ease;
 			}
 			
-			.topnav > sl-button.pageActive::part(base) {
+			.navContent > sl-button.pageActive::part(base) {
 				border-color: var(--sl-color-primary-500);
 			}
 			
-			.topnav > sl-button.pageInactive::part(base) {
+			.navContent > sl-button.pageInactive::part(base) {
 				border-color: var(--sl-color-neutral-300);
 			}
 			
-			.topnav > sl-button::part(base):hover {
+			.navContent > sl-button::part(base):hover {
 				transform: scale(1.07);
 			}
 			
-			.topnav > sl-button::part(base)::active {
+			.navContent > sl-button::part(base)::active {
 				transform: scale(1.07);
 			}
 			
-			.topnav > sl-button::part(base):focus-visible {
+			.navContent > sl-button::part(base):focus-visible {
 				outline: dashed 2px var(--sl-color-primary-500);
 				outline-offset: 2px;
 			}
 
-			.title {
-				display: flex;
+			.navBrand {
 				justify-content: flex-start;
 				padding-left: 0px;
 			}
 
-			.title > h2 {
+			.navBrand > h2 {
 				font-size: var(--sl-font-size-x-large);
+			}
+
+			@media(max-width: 768px) {
+				.grid,
+				.grid-3 {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			@media(max-width: 520px) {
+				.grid,
+				.grid-3 {
+					grid-template-columns: 1fr;
+				}
+
+				.flex {
+					flex-direction: column;
+				}
+
+				.navContent {
+					padding-bottom: 15px;
+				}
 			}
 			`];
 
@@ -106,9 +136,9 @@ export class App extends LitElement
 	render()
 	{
 		return html`
-		<nav>
-			<div class="topnav">
-				<div class="title">
+		<nav class="topNav">
+			<div class="navContent flex">
+				<div class="navBrand flex">
 					<h2>Lambert on Shading</h2>
 				</div>
 				<sl-button class=${this.homeClass}  name="Home"  href="/">HOME</sl-button>
@@ -117,7 +147,7 @@ export class App extends LitElement
 			</div>
 		</nav>
 
-		<slot></slot>
+		<slot class="content"></slot>
 		`;
 	}
 };
