@@ -14,9 +14,6 @@ export class App extends LitElement
 	static styles = [
 		baseStyles,
 		css`
-			* {
-			}
-
 			.flex {
 				display: flex;
 				flex-wrap: wrap;
