@@ -14,7 +14,14 @@
     "sourceMap": true,
     "inlineSources": true,
     "rootDir": "./",
-    "incremental": true
+    "incremental": true,
+	"baseUrl": "./",
+	"paths": {
+		"*": [
+			"*",
+			"./types/*"
+		]
+	}
   },
   "include": ["**/*.ts"]
 }
