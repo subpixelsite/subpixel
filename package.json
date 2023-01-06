@@ -21,6 +21,7 @@
     "@vaadin/router": "^1.7.4",
     "lit": "^2.0.2",
     "lit-element": "^3.2.2",
+    "lit-html": "^2.5.0",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-css-only": "^4.3.0"
   },
