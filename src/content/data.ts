@@ -1,6 +1,6 @@
-import { Post } from './post.js';
+import { PostData } from './post_data.js';
 
-export const POSTS: Post[] = [
+export const POSTS: PostData[] = [
   {
     id: 0,
     title: 'Mipmapping',

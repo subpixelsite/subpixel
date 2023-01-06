@@ -4,7 +4,7 @@ import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/card/card.js';
 import { svg, TemplateResult } from 'lit-element/lit-element.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { Post } from './post.js';
+import { PostData } from './post_data.js';
 
 @customElement('post-tile')
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -55,7 +55,7 @@ export class PostTile extends LitElement {
     }
   `;
 
-  @property({ type: Object }) post?: Post;
+  @property({ type: Object }) post?: PostData;
 
   static errorVisual(text: string): TemplateResult<2> {
     const viewWidth = 100;

@@ -1,4 +1,4 @@
-export interface Post {
+export interface PostData {
   id: number;
   title: string;
   author: string;
