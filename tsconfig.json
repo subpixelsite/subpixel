@@ -15,11 +15,11 @@
     "inlineSources": true,
     "rootDir": "./",
     "incremental": true,
-	"baseUrl": "./",
+	"baseUrl": "./src",
 	"paths": {
 		"*": [
 			"*",
-			"./types/*"
+			"../types/*"
 		]
 	}
   },

@@ -7,7 +7,15 @@ export const POSTS: PostData[] = [
     author: 'Chris Lambert',
     dateCreated: 0,
     tags: ['Textures', 'Geometry'],
-    hdrWGL: '',
+    hdrWGL: {
+      clearColor: [1.0, 0.0, 1.0, 1.0],
+      objects: [
+        {
+          vertexShader: 'pos.vs',
+          fragmentShader: 'col.fs',
+        },
+      ],
+    },
     hdrSVG: '',
     hdrImg: '',
     hdrAlt: '',
@@ -21,7 +29,7 @@ export const POSTS: PostData[] = [
     author: 'Chris Lambert',
     dateCreated: 0,
     tags: ['Textures', 'Geometry'],
-    hdrWGL: '',
+    hdrWGL: null,
     hdrSVG:
       '<rect x="25%" y="25%" width="50%" height="50%" fill="#ff0000" />  <line x1="0" y1="0" x2="100%" y2="100%" style="stroke:rgb(0,0,255);stroke-width:2" /> ',
     hdrImg:
@@ -37,7 +45,7 @@ export const POSTS: PostData[] = [
     author: 'Chris Lambert',
     dateCreated: 0,
     tags: ['Postprocessing'],
-    hdrWGL: '',
+    hdrWGL: null,
     hdrSVG: '',
     hdrImg:
       'https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80',

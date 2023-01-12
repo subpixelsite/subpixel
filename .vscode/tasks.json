@@ -29,6 +29,14 @@
 			"problemMatcher": [],
 			"label": "npm: rebuild",
 			"detail": "rimraf dist && tsc --force && rollup -c rollup.config.js && npm run analyze -- --exclude dist"
+		},
+		{
+			"type": "npm",
+			"script": "buildshaders",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: buildshaders",
+			"detail": "node ./build/buildshaders.js src/webgl/shaders src/webgl/shaders.ts"
 		}
 	]
 }

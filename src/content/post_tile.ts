@@ -4,6 +4,7 @@ import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/card/card.js';
 import { svg, TemplateResult } from 'lit-element/lit-element.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { WebGL } from '../webgl/webgl.js';
 import { PostData } from './post_data.js';
 
 @customElement('post-tile')
@@ -57,6 +58,16 @@ export class PostTile extends LitElement {
 
   @property({ type: Object }) post?: PostData;
 
+  private wglScene?: WebGL;
+
+  PostTile() {
+    if (this.post !== undefined && this.post.hdrWGL !== null) {
+      // initialize WebGL scene
+      this.wglScene = new WebGL(this.post.hdrWGL);
+      this.wglScene.init('tileImage');
+    }
+  }
+
   static errorVisual(text: string): TemplateResult<2> {
     const viewWidth = 100;
     const viewHeight = 56;
@@ -104,8 +115,17 @@ export class PostTile extends LitElement {
     }
 
     let visual;
-    if (this.post.hdrWGL.length > 0) {
-      visual = html`${this.post.hdrWGL}`;
+    if (this.post.hdrWGL !== null) {
+      visual = html`
+        <div
+          slot="image"
+          class="tileImage"
+          width="100%"
+          height="100%"
+          role="img"
+          aria-label="webgl example"
+        ></div>
+      `;
     } else if (this.post.hdrSVG.length > 0) {
       const content = `
 				<svg slot="image" viewbox="0 0 100 56" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
