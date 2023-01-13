@@ -60,11 +60,21 @@ export class PostTile extends LitElement {
 
   private wglScene?: WebGL;
 
-  PostTile() {
-    if (this.post !== undefined && this.post.hdrWGL !== null) {
-      // initialize WebGL scene
-      this.wglScene = new WebGL(this.post.hdrWGL);
-      this.wglScene.init('tileImage');
+  firstUpdated(changedProperties: Map<string, unknown>) {
+    if (changedProperties.has('post')) {
+      const oldValue = changedProperties.get('post') as PostData | undefined;
+      const newValue = this.post;
+      if (
+        newValue !== oldValue &&
+        this.post !== undefined &&
+        this.post.hdrWGL !== null
+      ) {
+        // initialize WebGL scene
+        this.updateComplete.then(() => {
+          this.wglScene = new WebGL(this.post!.hdrWGL!, this.shadowRoot!);
+          this.wglScene.init('.tileImage');
+        });
+      }
     }
   }
 
@@ -117,14 +127,9 @@ export class PostTile extends LitElement {
     let visual;
     if (this.post.hdrWGL !== null) {
       visual = html`
-        <div
-          slot="image"
-          class="tileImage"
-          width="100%"
-          height="100%"
-          role="img"
-          aria-label="webgl example"
-        ></div>
+        <canvas slot="image" class="tileImage"
+          >Your browser does not seem to support WebGL.</canvas
+        >
       `;
     } else if (this.post.hdrSVG.length > 0) {
       const content = `

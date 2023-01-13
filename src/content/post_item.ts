@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { BeforeEnterObserver, RouterLocation } from '@vaadin/router';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   LitElement,
   html,
   customElement,
