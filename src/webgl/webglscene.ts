@@ -1,5 +1,5 @@
 /* eslint-disable lines-between-class-members */
-import { WebGLObject } from './webglobject.js';
+import { WebGLObjectData } from './webglobject.js';
 
 export class WebGLScene {
   clearColor?: number[];
@@ -12,17 +12,17 @@ export class WebGLScene {
   eye?: number[];
   lookAt?: number[];
 
-  objects?: WebGLObject[];
+  objects?: WebGLObjectData[];
 }
 
 export const webGLSceneDefault: WebGLScene = {
-  clearColor: [0.25, 0.25, 0.25, 1.0],
+  clearColor: [0.75, 0.75, 0.75, 1.0],
   clearDepth: 1.0,
   clearStencil: 0,
-  fovYDeg: 60,
+  fovYDeg: 30,
   near: 0.5,
   far: 100,
-  eye: [3, 3, -10],
+  eye: [3, 3, -6],
   lookAt: [0, 0, 0],
   objects: [],
 };

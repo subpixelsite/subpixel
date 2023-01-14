@@ -8,11 +8,37 @@ export const POSTS: PostData[] = [
     dateCreated: 0,
     tags: ['Textures', 'Geometry'],
     hdrWGL: {
-      clearColor: [1.0, 0.0, 1.0, 1.0],
+      fovYDeg: 45,
+      lookAt: [0, 1, 0],
       objects: [
         {
-          vertexShader: 'pos.vs',
-          fragmentShader: 'col.fs',
+          vs: 'pos.vs',
+          fs: 'col.fs',
+          xform: {},
+          plane: {
+            width: 4,
+            height: 4,
+          },
+        },
+        {
+          vs: 'pos.vs',
+          fs: 'col.fs',
+          xform: {
+            pos: [0, 0.5, 0],
+          },
+          cube: {
+            size: 1,
+          },
+        },
+        {
+          vs: 'pos.vs',
+          fs: 'col.fs',
+          xform: {
+            pos: [0, 2, 0],
+          },
+          sphere: {
+            radius: 1,
+          },
         },
       ],
     },
