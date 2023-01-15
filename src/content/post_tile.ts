@@ -7,10 +7,11 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { WebGL } from '../webgl/webgl.js';
 import { PostData } from './post_data.js';
 
-@customElement('post-tile')
+@customElement( 'post-tile' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export class PostTile extends LitElement {
-  static styles = css`
+export class PostTile extends LitElement
+{
+	static styles = css`
     .post-tile {
       margin: 20px;
       display: flex;
@@ -56,46 +57,52 @@ export class PostTile extends LitElement {
     }
   `;
 
-  @property({ type: Object }) post?: PostData;
+	@property( { type: Object } ) post?: PostData;
 
-  private wglScene?: WebGL;
+	private wglScene?: WebGL;
 
-  firstUpdated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has('post')) {
-      const oldValue = changedProperties.get('post') as PostData | undefined;
-      const newValue = this.post;
-      if (
-        newValue !== oldValue &&
-        this.post !== undefined &&
-        this.post.hdrWGL !== null
-      ) {
-        // initialize WebGL scene
-        this.updateComplete.then(() => {
-          this.wglScene = new WebGL(this.post!.hdrWGL!, this.shadowRoot!);
-          this.wglScene.init('.tileImage');
-        });
-      }
-    }
-  }
+	firstUpdated( changedProperties: Map<string, unknown> )
+	{
+		if ( changedProperties.has( 'post' ) )
+		{
+			const oldValue = changedProperties.get( 'post' ) as PostData | undefined;
+			const newValue = this.post;
+			if (
+				newValue !== oldValue
+				&& this.post !== undefined
+				&& this.post.hdrWGL !== null
+			)
+			{
+				// initialize WebGL scene
+				this.updateComplete.then( () =>
+				{
+					this.wglScene = new WebGL( this.post!.hdrWGL!, this.shadowRoot! );
+					this.wglScene.init( '.tileImage' );
+				} );
+			}
+		}
+	}
 
-  static errorVisual(text: string): TemplateResult<2> {
-    const viewWidth = 100;
-    const viewHeight = 56;
-    const stride = 20;
-    const travel = 33;
-    const y1 = -5;
-    const y2 = viewHeight - y1;
-    let points = '';
-    // All stripes start from the top right, but stripeX will define the bottom left
-    for (let sx = -travel; sx < viewWidth; sx += stride * 2) {
-      const x0 = sx;
-      const x1 = sx + stride;
-      const x2 = sx + travel + stride * 2;
-      const x3 = sx + travel + stride;
-      points += `${x2},${y1} ${x1},${y2}, ${x0},${y2} ${x3},${y1}  `;
-    }
+	static errorVisual( text: string ): TemplateResult<2>
+	{
+		const viewWidth = 100;
+		const viewHeight = 56;
+		const stride = 20;
+		const travel = 33;
+		const y1 = -5;
+		const y2 = viewHeight - y1;
+		let points = '';
+		// All stripes start from the top right, but stripeX will define the bottom left
+		for ( let sx = -travel; sx < viewWidth; sx += stride * 2 )
+		{
+			const x0 = sx;
+			const x1 = sx + stride;
+			const x2 = sx + travel + stride * 2;
+			const x3 = sx + travel + stride;
+			points += `${x2},${y1} ${x1},${y2}, ${x0},${y2} ${x3},${y1}  `;
+		}
 
-    return svg`
+		return svg`
 				<svg slot="image" viewbox="0 0 100 56" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
 					<filter id="visBlur">
 						<feGaussianBlur in="SourceGraphic" stdDeviation="1" />
@@ -107,13 +114,15 @@ export class PostTile extends LitElement {
 					<text x="50%" y="50%" font-size="6" text-anchor="middle" alignment-baseline="central" fill="#363636">[ ${text} ]</text>
 				</svg>
 			`;
-  }
+	}
 
-  render() {
-    if (this.post === undefined) {
-      const visual = PostTile.errorVisual('missing post');
+	render()
+	{
+		if ( this.post === undefined )
+		{
+			const visual = PostTile.errorVisual( 'missing post' );
 
-      return html`
+			return html`
         <sl-card class="post-tile">
           ${visual}
           <div class="post-description">
@@ -122,33 +131,37 @@ export class PostTile extends LitElement {
           </div>
         </sl-card>
       `;
-    }
+		}
 
-    let visual;
-    if (this.post.hdrWGL !== null) {
-      visual = html`
+		let visual;
+		if ( this.post.hdrWGL !== null )
+		{
+			visual = html`
         <canvas slot="image" class="tileImage"
           >Your browser does not seem to support WebGL.</canvas
         >
       `;
-    } else if (this.post.hdrSVG.length > 0) {
-      const content = `
+		} else if ( this.post.hdrSVG.length > 0 )
+		{
+			const content = `
 				<svg slot="image" viewbox="0 0 100 56" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
 					<title id="svgTitle" > ${this.post.hdrAlt} </title>
 					${this.post.hdrSVG}
 				</svg>
 			`;
 
-      visual = svg`${unsafeHTML(content)}`;
-    } else if (this.post.hdrImg.length > 0) {
-      visual = html`
+			visual = svg`${unsafeHTML( content )}`;
+		} else if ( this.post.hdrImg.length > 0 )
+		{
+			visual = html`
         <img slot="image" src="${this.post.hdrImg}" alt="${this.post.hdrAlt}" />
       `;
-    } else {
-      visual = PostTile.errorVisual('missing visual');
-    }
+		} else
+		{
+			visual = PostTile.errorVisual( 'missing visual' );
+		}
 
-    return html`
+		return html`
       <sl-card class="post-tile">
         ${visual}
         <div class="post-description">
@@ -167,14 +180,15 @@ export class PostTile extends LitElement {
         </div>
       </sl-card>
     `;
-  }
+	}
 
-  private handleClick() {
-    const event = new CustomEvent('readMore', {
-      detail: this.post,
-      bubbles: true,
-      composed: true,
-    });
-    this.dispatchEvent(event);
-  }
+	private handleClick()
+	{
+		const event = new CustomEvent( 'readMore', {
+			detail: this.post,
+			bubbles: true,
+			composed: true
+		} );
+		this.dispatchEvent( event );
+	}
 }

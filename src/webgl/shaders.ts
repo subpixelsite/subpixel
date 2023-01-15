@@ -4,9 +4,7 @@
 export const shaders = new Map();
 
 // ---------------- col.fs
-shaders.set(
-  'col.fs',
-  `
+shaders.set( 'col.fs', `
 // ----------------
 // col.fs
 
@@ -20,13 +18,10 @@ void main() {
 }
 
 // ----------------
-`
-);
+` );
 
 // ---------------- pos.vs
-shaders.set(
-  'pos.vs',
-  `
+shaders.set( 'pos.vs', `
 // ----------------
 // pos.vs
 
@@ -46,5 +41,4 @@ void main() {
 }
 
 // ----------------
-`
-);
+` );

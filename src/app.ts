@@ -116,7 +116,7 @@ export class App extends LitElement
 
 		setBasePath( '/dist/shoelace' );
 
-		this.addEventListener( 'pageNav', ( e: Event ) => 
+		this.addEventListener( 'pageNav', ( e: Event ) =>
 		{
 			// Ugly and evil but TS is broken like this
 			const { detail } = ( e as CustomEvent );
@@ -147,4 +147,4 @@ export class App extends LitElement
 		<slot class="content"></slot>
 		`;
 	}
-};
+}
