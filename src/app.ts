@@ -78,7 +78,10 @@ export class App extends LitElement
 			}
 
 			.navBrand > h2 {
-				font-size: var(--sl-font-size-x-large);
+				font-size: var(--sl-font-size-2x-large);
+				font-weight: var(--sl-font-weight-bold);
+				letter-spacing: var(--sl-letter-spacing-normal);
+				color: #b5b5b5
 			}
 
 			@media(max-width: 768px) {
@@ -136,7 +139,7 @@ export class App extends LitElement
 		<nav class="topNav">
 			<div class="navContent flex">
 				<div class="navBrand flex">
-					<h2>Lambert on Shading</h2>
+					<h2>THE SHADER FILES</h2>
 				</div>
 				<sl-button class=${this.homeClass}  name="Home"  href="/">HOME</sl-button>
 				<sl-button class=${this.postsClass} name="Posts" href="posts">POSTS</sl-button>

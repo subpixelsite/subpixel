@@ -21,6 +21,11 @@ export interface WebGLObjectData
 	fs: string;
 	xform: WebGLObjectTransform;
 	// textures
+	diffuse?: {
+		url: string;
+		min?: number,
+		mag?: number
+	}
 }
 
 export class WebGLObject

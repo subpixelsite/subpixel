@@ -2,6 +2,8 @@
 import { LitElement, html, customElement, css, property } from 'lit-element';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/card/card.js';
+import '@shoelace-style/shoelace/dist/components/divider/divider.js';
+import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import { svg, TemplateResult } from 'lit-element/lit-element.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { WebGL } from '../webgl/webgl.js';
@@ -13,7 +15,7 @@ export class PostTile extends LitElement
 {
 	static styles = css`
     .post-tile {
-      margin: 20px;
+      margin: 10px;
       display: flex;
       flex-direction: column;
       margin-bottom: 15px;
@@ -24,7 +26,7 @@ export class PostTile extends LitElement
       max-width: 300px;
     }
     .post-description {
-      padding: 20px;
+      padding: 0px;
       background: white;
     }
     .post-footer {
@@ -35,6 +37,16 @@ export class PostTile extends LitElement
       // border-width: 0;
       // background-color: #ffffff;
     }
+	.post-date {
+		font-weight: 200;
+		color: #5e5e5e;
+		text-align: left;
+		font-size: var(--sl-font-size-small)
+	}
+	.footer-container {
+		display: grid;
+		grid-template-columns: 10fr 1fr;
+	}
     h1 {
       margin: 0;
       font-size: 1.5rem;
@@ -116,6 +128,33 @@ export class PostTile extends LitElement
 			`;
 	}
 
+	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
+	{
+		let visual;
+		if ( post.hdrWGL !== null )
+		{
+			visual = html`<canvas slot="image" class="postImage">Your browser does not seem to support WebGL.</canvas>`;
+		} else if ( post.hdrSVG.length > 0 )
+		{
+			const content = `
+				<svg slot="image" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
+					<title id="svgTitle" > ${post.hdrAlt} </title>
+					${post.hdrSVG}
+				</svg>
+			`;
+
+			visual = svg`${unsafeHTML( content )}`;
+		} else if ( post.hdrImg.length > 0 )
+		{
+			visual = html`<img slot="image" src="${post.hdrImg}" alt="${post.hdrAlt}" />`;
+		} else
+		{
+			visual = PostTile.errorVisual( 'missing visual' );
+		}
+
+		return visual;
+	}
+
 	render()
 	{
 		if ( this.post === undefined )
@@ -123,63 +162,45 @@ export class PostTile extends LitElement
 			const visual = PostTile.errorVisual( 'missing post' );
 
 			return html`
-        <sl-card class="post-tile">
-          ${visual}
-          <div class="post-description">
-            <strong>Error fetching post</strong>
-            <p>Post is undefined</p>
-          </div>
-        </sl-card>
-      `;
-		}
-
-		let visual;
-		if ( this.post.hdrWGL !== null )
-		{
-			visual = html`
-        <canvas slot="image" class="tileImage"
-          >Your browser does not seem to support WebGL.</canvas
-        >
-      `;
-		} else if ( this.post.hdrSVG.length > 0 )
-		{
-			const content = `
-				<svg slot="image" viewbox="0 0 100 56" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
-					<title id="svgTitle" > ${this.post.hdrAlt} </title>
-					${this.post.hdrSVG}
-				</svg>
+				<sl-card class="post-tile">
+					${visual}
+					<div class="post-description">
+						<strong>Error fetching post</strong>
+						<p>Post is undefined</p>
+					</div>
+				</sl-card>
 			`;
-
-			visual = svg`${unsafeHTML( content )}`;
-		} else if ( this.post.hdrImg.length > 0 )
-		{
-			visual = html`
-        <img slot="image" src="${this.post.hdrImg}" alt="${this.post.hdrAlt}" />
-      `;
-		} else
-		{
-			visual = PostTile.errorVisual( 'missing visual' );
 		}
+
+		const visual = PostTile.getPostVisual( this.post );
 
 		return html`
-      <sl-card class="post-tile">
-        ${visual}
-        <div class="post-description">
-          <strong>${this.post.title}</strong>
-          <small>${this.post.author}</small>
-          <p>${this.post.description}</p>
-          <div slot="post-footer">
-            <sl-button
-              variant="primary"
-              pill
-              class="post-link"
-              @click="${this.handleClick}"
-              >Read More</sl-button
-            >
-          </div>
-        </div>
-      </sl-card>
-    `;
+			<sl-card class="post-tile">
+				${visual}
+				<div class="post-description">
+					<strong>${this.post.title}</strong><br>
+					<small>${this.post.author}</small>
+					<p>${this.post.description}</p>
+					<sl-divider></sl-divider>
+					<div slot="post-footer" class="footer-container">
+						<div class="footer-item">
+							<p class="post-date"><sl-relative-time .date="${this.getDateObject()}" format="long" sync></sl-relative-time></p>
+						</div>
+						<div class="footer-item" align-items="flex-end">
+							<sl-button variant="primary" pill class="post-link" @click="${this.handleClick}">Read More</sl-button>
+						</div>
+					</div>
+				</div>
+			</sl-card>
+    	`;
+	}
+
+	getDateObject(): Date
+	{
+		if ( this.post === undefined )
+			throw new Error( 'Should not have been able to call this with an undefined post' );
+
+		return new Date( this.post.dateCreated );
 	}
 
 	private handleClick()

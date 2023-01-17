@@ -1,6 +1,6 @@
 /* eslint-disable lines-between-class-members */
 /* eslint-disable no-bitwise */
-import { m4, ProgramInfo, DrawObject, resizeCanvasToDisplaySize, drawObjectList } from 'twgl.js';
+import { m4, ProgramInfo, DrawObject, resizeCanvasToDisplaySize, drawObjectList, createTexture } from 'twgl.js';
 import { WebGLCube } from './webglcube.js';
 import { WebGLObject } from './webglobject.js';
 import { WebGLPlane } from './webglplane.js';
@@ -70,9 +70,20 @@ export class WebGL
 			if ( bufferInfo === undefined )
 				throw new Error( 'Failed to create buffer info for object' );
 
+			// Load any requested textures
+			let diffuse: WebGLTexture | undefined;
+			if ( data.diffuse !== undefined )
+			{
+				diffuse = createTexture( this.gl!, {
+					min: data.diffuse.min ?? WebGLRenderingContext.LINEAR,
+					mag: data.diffuse.mag ?? WebGLRenderingContext.LINEAR,
+					src: data.diffuse.url
+				} );
+			}
+
 			// Create shader common constants (uniforms)
 			const uniforms = {
-				// 'u_diffuse': diffuse;
+				u_diffuse: diffuse,
 				u_viewInverse: this.camera,
 				u_world: m4.identity(),
 				u_worldInverseTranspose: m4.identity(),
@@ -107,7 +118,14 @@ export class WebGL
 
 		resizeCanvasToDisplaySize( gl.canvas as HTMLCanvasElement );
 
-		gl.viewport( 0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight );
+		// THIS CAUSES ONE OF THE CASES NOT TO WORK!
+		// THEORY: SPA makes WebGL share the canvas the way I'm using it.
+		// Is it even hitting init twice?  Sharing resources?
+		// How is WebGL supposed to work in SPA?  Look at the multi-canvas example
+
+		gl.viewport( 0, 0, gl.canvas.width, gl.canvas.height );
+		// gl.viewport( 0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight );
+
 		gl.enable( gl.DEPTH_TEST );
 		gl.enable( gl.CULL_FACE );
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
