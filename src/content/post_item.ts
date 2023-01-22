@@ -7,10 +7,11 @@ import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
-import { WebGL } from '../webgl/webgl.js';
 import { POSTS } from './data.js';
 import { PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
+import { WebGLElement } from '../webgl/webglelement.js';
+import { WebGL } from '../webgl/webgl.js';
 
 @customElement( 'lit-post' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,6 +78,9 @@ export class PostItem extends LitElement implements BeforeEnterObserver
 		.post-image-content {
 			display: inline;
 		}
+		.postImage {
+			min-height: 150px;
+		}
 	`;
 
 	@state()
@@ -88,7 +92,7 @@ export class PostItem extends LitElement implements BeforeEnterObserver
 	@property( { type: Array } )
 	posts?: PostData[];
 
-	private wglScene?: WebGL;
+	private wglScene?: WebGLElement;
 
 	firstUpdated( changedProperties: Map<string, unknown> )
 	{
@@ -105,8 +109,8 @@ export class PostItem extends LitElement implements BeforeEnterObserver
 				// initialize WebGL scene
 				this.updateComplete.then( () =>
 				{
-					this.wglScene = new WebGL( this.post!.hdrWGL!, this.shadowRoot! );
-					this.wglScene.init( '.postImage' );
+					this.wglScene = new WebGLElement( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
+					this.wglScene.init();
 				} );
 			}
 		}
@@ -146,7 +150,8 @@ export class PostItem extends LitElement implements BeforeEnterObserver
 				${this.post.description}
 				${this.post.body}
 				</p>
-			</div>`;
+			</div>
+			`;
 	}
 
 	getTagsHTML(): TemplateResult<1>
@@ -195,5 +200,13 @@ export class PostItem extends LitElement implements BeforeEnterObserver
 				return null;
 			} );
 		}
+	}
+
+	// eslint-disable-next-line class-methods-use-this
+	public onAfterLeave(): void
+	{
+		// Delete created webgl elements
+		const webgl = WebGL.getInstance();
+		webgl.onNavigateAway();
 	}
 }

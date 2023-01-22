@@ -6,8 +6,8 @@ import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import { svg, TemplateResult } from 'lit-element/lit-element.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { WebGL } from '../webgl/webgl.js';
 import { PostData } from './post_data.js';
+import { WebGLElement } from '../webgl/webglelement.js';
 
 @customElement( 'post-tile' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -43,6 +43,9 @@ export class PostTile extends LitElement
 		text-align: left;
 		font-size: var(--sl-font-size-small)
 	}
+	.postImage {
+		min-height: 150px;
+	}
 	.footer-container {
 		display: grid;
 		grid-template-columns: 10fr 1fr;
@@ -71,7 +74,7 @@ export class PostTile extends LitElement
 
 	@property( { type: Object } ) post?: PostData;
 
-	private wglScene?: WebGL;
+	private wglScene?: WebGLElement;
 
 	firstUpdated( changedProperties: Map<string, unknown> )
 	{
@@ -88,8 +91,8 @@ export class PostTile extends LitElement
 				// initialize WebGL scene
 				this.updateComplete.then( () =>
 				{
-					this.wglScene = new WebGL( this.post!.hdrWGL!, this.shadowRoot! );
-					this.wglScene.init( '.tileImage' );
+					this.wglScene = new WebGLElement( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
+					this.wglScene.init();
 				} );
 			}
 		}
@@ -133,7 +136,7 @@ export class PostTile extends LitElement
 		let visual;
 		if ( post.hdrWGL !== null )
 		{
-			visual = html`<canvas slot="image" class="postImage">Your browser does not seem to support WebGL.</canvas>`;
+			visual = html`<div slot="image" class="postImage">Your browser does not seem to support WebGL.</div>`;
 		} else if ( post.hdrSVG.length > 0 )
 		{
 			const content = `

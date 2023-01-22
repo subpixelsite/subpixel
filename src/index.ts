@@ -1,5 +1,6 @@
 import { Router } from '@vaadin/router';
 import { setDefaults } from 'twgl.js';
+import { WebGL } from './webgl/webgl.js';
 import './app.js'; // Preload 'app' for better perforance
 
 const routes = [
@@ -61,5 +62,8 @@ const outlet = document.getElementById( 'outlet' );
 export const router = new Router( outlet );
 router.setRoutes( routes );
 
-// One-time TWGL initialization here
+// One-time TWGL and WebGL initialization here
 setDefaults( { attribPrefix: 'a_' } );
+
+const glSelector = document.querySelector( '#webgl' ) as HTMLCanvasElement;
+WebGL.initContext( glSelector );

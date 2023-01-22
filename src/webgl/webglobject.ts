@@ -33,6 +33,7 @@ export class WebGLObject
 	data: WebGLObjectData;
 
 	uniforms?: any; // Map:  [string]: any
+	element?: string;
 
 	constructor( data?: WebGLObjectData )
 	{

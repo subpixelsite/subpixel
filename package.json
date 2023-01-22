@@ -112,7 +112,9 @@
       "arrow-parens": [
         "error",
         "as-needed"
-      ]
+      ],
+	  "lines-between-class-members": "off",
+	  "no-bitwise": "off"
     }
   },
   "husky": {

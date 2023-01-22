@@ -15,14 +15,24 @@
       font-family: sans-serif;
       background-color: #ffffff;
     }
+	
+	canvas {
+		position: absolute;
+		display: block;
+		top: 0;
+		width: 100vw;
+		height: 100vh;
+	}
   </style>
   <title>GPU SITE</title>
 </head>
 
 <body>
-  <div id="outlet"></div>
+	<canvas id="webgl"></canvas>
+	<div id="outlet">
+  	</div>
 
-  <script type="module" src="./out-tsc/src/index.js"></script>
+  	<script type="module" src="./out-tsc/src/index.js"></script>
 </body>
 
 </html>

@@ -1,180 +1,155 @@
-/* eslint-disable lines-between-class-members */
-/* eslint-disable no-bitwise */
-import { m4, ProgramInfo, DrawObject, resizeCanvasToDisplaySize, drawObjectList, createTexture } from 'twgl.js';
-import { WebGLCube } from './webglcube.js';
-import { WebGLObject } from './webglobject.js';
-import { WebGLPlane } from './webglplane.js';
-import { WebGLScene, webGLSceneDefault } from './webglscene.js';
-import { WebGLSphere } from './webglsphere.js';
+import { resizeCanvasToDisplaySize } from 'twgl.js';
+import { WebGLElement } from './webglelement.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WebGL
 {
-	public gl?: WebGLRenderingContext;
+	// This is a singleton.
+	private static instance: WebGL;
+	// eslint-disable-next-line no-useless-constructor, no-empty-function
+	private constructor() {}
+	public static getInstance(): WebGL
+	{
+		if ( !WebGL.instance )
+			WebGL.instance = new WebGL();
 
-	private scene: WebGLScene;
-	private shadowRoot: ShadowRoot;
+		return WebGL.instance;
+	}
+
+	public static initContext( canvas: HTMLCanvasElement )
+	{
+		if ( canvas === null )
+			throw new Error( 'WebGL::initContext: selector is NULL' );
+
+		const instance = WebGL.getInstance();
+
+		instance.gl = canvas.getContext( 'webgl' ) as WebGLRenderingContext;
+		instance.canvas = canvas;
+
+		instance.render = instance.render.bind( instance );
+	}
+
+	public static DEBUG_RENDERS = false;
+
+	public gl?: WebGLRenderingContext;
+	public canvas?: HTMLCanvasElement;
+
+	private animated: number = 0;
+	private elements: WebGLElement[] = [];
+	private requestId?: number;
 
 	// Map of vs/fs pair strings to runtime objects
-	private programInfo: Map<string, ProgramInfo> = new Map();
+	// private programInfo: Map<string, ProgramInfo> = new Map();
 
-	// One-to-one mapping of scene objects to drawable objects
-	private sceneObjects: WebGLObject[] = [];
-	private drawObjects: DrawObject[] = [];
-
-	private camera: m4.Mat4 = m4.identity();
-
-	constructor( scene: WebGLScene, shadowRoot: ShadowRoot )
+	public addElement( element: WebGLElement )
 	{
-		this.scene = { ...webGLSceneDefault, ...scene };
-		this.shadowRoot = shadowRoot;
+		this.elements.push( element );
 
-		this.render = this.render.bind( this );
+		if ( element.getAnimated() )
+			this.animated += 1;
+
+		this.requestNewRender();
 	}
 
-	init( context: string )
+	public setAnimated( isAnimated: boolean )
 	{
-		if ( this.scene === undefined )
-			return;
+		this.animated += isAnimated ? 1 : -1;
 
-		const selector = this.shadowRoot.querySelector(
-			context
-		) as HTMLCanvasElement;
-		if ( selector === null )
-			throw new Error( `Couldn't find page context for WebGL: ${context}` );
+		if ( this.animated < 0 )
+			throw new Error( 'WebGL animated refcount is less than zero' );
 
-		this.gl = selector.getContext( 'webgl' ) as WebGLRenderingContext;
-		if ( !this.gl )
-			throw new Error( `Couldn't get WebGL context for canvas ${context}` );
-
-		this.scene.objects?.forEach( data =>
-		{
-			// Create the correct type of WebGLObject for the requested primitive
-			let obj;
-			if ( data.plane !== undefined )
-				obj = new WebGLPlane( data );
-			else if ( data.sphere !== undefined )
-				obj = new WebGLSphere( data );
-			else if ( data.cube !== undefined )
-				obj = new WebGLCube( data );
-			else
-				obj = new WebGLObject( data );
-
-			// Find and load shaders from shader library for each object
-			const objShaderKey = `${data.vs}|${data.fs}`;
-			const programInfo = obj.createProgramInfo( this.gl! );
-			this.programInfo.set( objShaderKey, programInfo );
-
-			// Create geometry buffer for each object
-			const bufferInfo = obj.createBufferInfo( this.gl! );
-			if ( bufferInfo === undefined )
-				throw new Error( 'Failed to create buffer info for object' );
-
-			// Load any requested textures
-			let diffuse: WebGLTexture | undefined;
-			if ( data.diffuse !== undefined )
-			{
-				diffuse = createTexture( this.gl!, {
-					min: data.diffuse.min ?? WebGLRenderingContext.LINEAR,
-					mag: data.diffuse.mag ?? WebGLRenderingContext.LINEAR,
-					src: data.diffuse.url
-				} );
-			}
-
-			// Create shader common constants (uniforms)
-			const uniforms = {
-				u_diffuse: diffuse,
-				u_viewInverse: this.camera,
-				u_world: m4.identity(),
-				u_worldInverseTranspose: m4.identity(),
-				u_worldViewProjection: m4.identity()
-			};
-
-			const drawObj: DrawObject = {
-				programInfo,
-				bufferInfo,
-				uniforms
-			};
-
-			// eslint-disable-next-line no-param-reassign
-			obj.uniforms = uniforms;
-
-			this.sceneObjects.push( obj );
-			this.drawObjects.push( drawObj );
-		} );
-
-		requestAnimationFrame( this.render );
+		this.requestNewRender();
 	}
+
+	// public setProgramInfo( vs: string, fs: string, obj: WebGLObject )
+	// {
+	// 	if ( this.gl === undefined )
+	// 		return;
+
+	// 	const objShaderKey = `${vs}|${fs}`;
+	// 	const programInfo = obj.createProgramInfo( this.gl );
+	// 	this.programInfo.set( objShaderKey, programInfo );
+	// }
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	render( time: number )
 	{
-		if ( this.gl === undefined )
+		const webgl = WebGL.getInstance();
+		const { gl, canvas } = webgl;
+
+		if ( canvas === undefined )
+			throw new Error( 'Unexpected undefined canvas in WebGL::render' );
+		if ( gl === undefined )
 			return;
-		const { gl } = this;
 
-		// time in ms
-		// time *= 0.001;
+		const timeMS = time * 0.001;
 
-		resizeCanvasToDisplaySize( gl.canvas as HTMLCanvasElement );
+		resizeCanvasToDisplaySize( canvas );
 
-		// THIS CAUSES ONE OF THE CASES NOT TO WORK!
-		// THEORY: SPA makes WebGL share the canvas the way I'm using it.
-		// Is it even hitting init twice?  Sharing resources?
-		// How is WebGL supposed to work in SPA?  Look at the multi-canvas example
+		// eslint-disable-next-line prefer-destructuring
+		canvas.style.transform = `translateY(${window.scrollY}px)`;
 
-		gl.viewport( 0, 0, gl.canvas.width, gl.canvas.height );
-		// gl.viewport( 0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight );
-
+		// First clear color with scissor disabled, then re-enable for rendering
 		gl.enable( gl.DEPTH_TEST );
-		gl.enable( gl.CULL_FACE );
+		gl.disable( gl.SCISSOR_TEST );
+		gl.clearColor( 0, 0, 0, 0 );
+		gl.clearDepth( 1.0 );
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
-		gl.clearColor(
-			this.scene.clearColor![0],
-			this.scene.clearColor![1],
-			this.scene.clearColor![2],
-			this.scene.clearColor![3]
-		);
-		gl.clearDepth( this.scene.clearDepth! );
-		gl.clearStencil( this.scene.clearStencil! );
 
-		// Calculate common matrices to update each object's uniforms
-		const projection = m4.perspective(
-			( this.scene.fovYDeg! * Math.PI ) / 180,
-			gl.canvas.width / gl.canvas.height,
-			this.scene.near!,
-			this.scene.far!
-		);
-		const up = [0, 1, 0];
-
-		const view = m4.identity();
-		const viewProjection = m4.identity();
-		m4.lookAt( this.scene.eye!, this.scene.lookAt!, up, this.camera );
-		m4.inverse( this.camera, view );
-		m4.multiply( projection, view, viewProjection );
-
-		this.sceneObjects?.forEach( object =>
+		// Iterate elements to draw each as requested
+		this.elements.forEach( element =>
 		{
-			const { data } = object;
-			const { uniforms } = object;
-			const world = uniforms.u_world;
-			m4.identity( world );
-			if ( data.xform.rotAxis !== undefined && data.xform.rotRad !== undefined )
-				m4.axisRotate( world, data.xform.rotAxis, data.xform.rotRad, world );
-			m4.translate( world, data.xform.pos ?? [0, 0, 0], world );
-			m4.transpose(
-				m4.inverse( world, uniforms.u_worldInverseTranspose ),
-				uniforms.u_worldInverseTranspose
-			);
-			m4.multiply(
-				viewProjection,
-				uniforms.u_world,
-				uniforms.u_worldViewProjection
-			);
+			element.render( timeMS );
 		} );
 
-		drawObjectList( this.gl!, this.drawObjects );
+		if ( WebGL.DEBUG_RENDERS )
+			// eslint-disable-next-line no-console
+			console.log( `Rendering... elements ${this.elements.length}, animated: ${this.animated}` );
+	}
 
-		requestAnimationFrame( this.render );
+	public requestNewRender()
+	{
+		if ( this.animated > 0 )
+		{
+			const renderContinuously = ( t: number ) =>
+			{
+				this.render( t );
+				if ( this.animated > 0 )
+					requestAnimationFrame( renderContinuously );
+			};
+			requestAnimationFrame( renderContinuously );
+		}
+		else
+		{
+			const singleRender = ( t: number ) =>
+			{
+				if ( WebGL.DEBUG_RENDERS )
+					// eslint-disable-next-line no-console
+					console.log( 'Render requested' );
+
+				this.render( t );
+				this.requestId = undefined;
+			};
+
+			const queueRender = () =>
+			{
+				if ( this.requestId === undefined )
+					this.requestId = requestAnimationFrame( singleRender );
+			};
+
+			window.addEventListener( 'resize', queueRender );
+			window.addEventListener( 'scroll', queueRender );
+
+			queueRender();
+		}
+	}
+
+	public onNavigateAway()
+	{
+		// Clear all added elements
+		this.elements.length = 0;
+		this.animated = 0;
+
+		this.requestNewRender();
 	}
 }
