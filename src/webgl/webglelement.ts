@@ -72,7 +72,11 @@ export class WebGLElement
 				diffuse = createTexture( gl!, {
 					min: data.diffuse.min ?? WebGLRenderingContext.LINEAR,
 					mag: data.diffuse.mag ?? WebGLRenderingContext.LINEAR,
-					src: data.diffuse.url
+					src: data.diffuse.url,
+					color: [0.5, 0.5, 0.5, 1.0]
+				}, () =>
+				{
+					webgl.requestNewRender();
 				} );
 			}
 
