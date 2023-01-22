@@ -36,7 +36,9 @@ export class WebGL
 
 	private animated: number = 0;
 	private elements: WebGLElement[] = [];
+
 	private requestId?: number;
+	private lastTimeSecs: number = 0;
 
 	// Map of vs/fs pair strings to runtime objects
 	// private programInfo: Map<string, ProgramInfo> = new Map();
@@ -72,7 +74,7 @@ export class WebGL
 	// }
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	render( time: number )
+	render( timeAccumMS: number )
 	{
 		const webgl = WebGL.getInstance();
 		const { gl, canvas } = webgl;
@@ -82,7 +84,9 @@ export class WebGL
 		if ( gl === undefined )
 			return;
 
-		const timeMS = time * 0.001;
+		const timeAccumSecs = timeAccumMS * 0.001;
+		const timeElapsedSecs = timeAccumSecs - this.lastTimeSecs;
+		this.lastTimeSecs = timeAccumSecs;
 
 		resizeCanvasToDisplaySize( canvas );
 
@@ -99,7 +103,7 @@ export class WebGL
 		// Iterate elements to draw each as requested
 		this.elements.forEach( element =>
 		{
-			element.render( timeMS );
+			element.render( timeElapsedSecs );
 		} );
 
 		if ( WebGL.DEBUG_RENDERS )

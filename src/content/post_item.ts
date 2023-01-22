@@ -136,7 +136,8 @@ export class PostItem extends LitElement implements BeforeEnterObserver
 				<div class="header-container">
 					<div class="post-info">
 						<h1 class="post-title">${this.post.title}</h1>
-						<span class="post-author">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> <span class="post-date">on ${this.getDateString()}</span>
+						<span class="post-author">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
+							<span class="post-date">on ${this.getDateString()}</span>
 						<div class="post-tag-set">${this.getTagsHTML()}</div>
 					</div>
 					<div class="post-image">

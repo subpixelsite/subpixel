@@ -114,7 +114,10 @@
         "as-needed"
       ],
 	  "lines-between-class-members": "off",
-	  "no-bitwise": "off"
+	  "no-bitwise": "off",
+	  "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+	  "default-case": "off",
+	  "max-len": ["error", { "code": 140 }]
     }
   },
   "husky": {

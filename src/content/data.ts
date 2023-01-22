@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+import { AnimBlendMode, AnimLoopMode } from '../webgl/webglanim.js';
 import { PostData } from './post_data.js';
 
 export const POSTS: PostData[] = [
@@ -14,7 +16,7 @@ export const POSTS: PostData[] = [
 				{
 					vs: 'pos.vs',
 					fs: 'col.fs',
-					xform: {},
+					xform: [],
 					plane: {
 						width: 4,
 						height: 4
@@ -23,9 +25,32 @@ export const POSTS: PostData[] = [
 				{
 					vs: 'postex.vs',
 					fs: 'tex.fs',
-					xform: {
-						pos: [0, 0.5, 0]
+					anim: {
+						mode: AnimBlendMode.Linear,
+						loop: AnimLoopMode.PingPong
 					},
+					xform: [
+						{
+							pos: [-1.0, 0.5, -1.0],
+							key: { time: 0.0 }
+						},
+						{
+							pos: [1.0, 0.5, -1.0],
+							key: { time: 2.0, modeIn: AnimBlendMode.Sine }
+						},
+						{
+							pos: [1.0, 0.5, 1.0],
+							key: { time: 4.0, modeIn: AnimBlendMode.Discrete }
+						},
+						{
+							pos: [-1.0, 0.5, 1.0],
+							key: { time: 6.0, modeIn: AnimBlendMode.Sine }
+						},
+						{
+							pos: [-1.0, 0.5, -1.0],
+							key: { time: 8.0 }
+						}
+					],
 					cube: {
 						size: 1
 					},
@@ -33,14 +58,36 @@ export const POSTS: PostData[] = [
 						url: 'https://farm6.staticflickr.com/5795/21506301808_efb27ed699_q_d.jpg',
 						min: WebGLRenderingContext.NEAREST,
 						mag: WebGLRenderingContext.NEAREST
-					}
+					},
+					color: [
+						{
+							color: [0, 0.0, 0.0],
+							alpha: 1.0,
+							key: { time: 0.0 }
+						},
+						{
+							color: [0, 1.0, 1.0],
+							alpha: 1.0,
+							key: { time: 4.75, modeIn: AnimBlendMode.Sine }
+						},
+						{
+							color: [0, 0.0, 1.0],
+							alpha: 1.0,
+							key: { time: 5.0 }
+						},
+						{
+							color: [0, 0.0, 0.0],
+							alpha: 1.0,
+							key: { time: 8.0 }
+						}
+					]
 				},
 				{
 					vs: 'pos.vs',
 					fs: 'col.fs',
-					xform: {
+					xform: [{
 						pos: [0, 2, 0]
-					},
+					}],
 					sphere: {
 						radius: 1
 					}

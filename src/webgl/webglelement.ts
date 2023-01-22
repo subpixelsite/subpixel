@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-bitwise */
 import { createTexture, DrawObject, drawObjectList, m4, ProgramInfo } from 'twgl.js';
 import { WebGL } from './webgl.js';
@@ -83,6 +84,7 @@ export class WebGLElement
 			// Create shader common constants (uniforms)
 			const uniforms = {
 				u_diffuse: diffuse,
+				u_color: [1, 1, 1, 1],
 				u_viewInverse: this.camera,
 				u_world: m4.identity(),
 				u_worldInverseTranspose: m4.identity(),
@@ -105,8 +107,7 @@ export class WebGLElement
 		webgl.addElement( this );
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	render( timeMS: number )
+	render( timeElapsedSecs: number )
 	{
 		const webgl = WebGL.getInstance();
 		const { gl, canvas } = webgl;
@@ -161,22 +162,34 @@ export class WebGLElement
 
 		this.sceneObjects?.forEach( object =>
 		{
-			const { data } = object;
+			// const { data } = object;
 			const { uniforms } = object;
 			const world = uniforms.u_world;
+
 			m4.identity( world );
-			if ( data.xform.rotAxis !== undefined && data.xform.rotRad !== undefined )
-				m4.axisRotate( world, data.xform.rotAxis, data.xform.rotRad, world );
-			m4.translate( world, data.xform.pos ?? [0, 0, 0], world );
+
+			// Perform animation interpolation
+			object.animate( timeElapsedSecs );
+			const xform = object.getTransform();
+			const colorObj = object.getColor();
+
+			if ( xform.rotAxis !== undefined && xform.rotRad !== undefined )
+				m4.axisRotate( world, xform.rotAxis, xform.rotRad, world );
+
+			m4.translate( world, xform.pos ?? [0, 0, 0], world );
+
 			m4.transpose(
 				m4.inverse( world, uniforms.u_worldInverseTranspose ),
 				uniforms.u_worldInverseTranspose
 			);
+
 			m4.multiply(
 				viewProjection,
 				uniforms.u_world,
 				uniforms.u_worldViewProjection
 			);
+
+			uniforms.u_color = [colorObj.color[0], colorObj.color[1], colorObj.color[2], colorObj.alpha];
 		} );
 
 		drawObjectList( gl!, this.drawObjects );
@@ -184,6 +197,13 @@ export class WebGLElement
 
 	public getAnimated(): boolean
 	{
-		return this.animated;
+		let maxTime = 0.0;
+
+		this.sceneObjects?.forEach( object =>
+		{
+			maxTime = Math.max( maxTime, object.maxTime );
+		} );
+
+		return maxTime > 0.0;
 	}
 }

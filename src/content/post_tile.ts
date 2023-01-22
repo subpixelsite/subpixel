@@ -187,7 +187,9 @@ export class PostTile extends LitElement
 					<sl-divider></sl-divider>
 					<div slot="post-footer" class="footer-container">
 						<div class="footer-item">
-							<p class="post-date"><sl-relative-time .date="${this.getDateObject()}" format="long" sync></sl-relative-time></p>
+							<p class="post-date">
+								<sl-relative-time .date="${this.getDateObject()}" format="long" sync></sl-relative-time>
+							</p>
 						</div>
 						<div class="footer-item" align-items="flex-end">
 							<sl-button variant="primary" pill class="post-link" @click="${this.handleClick}">Read More</sl-button>
