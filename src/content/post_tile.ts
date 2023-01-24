@@ -1,17 +1,18 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { LitElement, html, customElement, css, property } from 'lit-element';
+import { html, customElement, css, property } from 'lit-element';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/card/card.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import { svg, TemplateResult } from 'lit-element/lit-element.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { AppElement } from '../appelement.js';
 import { PostData } from './post_data.js';
 import { WebGLElement } from '../webgl/webglelement.js';
 
 @customElement( 'post-tile' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export class PostTile extends LitElement
+export class PostTile extends AppElement
 {
 	static styles = css`
     .post-tile {
@@ -136,7 +137,8 @@ export class PostTile extends LitElement
 		let visual;
 		if ( post.hdrWGL !== null )
 		{
-			visual = html`<div slot="image" class="postImage">Your browser does not seem to support WebGL.</div>`;
+			// eslint-disable-next-line max-len
+			visual = html`<div slot="image" width="100%" height="100%" class="postImage">Your browser does not seem to support WebGL.</div>`;
 		} else if ( post.hdrSVG.length > 0 )
 		{
 			const content = `
@@ -149,7 +151,7 @@ export class PostTile extends LitElement
 			visual = svg`${unsafeHTML( content )}`;
 		} else if ( post.hdrImg.length > 0 )
 		{
-			visual = html`<img slot="image" src="${post.hdrImg}" alt="${post.hdrAlt}" />`;
+			visual = html`<img slot="image" width="100%" height="100%" src="${post.hdrImg}" alt="${post.hdrAlt}" />`;
 		} else
 		{
 			visual = PostTile.errorVisual( 'missing visual' );

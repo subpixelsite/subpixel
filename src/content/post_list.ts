@@ -1,13 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { LitElement, html, customElement, property } from 'lit-element';
+import { html, customElement, property } from 'lit-element';
 import { Router } from '@vaadin/router';
-import { WebGL } from '../webgl/webgl.js';
+import { AppElement } from '../appelement.js';
 import { POSTS } from './data.js';
 import { PostData } from './post_data.js';
 
 @customElement( 'lit-posts' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export class PostList extends LitElement
+export class PostList extends AppElement
 {
 	@property( { type: Array } ) posts?: PostData[];
 
@@ -41,13 +41,5 @@ export class PostList extends LitElement
 	static async loadPostTile()
 	{
 		await import( './post_tile.js' );
-	}
-
-	// eslint-disable-next-line class-methods-use-this
-	public onAfterLeave(): void
-	{
-		// Delete created webgl elements
-		const webgl = WebGL.getInstance();
-		webgl.onNavigateAway();
 	}
 }

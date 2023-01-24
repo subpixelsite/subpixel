@@ -117,7 +117,8 @@
 	  "no-bitwise": "off",
 	  "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
 	  "default-case": "off",
-	  "max-len": ["error", { "code": 140 }]
+	  "max-len": ["error", { "code": 140 }],
+	  "class-methods-use-this": "off"
     }
   },
   "husky": {

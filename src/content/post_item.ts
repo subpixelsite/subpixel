@@ -1,21 +1,21 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BeforeEnterObserver, RouterLocation } from '@vaadin/router';
+import { RouterLocation } from '@vaadin/router';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { LitElement, html, customElement, state, property, css, TemplateResult } from 'lit-element';
+import { html, customElement, state, property, css, TemplateResult } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
+import { AppElement } from '../appelement.js';
 import { POSTS } from './data.js';
 import { PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
 import { WebGLElement } from '../webgl/webglelement.js';
-import { WebGL } from '../webgl/webgl.js';
 
 @customElement( 'lit-post' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export class PostItem extends LitElement implements BeforeEnterObserver
+export class PostItem extends AppElement
 {
 	static styles = css`
 		.lit-post {
@@ -186,6 +186,8 @@ export class PostItem extends LitElement implements BeforeEnterObserver
 
 	public onBeforeEnter( location: RouterLocation )
 	{
+		super.onBeforeEnter( location );
+
 		this.posts = POSTS;
 
 		const id = location.params.id as string;
@@ -201,13 +203,5 @@ export class PostItem extends LitElement implements BeforeEnterObserver
 				return null;
 			} );
 		}
-	}
-
-	// eslint-disable-next-line class-methods-use-this
-	public onAfterLeave(): void
-	{
-		// Delete created webgl elements
-		const webgl = WebGL.getInstance();
-		webgl.onNavigateAway();
 	}
 }
