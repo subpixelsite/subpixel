@@ -1,56 +1,7 @@
 /* eslint-disable indent */
-import { BufferInfo, createProgramInfo, ProgramInfo, v3 } from 'twgl.js';
+import { BufferInfo, createProgramInfo, ProgramInfo } from 'twgl.js';
 import { shaders } from './shaders.js';
-import { WebGLAnim, AnimKey, AnimLoopMode, AnimBlendMode } from './webglanim.js';
-import { WebGLCubeData } from './webglcube.js';
-import { WebGLPlaneData } from './webglplane.js';
-import { WebGLSphereData } from './webglsphere.js';
-
-export interface WebGLObjectTransform
-{
-	pos?: v3.Vec3;
-	rotAxis?: v3.Vec3;
-	rotRad?: number;
-	scale?: v3.Vec3;
-
-	// animation
-	key?: AnimKey;
-}
-
-export interface WebGLObjectColor
-{
-	color: v3.Vec3;
-	alpha: number;
-
-	// animation
-	key?: AnimKey;
-}
-
-export interface WebGLObjectData
-	extends WebGLPlaneData,
-	WebGLSphereData,
-	WebGLCubeData
-{
-	// shaders
-	vs: string;
-	fs: string;
-
-	// animation
-	anim?: WebGLAnim;
-
-	// transform
-	xform: WebGLObjectTransform[];
-
-	// colors
-	color?: WebGLObjectColor[];
-
-	// textures
-	diffuse?: {
-		url: string;
-		min?: number,
-		mag?: number
-	}
-}
+import { AnimBlendMode, AnimLoopMode, WebGLObjectColor, WebGLObjectData, WebGLObjectTransform } from './webglscene.js';
 
 export class WebGLObject
 {
@@ -170,19 +121,14 @@ export class WebGLObject
 			xformRet.scale = this.data.xform[0].scale ?? xformRet.scale;
 		}
 
-		// const lerp = ( x: number, y: number, a: number ) => x * ( 1 - a ) + y * a;
-		// const cos = ( x: number, y: number, a: number ) => lerp( x, y, ( Math.cos( ( 1 - a ) * Math.PI ) + 1 ) * 0.5 );
-
-		// const pingpongLerp = ( x: number, y: number, a: number ) => ( ( this.playCount % 2 ) ? lerp( x, y, 1 - a ) : lerp( x, y, a ) );
-		// const pingpongCos = ( x: number, y: number, a: number ) => ( ( this.playCount % 2 ) ? cos( x, y, 1 - a ) : cos( x, y, a ) );
-
 		const { xform } = this.data;
-		const animMode = this.data.anim?.mode || AnimBlendMode.Linear;
+		const animMode = this.data.anim?.mode ?? AnimBlendMode.Linear;
 		let animTime = this.time;
 		let backwards = false;
 		let pingpong = false;
+		const loopMode = this.data.anim?.loop ?? AnimLoopMode.Repeat;
 
-		if ( this.data.anim !== undefined && this.data.anim.loop === AnimLoopMode.PingPong )
+		if ( loopMode === AnimLoopMode.PingPong )
 		{
 			pingpong = true;
 			if ( ( this.playCount % 2 ) !== 0 )
@@ -284,12 +230,13 @@ export class WebGLObject
 		}
 
 		const { color } = this.data;
-		const animMode = this.data.anim?.mode || AnimBlendMode.Linear;
+		const animMode = this.data.anim?.mode ?? AnimBlendMode.Linear;
 		let animTime = this.time;
 		let backwards = false;
 		let pingpong = false;
+		const loopMode = this.data.anim?.loop ?? AnimLoopMode.Repeat;
 
-		if ( this.data.anim !== undefined && this.data.anim.loop === AnimLoopMode.PingPong )
+		if ( loopMode === AnimLoopMode.PingPong )
 		{
 			pingpong = true;
 			if ( ( this.playCount % 2 ) !== 0 )

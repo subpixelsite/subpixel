@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { AnimBlendMode, AnimLoopMode } from '../webgl/webglanim.js';
+import { AnimBlendMode, AnimLoopMode } from '../webgl/webglscene.js';
 import { PostData } from './post_data.js';
 
 export const POSTS: PostData[] = [

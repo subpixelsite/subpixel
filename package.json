@@ -118,7 +118,8 @@
 	  "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
 	  "default-case": "off",
 	  "max-len": ["error", { "code": 140 }],
-	  "class-methods-use-this": "off"
+	  "class-methods-use-this": "off",
+	  "@typescript-eslint/max-classes-per-file": "off"
     }
   },
   "husky": {

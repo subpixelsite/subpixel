@@ -1,5 +1,73 @@
+/* eslint-disable no-shadow */
 /* eslint-disable lines-between-class-members */
-import { WebGLObjectData } from './webglobject.js';
+import { v3 } from 'twgl.js';
+import { WebGLCubeData } from './webglcube.js';
+import { WebGLPlaneData } from './webglplane.js';
+import { WebGLSphereData } from './webglsphere.js';
+
+export enum AnimBlendMode
+{
+	Discrete = 1,
+	Linear,
+	Sine
+}
+
+export enum AnimLoopMode
+{
+	Repeat = 1,
+	PingPong
+}
+
+export interface AnimKey
+{
+	modeIn?: AnimBlendMode;
+	time: number;
+}
+
+export interface WebGLAnim
+{
+	mode?: AnimBlendMode;
+	loop?: AnimLoopMode;
+}
+
+export interface WebGLObjectTransform
+{
+	pos?: v3.Vec3;
+	rotAxis?: v3.Vec3;
+	rotRad?: number;
+	scale?: v3.Vec3;
+
+	key?: AnimKey;
+}
+
+export interface WebGLObjectColor
+{
+	color: v3.Vec3;
+	alpha: number;
+
+	key?: AnimKey;
+}
+
+export interface WebGLObjectData
+	extends WebGLPlaneData,
+	WebGLSphereData,
+	WebGLCubeData
+{
+	vs: string;
+	fs: string;
+
+	anim?: WebGLAnim;
+
+	xform: WebGLObjectTransform[];
+
+	color?: WebGLObjectColor[];
+
+	diffuse?: {
+		url: string;
+		min?: number,
+		mag?: number
+	}
+}
 
 export class WebGLScene
 {
