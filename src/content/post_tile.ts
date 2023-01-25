@@ -8,7 +8,7 @@ import { svg, TemplateResult } from 'lit-element/lit-element.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AppElement } from '../appelement.js';
 import { PostData } from './post_data.js';
-import { WebGLElement } from '../webgl/webglelement.js';
+import { WebGLViewport } from '../webgl/webglelement.js';
 
 @customElement( 'post-tile' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -75,7 +75,7 @@ export class PostTile extends AppElement
 
 	@property( { type: Object } ) post?: PostData;
 
-	private wglScene?: WebGLElement;
+	private wglViewport?: WebGLViewport;
 
 	firstUpdated( changedProperties: Map<string, unknown> )
 	{
@@ -92,8 +92,8 @@ export class PostTile extends AppElement
 				// initialize WebGL scene
 				this.updateComplete.then( () =>
 				{
-					this.wglScene = new WebGLElement( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
-					this.wglScene.init();
+					this.wglViewport = new WebGLViewport( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
+					this.wglViewport.init();
 				} );
 			}
 		}

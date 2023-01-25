@@ -1,5 +1,5 @@
 import { resizeCanvasToDisplaySize } from 'twgl.js';
-import { WebGLElement } from './webglelement.js';
+import { WebGLViewport } from './webglelement.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WebGL
@@ -35,7 +35,7 @@ export class WebGL
 	public canvas?: HTMLCanvasElement;
 
 	private animated: number = 0;
-	private elements: WebGLElement[] = [];
+	private viewports: WebGLViewport[] = [];
 
 	private requestId?: number;
 	private lastTimeSecs: number = 0;
@@ -43,11 +43,11 @@ export class WebGL
 	// Map of vs/fs pair strings to runtime objects
 	// private programInfo: Map<string, ProgramInfo> = new Map();
 
-	public addElement( element: WebGLElement )
+	public addElement( viewport: WebGLViewport )
 	{
-		this.elements.push( element );
+		this.viewports.push( viewport );
 
-		if ( element.getAnimated() )
+		if ( viewport.getAnimated() )
 			this.animated += 1;
 
 		this.requestNewRender();
@@ -101,14 +101,14 @@ export class WebGL
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
 
 		// Iterate elements to draw each as requested
-		this.elements.forEach( element =>
+		this.viewports.forEach( element =>
 		{
 			element.render( timeElapsedSecs );
 		} );
 
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
-			console.log( `Rendering... elements ${this.elements.length}, animated: ${this.animated}` );
+			console.log( `Rendering... elements ${this.viewports.length}, animated: ${this.animated}` );
 	}
 
 	public requestNewRender()
@@ -151,7 +151,7 @@ export class WebGL
 	public onNavigateAway()
 	{
 		// Clear all added elements
-		this.elements.length = 0;
+		this.viewports.length = 0;
 		this.animated = 0;
 
 		this.requestNewRender();

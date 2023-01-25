@@ -8,11 +8,10 @@ import { WebGLCube } from './webglcube.js';
 import { WebGLPlane } from './webglplane.js';
 import { WebGLSphere } from './webglsphere.js';
 
-export class WebGLElement
+export class WebGLViewport
 {
 	private scene: WebGLScene;
 	private element: HTMLDivElement;
-	private animated: boolean;
 	private camera: m4.Mat4 = m4.identity();
 
 	private programInfo: Map<string, ProgramInfo> = new Map();
@@ -29,8 +28,6 @@ export class WebGLElement
 		) as HTMLDivElement;
 		if ( this.element === null )
 			throw new Error( `Couldn't find element by name in specified root: ${elementName}` );
-
-		this.animated = false;
 	}
 
 	init()

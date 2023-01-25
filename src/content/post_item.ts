@@ -11,7 +11,7 @@ import { AppElement } from '../appelement.js';
 import { POSTS } from './data.js';
 import { PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
-import { WebGLElement } from '../webgl/webglelement.js';
+import { WebGLViewport } from '../webgl/webglelement.js';
 
 @customElement( 'lit-post' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -92,7 +92,7 @@ export class PostItem extends AppElement
 	@property( { type: Array } )
 	posts?: PostData[];
 
-	private wglScene?: WebGLElement;
+	private wglViewport?: WebGLViewport;
 
 	firstUpdated( changedProperties: Map<string, unknown> )
 	{
@@ -109,8 +109,8 @@ export class PostItem extends AppElement
 				// initialize WebGL scene
 				this.updateComplete.then( () =>
 				{
-					this.wglScene = new WebGLElement( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
-					this.wglScene.init();
+					this.wglViewport = new WebGLViewport( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
+					this.wglViewport.init();
 				} );
 			}
 		}
