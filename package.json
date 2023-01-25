@@ -20,9 +20,11 @@
   "dependencies": {
     "@shoelace-style/shoelace": "^2.0.0-beta.86",
     "@vaadin/router": "^1.7.4",
+    "class-transformer": "^0.5.1",
     "lit": "^2.0.2",
     "lit-element": "^3.2.2",
     "lit-html": "^2.5.0",
+    "reflect-metadata": "^0.1.13",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-css-only": "^4.3.0",
     "twgl.js": "^5.3.0"
@@ -113,13 +115,23 @@
         "error",
         "as-needed"
       ],
-	  "lines-between-class-members": "off",
-	  "no-bitwise": "off",
-	  "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-	  "default-case": "off",
-	  "max-len": ["error", { "code": 140 }],
-	  "class-methods-use-this": "off",
-	  "@typescript-eslint/max-classes-per-file": "off"
+      "lines-between-class-members": "off",
+      "no-bitwise": "off",
+      "no-plusplus": [
+        "error",
+        {
+          "allowForLoopAfterthoughts": true
+        }
+      ],
+      "default-case": "off",
+      "max-len": [
+        "error",
+        {
+          "code": 140
+        }
+      ],
+      "class-methods-use-this": "off",
+	  "max-classes-per-file": "off"
     }
   },
   "husky": {

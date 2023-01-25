@@ -7,11 +7,13 @@ import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
+import { plainToClass } from 'class-transformer';
 import { AppElement } from '../appelement.js';
 import { POSTS } from './data.js';
 import { PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
 import { WebGLViewport } from '../webgl/webglelement.js';
+import { WebGLScene } from '../webgl/webglscene.js';
 
 @customElement( 'lit-post' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -103,15 +105,27 @@ export class PostItem extends AppElement
 			if (
 				newValue !== oldValue
 				&& this.post !== undefined
-				&& this.post.hdrWGL !== null
+				&& ( this.post.hdrWGL !== null || this.post.hdrJSON !== null )
 			)
 			{
 				// initialize WebGL scene
-				this.updateComplete.then( () =>
+				if ( this.post.hdrJSON !== null )
 				{
-					this.wglViewport = new WebGLViewport( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
-					this.wglViewport.init();
-				} );
+					this.updateComplete.then( () =>
+					{
+						const wgl = plainToClass( WebGLScene, this.post!.hdrJSON! );
+						this.wglViewport = new WebGLViewport( wgl, this.shadowRoot!, '.postImage' );
+						this.wglViewport.init();
+					} );
+				}
+				else if ( this.post.hdrWGL !== null )
+				{
+					this.updateComplete.then( () =>
+					{
+						this.wglViewport = new WebGLViewport( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
+						this.wglViewport.init();
+					} );
+				}
 			}
 		}
 	}

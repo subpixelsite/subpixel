@@ -1,15 +1,22 @@
 /* eslint-disable lines-between-class-members */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Type } from 'class-transformer';
 import { BufferInfo, primitives } from 'twgl.js';
 import { WebGLObject } from './webglobject.js';
 
-export interface WebGLPlaneData
+export class WebGLPlaneData
 {
-	plane?: {
-		width: number;
-		height: number;
-		subDWidth?: number;
-		subDHeight?: number;
-	};
+	@Type( () => Number )
+	width: number = 10;
+
+	@Type( () => Number )
+	height: number = 10;
+
+	@Type( () => Number )
+	subDWidth?: number;
+
+	@Type( () => Number )
+	subDHeight?: number;
 }
 
 export class WebGLPlane extends WebGLObject

@@ -1,12 +1,13 @@
 /* eslint-disable lines-between-class-members */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Type } from 'class-transformer';
 import { BufferInfo, primitives } from 'twgl.js';
 import { WebGLObject } from './webglobject.js';
 
-export interface WebGLCubeData
+export class WebGLCubeData
 {
-	cube?: {
-		size: number;
-	};
+	@Type( () => Number )
+	size: number = 4;
 }
 
 export class WebGLCube extends WebGLObject

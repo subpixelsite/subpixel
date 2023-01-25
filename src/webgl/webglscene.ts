@@ -1,6 +1,7 @@
 /* eslint-disable no-shadow */
-/* eslint-disable lines-between-class-members */
 import { v3 } from 'twgl.js';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Type } from 'class-transformer';
 import { WebGLCubeData } from './webglcube.js';
 import { WebGLPlaneData } from './webglplane.js';
 import { WebGLSphereData } from './webglsphere.js';
@@ -18,69 +19,123 @@ export enum AnimLoopMode
 	PingPong
 }
 
-export interface AnimKey
+export class AnimKey
 {
+	@Type( () => Number )
 	modeIn?: AnimBlendMode;
-	time: number;
+
+	@Type( () => Number )
+	time: number = 0;
 }
 
-export interface WebGLAnim
+export class WebGLAnim
 {
+	@Type( () => Number )
 	mode?: AnimBlendMode;
+
+	@Type( () => Number )
 	loop?: AnimLoopMode;
 }
 
-export interface WebGLObjectTransform
+export class WebGLObjectTransform
 {
+	@Type( () => Number )
 	pos?: v3.Vec3;
+
+	@Type( () => Number )
 	rotAxis?: v3.Vec3;
+
+	@Type( () => Number )
 	rotRad?: number;
+
+	@Type( () => Number )
 	scale?: v3.Vec3;
 
+	@Type( () => AnimKey )
 	key?: AnimKey;
 }
 
-export interface WebGLObjectColor
+export class WebGLObjectColor
 {
-	color: v3.Vec3;
-	alpha: number;
+	@Type( () => Number )
+	color: v3.Vec3 = [1, 1, 1];
 
+	@Type( () => Number )
+	alpha: number = 1;
+
+	@Type( () => AnimKey )
 	key?: AnimKey;
 }
 
-export interface WebGLObjectData
-	extends WebGLPlaneData,
-	WebGLSphereData,
-	WebGLCubeData
+export class WebGLTextureData
 {
-	vs: string;
-	fs: string;
+	@Type( () => String )
+	url: string = '';
 
+	@Type( () => Number )
+	min?: number;
+
+	@Type( () => Number )
+	mag?: number;
+}
+
+export class WebGLObjectData
+{
+	@Type( () => String )
+	vs: string = 'pos.vs';
+
+	@Type( () => String )
+	fs: string = 'col.fs';
+
+	@Type( () => WebGLPlaneData )
+	plane?: WebGLPlaneData;
+
+	@Type( () => WebGLSphereData )
+	sphere?: WebGLSphereData;
+
+	@Type( () => WebGLCubeData )
+	cube?: WebGLCubeData;
+
+	@Type( () => WebGLAnim )
 	anim?: WebGLAnim;
 
-	xform: WebGLObjectTransform[];
+	@Type( () => WebGLObjectTransform )
+	xform: WebGLObjectTransform[] = [];
 
+	@Type( () => WebGLObjectColor )
 	color?: WebGLObjectColor[];
 
-	diffuse?: {
-		url: string;
-		min?: number,
-		mag?: number
-	}
+	@Type( () => WebGLTextureData )
+	diffuse?: WebGLTextureData;
 }
 
 export class WebGLScene
 {
+	@Type( () => Number )
 	clearColor?: number[];
+
+	@Type( () => Number )
 	clearDepth?: number;
+
+	@Type( () => Number )
 	clearStencil?: number;
 
+	@Type( () => Number )
 	fovYDeg?: number;
+
+	@Type( () => Number )
 	near?: number;
+
+	@Type( () => Number )
 	far?: number;
+
+	@Type( () => Number )
 	eye?: number[];
+
+	@Type( () => Number )
 	lookAt?: number[];
 
+	@Type( () => WebGLObjectData )
 	objects?: WebGLObjectData[];
 }
 

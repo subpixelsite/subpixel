@@ -50,8 +50,8 @@ export class WebGLViewport
 				obj = new WebGLSphere( data );
 			else if ( data.cube !== undefined )
 				obj = new WebGLCube( data );
-			else
-				obj = new WebGLObject( data );
+			else // New object types go here
+				throw new Error( 'Unknown data type encountered in scene object' );
 
 			// Find and load shaders from shader library for each object
 			const objShaderKey = `${data.vs}|${data.fs}`;

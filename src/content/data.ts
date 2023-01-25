@@ -9,6 +9,7 @@ export const POSTS: PostData[] = [
 		author: 'Chris "Shader" Lambert',
 		dateCreated: 1673735586720,
 		tags: ['Textures', 'Geometry'],
+		hdrJSON: null,
 		hdrWGL: {
 			fovYDeg: 45,
 			lookAt: [0, 1, 0],
@@ -103,10 +104,119 @@ export const POSTS: PostData[] = [
 	},
 	{
 		id: 1,
+		title: 'Level of Detail',
+		author: 'Chris "Shader" Lambert',
+		dateCreated: 1673721586720,
+		tags: ['Geometry'],
+		hdrJSON: {
+			fovYDeg: '45',
+			lookAt: ['0', '1', '0'],
+			objects: [
+				{
+					vs: 'pos.vs',
+					fs: 'col.fs',
+					xform: [],
+					plane: {
+						width: '4',
+						height: '4'
+					}
+				},
+				{
+					vs: 'postex.vs',
+					fs: 'tex.fs',
+					anim: {
+						mode: '2',
+						loop: '2'
+					},
+					xform: [
+						{
+							pos: ['-1.0', '0.5', '-1.0'],
+							key: { time: '0.0' }
+						},
+						{
+							pos: ['1.0', '0.5', '-1.0'],
+							key: { time: '2.0', modeIn: '3' }
+						},
+						{
+							pos: ['1.0', '0.5', '1.0'],
+							key: { time: '4.0', modeIn: '1' }
+						},
+						{
+							pos: ['-1.0', '0.5', '1.0'],
+							key: { time: '6.0', modeIn: '3' }
+						},
+						{
+							pos: ['-1.0', '0.5', '-1.0'],
+							key: { time: '8.0' }
+						}
+					],
+					cube: {
+						size: '1'
+					},
+					diffuse: {
+						url: 'https://farm6.staticflickr.com/5795/21506301808_efb27ed699_q_d.jpg'
+					},
+					color: [
+						{
+							color: ['0', '0.0', '0.0'],
+							alpha: '1.0',
+							key: { time: '0.0' }
+						},
+						{
+							color: ['0', '1.0', '1.0'],
+							alpha: '1.0',
+							key: { time: '4.75', modeIn: 3 }
+						},
+						{
+							color: ['0', '0.0', '1.0'],
+							alpha: '1.0',
+							key: { time: '5.0' }
+						},
+						{
+							color: ['0', '0.0', '0.0'],
+							alpha: '1.0',
+							key: { time: '8.0' }
+						}
+					]
+				},
+				{
+					vs: 'pos.vs',
+					fs: 'col.fs',
+					anim: {
+						mode: '3',
+						loop: '2'
+					},
+					xform: [
+						{
+							pos: ['0', '1', '0'],
+							key: { time: '0' }
+						},
+						{
+							pos: ['0', '3', '0'],
+							key: { time: '1' }
+						}
+					],
+					sphere: {
+						radius: '1'
+					}
+				}
+			]
+		},
+		hdrWGL: null,
+		hdrSVG: '',
+		hdrImg: '',
+		hdrAlt: '',
+		description:
+			'What are mipmaps and why do we need them?  What is the difference between linear and anisotropic?',
+		body: ''
+	},
+	{
+		id: 2,
 		title: 'Texture Filtering',
 		author: 'Chris "Shader" Lambert',
 		dateCreated: 1673525586720,
 		tags: ['Textures', 'Geometry'],
+		hdrJSON: null,
 		hdrWGL: null,
 		hdrSVG: '<rect x="25%" y="25%" width="50%" height="50%" fill="#ff0000" />  <line x1="0" y1="0" x2="100%" y2="100%" style="stroke:rgb(0,0,255);stroke-width:2" /> ',
 		hdrImg: 'https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80',
@@ -116,11 +226,12 @@ export const POSTS: PostData[] = [
 		body: ''
 	},
 	{
-		id: 2,
+		id: 3,
 		title: 'Antialiasing',
 		author: 'Chris "Shader" Lambert',
 		dateCreated: 1672725586720,
 		tags: ['Postprocessing'],
+		hdrJSON: null,
 		hdrWGL: null,
 		hdrSVG: '',
 		hdrImg: 'https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80',
@@ -130,11 +241,12 @@ export const POSTS: PostData[] = [
 		body: ''
 	},
 	{
-		id: 3,
+		id: 4,
 		title: 'Anisotropy',
 		author: 'Chris "Shader" Lambert',
 		dateCreated: 1673635586720,
 		tags: ['Textures', 'Geometry'],
+		hdrJSON: null,
 		hdrWGL: null,
 		hdrSVG: '',
 		hdrImg: '',

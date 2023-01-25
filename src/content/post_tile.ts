@@ -6,9 +6,12 @@ import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import { svg, TemplateResult } from 'lit-element/lit-element.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import 'reflect-metadata';
+import { plainToClass } from 'class-transformer';
 import { AppElement } from '../appelement.js';
 import { PostData } from './post_data.js';
 import { WebGLViewport } from '../webgl/webglelement.js';
+import { WebGLScene } from '../webgl/webglscene.js';
 
 @customElement( 'post-tile' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -86,15 +89,27 @@ export class PostTile extends AppElement
 			if (
 				newValue !== oldValue
 				&& this.post !== undefined
-				&& this.post.hdrWGL !== null
+				&& ( this.post.hdrWGL !== null || this.post.hdrJSON !== null )
 			)
 			{
 				// initialize WebGL scene
-				this.updateComplete.then( () =>
+				if ( this.post.hdrJSON !== null )
 				{
-					this.wglViewport = new WebGLViewport( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
-					this.wglViewport.init();
-				} );
+					this.updateComplete.then( () =>
+					{
+						const wgl = plainToClass( WebGLScene, this.post!.hdrJSON! );
+						this.wglViewport = new WebGLViewport( wgl, this.shadowRoot!, '.postImage' );
+						this.wglViewport.init();
+					} );
+				}
+				else if ( this.post.hdrWGL !== null )
+				{
+					this.updateComplete.then( () =>
+					{
+						this.wglViewport = new WebGLViewport( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
+						this.wglViewport.init();
+					} );
+				}
 			}
 		}
 	}
@@ -135,7 +150,7 @@ export class PostTile extends AppElement
 	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
 	{
 		let visual;
-		if ( post.hdrWGL !== null )
+		if ( post.hdrWGL !== null || post.hdrJSON !== null )
 		{
 			// eslint-disable-next-line max-len
 			visual = html`<div slot="image" width="100%" height="100%" class="postImage">Your browser does not seem to support WebGL.</div>`;

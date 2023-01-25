@@ -1,14 +1,19 @@
 /* eslint-disable lines-between-class-members */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Type } from 'class-transformer';
 import { BufferInfo, primitives } from 'twgl.js';
 import { WebGLObject } from './webglobject.js';
 
-export interface WebGLSphereData
+export class WebGLSphereData
 {
-	sphere?: {
-		radius: number;
-		subDAxis?: number;
-		subDHeight?: number;
-	};
+	@Type( () => Number )
+	radius: number = 2;
+
+	@Type( () => Number )
+	subDAxis?: number;
+
+	@Type( () => Number )
+	subDHeight?: number;
 }
 
 export class WebGLSphere extends WebGLObject

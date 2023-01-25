@@ -6,6 +6,7 @@ import baseStyles from '@shoelace-style/shoelace/dist/themes/light.styles.js';
 import '@shoelace-style/shoelace/dist/components/alert/alert.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
+import 'reflect-metadata';
 
 @customElement( 'lit-app' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
