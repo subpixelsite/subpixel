@@ -7,6 +7,7 @@ export interface PostData
 	author: string;
 	dateCreated: number;
 	tags: string[];
+	hdrURL?: string;
 	hdrJSON: any | null;
 	hdrWGL: WebGLScene | null; // First priority
 	hdrSVG: string; // Second priority

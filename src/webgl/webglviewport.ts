@@ -32,9 +32,6 @@ export class WebGLViewport
 
 	init()
 	{
-		if ( this.scene === undefined )
-			throw new Error( 'Cannot init WebGLElement with missing scene' );
-
 		const webgl = WebGL.getInstance();
 		const { gl } = webgl;
 		if ( gl === undefined )

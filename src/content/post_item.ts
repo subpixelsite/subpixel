@@ -12,7 +12,7 @@ import { AppElement } from '../appelement.js';
 import { POSTS } from './data.js';
 import { PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
-import { WebGLViewport } from '../webgl/webglelement.js';
+import { WebGLViewport } from '../webgl/webglviewport.js';
 import { WebGLScene } from '../webgl/webglscene.js';
 
 @customElement( 'lit-post' )

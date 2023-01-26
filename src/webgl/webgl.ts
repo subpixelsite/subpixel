@@ -1,5 +1,5 @@
 import { resizeCanvasToDisplaySize } from 'twgl.js';
-import { WebGLViewport } from './webglelement.js';
+import { WebGLViewport } from './webglviewport.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WebGL
@@ -16,6 +16,8 @@ export class WebGL
 		return WebGL.instance;
 	}
 
+	public static error?: string;
+
 	public static initContext( canvas: HTMLCanvasElement )
 	{
 		if ( canvas === null )
@@ -24,6 +26,12 @@ export class WebGL
 		const instance = WebGL.getInstance();
 
 		instance.gl = canvas.getContext( 'webgl' ) as WebGLRenderingContext;
+		if ( instance.gl === null )
+		{
+			WebGL.error = 'WebGL is not supported';
+			return;
+		}
+
 		instance.canvas = canvas;
 
 		instance.render = instance.render.bind( instance );

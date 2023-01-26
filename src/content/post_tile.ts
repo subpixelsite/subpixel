@@ -10,7 +10,7 @@ import 'reflect-metadata';
 import { plainToClass } from 'class-transformer';
 import { AppElement } from '../appelement.js';
 import { PostData } from './post_data.js';
-import { WebGLViewport } from '../webgl/webglelement.js';
+import { WebGLViewport } from '../webgl/webglviewport.js';
 import { WebGLScene } from '../webgl/webglscene.js';
 
 @customElement( 'post-tile' )
@@ -89,7 +89,7 @@ export class PostTile extends AppElement
 			if (
 				newValue !== oldValue
 				&& this.post !== undefined
-				&& ( this.post.hdrWGL !== null || this.post.hdrJSON !== null )
+				&& ( this.post.hdrWGL !== null || this.post.hdrJSON !== null || this.post.hdrURL !== undefined )
 			)
 			{
 				// initialize WebGL scene
@@ -110,8 +110,35 @@ export class PostTile extends AppElement
 						this.wglViewport.init();
 					} );
 				}
+				else
+				{
+					// build and try fetching the URL
+					const url = new URL( this.post!.hdrURL!, window.location.origin );
+					this.fetchWebGLData( url.href, this.shadowRoot!, '.postImage' );
+				}
 			}
 		}
+	}
+
+	fetchWebGLData( url: string, root: ShadowRoot, elementName: string )
+	{
+		fetch( url.toString() )
+			.then( response =>
+			{
+				if ( !response.ok )
+					throw new Error( `Fetch failed with status ${response.status}` );
+				return response.json();
+			} )
+			.then( data =>
+			{
+				const wgl = plainToClass( WebGLScene, data );
+				this.wglViewport = new WebGLViewport( wgl, root, elementName );
+				this.wglViewport.init();
+			} )
+			.catch( error =>
+			{
+				throw new Error( `${error}` );
+			} );
 	}
 
 	static errorVisual( text: string ): TemplateResult<2>
@@ -142,7 +169,11 @@ export class PostTile extends AppElement
 					<rect width="100%" height="100%" fill="#000000"/>
 					<polygon points="${points}" style="fill:#ffff00;stroke-width:0" filter="url(#visBlur)"/></polygon>
 					<rect width="100%" height="100%" fill="#ffffff" fill-opacity="60%"/>
-					<text x="50%" y="50%" font-size="6" text-anchor="middle" alignment-baseline="central" fill="#363636">[ ${text} ]</text>
+					<text x="50%" y="25%" font-size="6" text-anchor="middle" alignment-baseline="central" fill="#363636">
+					  <tspan x="50%" dy="1.2em">this space unintentionally</tspan>
+					  <tspan x="50%" dy="1.2em">left blank</tspan>
+					  <tspan x="50%" y="75%" font-size="5">[ ${text} ]</tspan>
+					</text>
 				</svg>
 			`;
 	}
@@ -150,7 +181,7 @@ export class PostTile extends AppElement
 	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
 	{
 		let visual;
-		if ( post.hdrWGL !== null || post.hdrJSON !== null )
+		if ( post.hdrWGL !== null || post.hdrJSON !== null || post.hdrURL !== undefined )
 		{
 			// eslint-disable-next-line max-len
 			visual = html`<div slot="image" width="100%" height="100%" class="postImage">Your browser does not seem to support WebGL.</div>`;
