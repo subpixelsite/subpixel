@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-bitwise */
 import { createTexture, DrawObject, drawObjectList, m4, ProgramInfo } from 'twgl.js';
+import 'reflect-metadata';
+import { plainToClass } from 'class-transformer';
 import { WebGL } from './webgl.js';
 import { WebGLScene, webGLSceneDefault } from './webglscene.js';
 import { WebGLObject } from './webglobject.js';
@@ -10,7 +12,7 @@ import { WebGLSphere } from './webglsphere.js';
 
 export class WebGLViewport
 {
-	private scene: WebGLScene;
+	private scene?: WebGLScene;
 	private element: HTMLDivElement;
 	private camera: m4.Mat4 = m4.identity();
 
@@ -19,10 +21,8 @@ export class WebGLViewport
 	private sceneObjects: WebGLObject[] = [];
 	private drawObjects: DrawObject[] = [];
 
-	constructor( scene: WebGLScene, shadowRoot: ShadowRoot, elementName: string )
+	constructor( shadowRoot: ShadowRoot, elementName: string )
 	{
-		this.scene = { ...webGLSceneDefault, ...scene };
-
 		this.element = shadowRoot.querySelector(
 			elementName
 		) as HTMLDivElement;
@@ -30,12 +30,34 @@ export class WebGLViewport
 			throw new Error( `Couldn't find element by name in specified root: ${elementName}` );
 	}
 
-	init()
+	fetchWebGLData( url: string )
+	{
+		fetch( url.toString() )
+			.then( response =>
+			{
+				if ( !response.ok )
+					throw new Error( `Fetch failed with status ${response.status}` );
+				return response.json();
+			} )
+			.then( data =>
+			{
+				const wgl = plainToClass( WebGLScene, data );
+				this.init( wgl );
+			} )
+			.catch( error =>
+			{
+				throw new Error( `${error}` );
+			} );
+	}
+
+	init( scene: WebGLScene )
 	{
 		const webgl = WebGL.getInstance();
 		const { gl } = webgl;
 		if ( gl === undefined )
 			return;
+
+		this.scene = { ...webGLSceneDefault, ...scene };
 
 		this.scene.objects?.forEach( data =>
 		{
@@ -105,7 +127,7 @@ export class WebGLViewport
 	{
 		const webgl = WebGL.getInstance();
 		const { gl, canvas } = webgl;
-		if ( gl === undefined || canvas === undefined )
+		if ( gl === undefined || canvas === undefined || this.scene === undefined )
 			return;
 
 		const rect = this.element.getBoundingClientRect();

@@ -105,26 +105,32 @@ export class PostItem extends AppElement
 			if (
 				newValue !== oldValue
 				&& this.post !== undefined
-				&& ( this.post.hdrWGL !== null || this.post.hdrJSON !== null )
+				&& ( this.post.hdrWGL !== null || this.post.hdrJSON !== null || this.post.hdrURL !== undefined )
 			)
 			{
+				this.wglViewport = new WebGLViewport( this.shadowRoot!, '.postImage' );
+
 				// initialize WebGL scene
 				if ( this.post.hdrJSON !== null )
 				{
 					this.updateComplete.then( () =>
 					{
 						const wgl = plainToClass( WebGLScene, this.post!.hdrJSON! );
-						this.wglViewport = new WebGLViewport( wgl, this.shadowRoot!, '.postImage' );
-						this.wglViewport.init();
+						this.wglViewport!.init( wgl );
 					} );
 				}
 				else if ( this.post.hdrWGL !== null )
 				{
 					this.updateComplete.then( () =>
 					{
-						this.wglViewport = new WebGLViewport( this.post!.hdrWGL!, this.shadowRoot!, '.postImage' );
-						this.wglViewport.init();
+						this.wglViewport!.init( this.post!.hdrWGL! );
 					} );
+				}
+				else
+				{
+					// build and try fetching the URL
+					const url = new URL( this.post!.hdrURL!, window.location.origin );
+					this.wglViewport.fetchWebGLData( url.href );
 				}
 			}
 		}
