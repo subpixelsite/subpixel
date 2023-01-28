@@ -6,6 +6,7 @@ export class WebGL
 {
 	// This is a singleton.
 	private static instance: WebGL;
+
 	// eslint-disable-next-line no-useless-constructor, no-empty-function
 	private constructor() {}
 	public static getInstance(): WebGL
@@ -17,6 +18,7 @@ export class WebGL
 	}
 
 	public static error?: string;
+	private static nextId: number = 1;
 
 	public static initContext( canvas: HTMLCanvasElement )
 	{
@@ -35,6 +37,13 @@ export class WebGL
 		instance.canvas = canvas;
 
 		instance.render = instance.render.bind( instance );
+	}
+
+	public static getNextID(): number
+	{
+		const id = WebGL.nextId;
+		WebGL.nextId += 1;
+		return id;
 	}
 
 	public static DEBUG_RENDERS = false;

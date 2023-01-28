@@ -1,5 +1,3 @@
-import { WebGLScene } from 'webgl/webglscene.js';
-
 export interface PostData
 {
 	id: number;
@@ -7,12 +5,9 @@ export interface PostData
 	author: string;
 	dateCreated: number;
 	tags: string[];
-	hdrURL?: string;
-	hdrJSON: any | null;
-	hdrWGL: WebGLScene | null; // First priority
-	hdrSVG: string; // Second priority
-	hdrImg: string; // Third priority
-	hdrAlt: string; // Alt text for header visual
+	hdrInline?: string;		// inline header HTML data
+	hdrHref?: string; 		// URL to header visual
+	hdrAlt?: string; 		// Alt-text for header image
 	description: string;
 	body: string;
 }

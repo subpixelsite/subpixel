@@ -1,8 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-bitwise */
 import { createTexture, DrawObject, drawObjectList, m4, ProgramInfo } from 'twgl.js';
-import 'reflect-metadata';
-import { plainToClass } from 'class-transformer';
 import { WebGL } from './webgl.js';
 import { WebGLScene, webGLSceneDefault } from './webglscene.js';
 import { WebGLObject } from './webglobject.js';
@@ -28,26 +26,6 @@ export class WebGLViewport
 		) as HTMLDivElement;
 		if ( this.element === null )
 			throw new Error( `Couldn't find element by name in specified root: ${elementName}` );
-	}
-
-	fetchWebGLData( url: string )
-	{
-		fetch( url.toString() )
-			.then( response =>
-			{
-				if ( !response.ok )
-					throw new Error( `Fetch failed with status ${response.status}` );
-				return response.json();
-			} )
-			.then( data =>
-			{
-				const wgl = plainToClass( WebGLScene, data );
-				this.init( wgl );
-			} )
-			.catch( error =>
-			{
-				throw new Error( `${error}` );
-			} );
 	}
 
 	init( scene: WebGLScene )

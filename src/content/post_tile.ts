@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { html, customElement, css, property } from 'lit-element';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
@@ -6,12 +7,8 @@ import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import { svg, TemplateResult } from 'lit-element/lit-element.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import 'reflect-metadata';
-import { plainToClass } from 'class-transformer';
 import { AppElement } from '../appelement.js';
 import { PostData } from './post_data.js';
-import { WebGLViewport } from '../webgl/webglviewport.js';
-import { WebGLScene } from '../webgl/webglscene.js';
 
 @customElement( 'post-tile' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -78,54 +75,12 @@ export class PostTile extends AppElement
 
 	@property( { type: Object } ) post?: PostData;
 
-	private wglViewport?: WebGLViewport;
-
-	firstUpdated( changedProperties: Map<string, unknown> )
-	{
-		if ( changedProperties.has( 'post' ) )
-		{
-			const oldValue = changedProperties.get( 'post' ) as PostData | undefined;
-			const newValue = this.post;
-			if (
-				newValue !== oldValue
-				&& this.post !== undefined
-				&& ( this.post.hdrWGL !== null || this.post.hdrJSON !== null || this.post.hdrURL !== undefined )
-			)
-			{
-				this.wglViewport = new WebGLViewport( this.shadowRoot!, '.postImage' );
-
-				// initialize WebGL scene
-				if ( this.post.hdrJSON !== null )
-				{
-					this.updateComplete.then( () =>
-					{
-						const wgl = plainToClass( WebGLScene, this.post!.hdrJSON! );
-						this.wglViewport!.init( wgl );
-					} );
-				}
-				else if ( this.post.hdrWGL !== null )
-				{
-					this.updateComplete.then( () =>
-					{
-						this.wglViewport!.init( this.post!.hdrWGL! );
-					} );
-				}
-				else
-				{
-					// build and try fetching the URL
-					const url = new URL( this.post!.hdrURL!, window.location.origin );
-					this.wglViewport.fetchWebGLData( url.href );
-				}
-			}
-		}
-	}
-
 	static errorVisual( text: string ): TemplateResult<2>
 	{
-		const viewWidth = 100;
-		const viewHeight = 56;
-		const stride = 20;
-		const travel = 33;
+		const viewWidth = 300;
+		const viewHeight = 150;
+		const stride = 30;
+		const travel = 44;
 		const y1 = -5;
 		const y2 = viewHeight - y1;
 		let points = '';
@@ -140,18 +95,23 @@ export class PostTile extends AppElement
 		}
 
 		return svg`
-				<svg slot="image" viewbox="0 0 100 56" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
+				<svg slot="image" clip-path="url(#clip2)" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
+					<defs>
+						<clipPath id="clip">
+							<rect width="100%" height="100%" x="0" y="0"/>
+						</clipPath>
+					</defs>
 					<filter id="visBlur">
 						<feGaussianBlur in="SourceGraphic" stdDeviation="1" />
 					</filter>
 					<title id="svgTitle">${text}</title>
 					<rect width="100%" height="100%" fill="#000000"/>
 					<polygon points="${points}" style="fill:#ffff00;stroke-width:0" filter="url(#visBlur)"/></polygon>
-					<rect width="100%" height="100%" fill="#ffffff" fill-opacity="60%"/>
-					<text x="50%" y="25%" font-size="6" text-anchor="middle" alignment-baseline="central" fill="#363636">
+					<rect width="100%" height="100%" fill="#ffffff" fill-opacity="80%"/>
+					<text x="50%" y="25%" font-size="16" text-anchor="middle" alignment-baseline="central" fill="#5f5f5f">
 					  <tspan x="50%" dy="1.2em">this space unintentionally</tspan>
 					  <tspan x="50%" dy="1.2em">left blank</tspan>
-					  <tspan x="50%" y="75%" font-size="5">[ ${text} ]</tspan>
+					  <tspan x="50%" y="75%" font-size="12">[ ${text} ]</tspan>
 					</text>
 				</svg>
 			`;
@@ -159,34 +119,36 @@ export class PostTile extends AppElement
 
 	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
 	{
-		let visual;
-		if ( post.hdrWGL !== null || post.hdrJSON !== null || post.hdrURL !== undefined )
-		{
-			// eslint-disable-next-line max-len
-			visual = html`<div slot="image" width="100%" height="100%" class="postImage">Your browser does not seem to support WebGL.</div>`;
-		} else if ( post.hdrSVG.length > 0 )
-		{
-			const content = `
-				<svg slot="image" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
-					<title id="svgTitle" > ${post.hdrAlt} </title>
-					${post.hdrSVG}
-				</svg>
-			`;
+		// If inline data is present, use that as unsafe HTML
+		// If not and HREF is available, check extension
+		// 	if JSON, load as <web-gl>
+		//	otherwise (including .svg), load as <img>
+		// Fall through to missing visual
 
-			visual = svg`${unsafeHTML( content )}`;
-		} else if ( post.hdrImg.length > 0 )
+		if ( post.hdrInline !== undefined )
+			return html`${unsafeHTML( post.hdrInline )}`;
+
+		if ( post.hdrHref !== undefined )
 		{
-			visual = html`<img slot="image" width="100%" height="100%" src="${post.hdrImg}" alt="${post.hdrAlt}" />`;
-		} else
-		{
-			visual = PostTile.errorVisual( 'missing visual' );
+			const href = post.hdrHref.toLowerCase();
+			if ( href.endsWith( 'json' ) )
+			{
+				// eslint-disable-next-line max-len
+				const embed = `<web-gl slot="image" width="100%" height="100%" class="postImage" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
+				return html`${unsafeHTML( embed )}`;
+			}
+
+			const embed = `<img slot="image" width="100%" height="100%" class="postImage" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
+			return html`${unsafeHTML( embed )}`;
 		}
 
-		return visual;
+		return PostTile.errorVisual( 'missing visual' );
 	}
 
 	render()
 	{
+		this.loadWebGL();
+
 		if ( this.post === undefined )
 		{
 			const visual = PostTile.errorVisual( 'missing post' );
@@ -243,5 +205,10 @@ export class PostTile extends AppElement
 			composed: true
 		} );
 		this.dispatchEvent( event );
+	}
+
+	async loadWebGL()
+	{
+		await import( '../webgl/webglelement.js' );
 	}
 }

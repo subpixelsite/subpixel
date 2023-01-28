@@ -7,13 +7,10 @@ import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
-import { plainToClass } from 'class-transformer';
 import { AppElement } from '../appelement.js';
 import { POSTS } from './data.js';
 import { PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
-import { WebGLViewport } from '../webgl/webglviewport.js';
-import { WebGLScene } from '../webgl/webglscene.js';
 
 @customElement( 'lit-post' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -79,6 +76,7 @@ export class PostItem extends AppElement
 		}
 		.post-image-content {
 			display: inline;
+			max-height: 168px;
 		}
 		.postImage {
 			min-height: 150px;
@@ -94,50 +92,10 @@ export class PostItem extends AppElement
 	@property( { type: Array } )
 	posts?: PostData[];
 
-	private wglViewport?: WebGLViewport;
-
-	firstUpdated( changedProperties: Map<string, unknown> )
-	{
-		if ( changedProperties.has( 'post' ) )
-		{
-			const oldValue = changedProperties.get( 'post' ) as PostData | undefined;
-			const newValue = this.post;
-			if (
-				newValue !== oldValue
-				&& this.post !== undefined
-				&& ( this.post.hdrWGL !== null || this.post.hdrJSON !== null || this.post.hdrURL !== undefined )
-			)
-			{
-				this.wglViewport = new WebGLViewport( this.shadowRoot!, '.postImage' );
-
-				// initialize WebGL scene
-				if ( this.post.hdrJSON !== null )
-				{
-					this.updateComplete.then( () =>
-					{
-						const wgl = plainToClass( WebGLScene, this.post!.hdrJSON! );
-						this.wglViewport!.init( wgl );
-					} );
-				}
-				else if ( this.post.hdrWGL !== null )
-				{
-					this.updateComplete.then( () =>
-					{
-						this.wglViewport!.init( this.post!.hdrWGL! );
-					} );
-				}
-				else
-				{
-					// build and try fetching the URL
-					const url = new URL( this.post!.hdrURL!, window.location.origin );
-					this.wglViewport.fetchWebGLData( url.href );
-				}
-			}
-		}
-	}
-
 	render()
 	{
+		this.loadWebGL();
+
 		if ( this.post === undefined )
 		{
 			return html`
@@ -159,6 +117,7 @@ export class PostItem extends AppElement
 						<span class="post-author">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
 							<span class="post-date">on ${this.getDateString()}</span>
 						<div class="post-tag-set">${this.getTagsHTML()}</div>
+						${this.post.description}
 					</div>
 					<div class="post-image">
 						<div class="post-image-content">
@@ -168,8 +127,7 @@ export class PostItem extends AppElement
 				</div>
 				<sl-divider></sl-divider>
 				<p class="post-content">
-				${this.post.description}
-				${this.post.body}
+				${unsafeHTML( this.post.body )}
 				</p>
 			</div>
 			`;
@@ -223,5 +181,10 @@ export class PostItem extends AppElement
 				return null;
 			} );
 		}
+	}
+
+	async loadWebGL()
+	{
+		await import( '../webgl/webglelement.js' );
 	}
 }

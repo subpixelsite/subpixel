@@ -37,6 +37,16 @@
 			"problemMatcher": [],
 			"label": "npm: buildshaders",
 			"detail": "node ./build/buildshaders.js src/webgl/shaders src/webgl/shaders.ts"
+		},
+		{
+			"type": "npm",
+			"script": "start force",
+			"problemMatcher": [
+				"$tsc-watch"
+			],
+			"label": "npm: start force",
+			"detail": "tsc --force && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
+			"isBackground": true
 		}
 	]
 }
