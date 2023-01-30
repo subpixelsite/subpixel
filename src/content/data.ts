@@ -8,7 +8,7 @@ export const POSTS: PostData[] = [
 		author: 'Chris "Shader" Lambert',
 		dateCreated: 1673735586720,
 		tags: ['Textures', 'Geometry'],
-		hdrInline: '<div id="inlinecontent"><h1>This is where content goes</h1></div>',
+		hdrInline: '<div style="display:block;margin:10px">If this has no image it\'s just rendered as <i>inline</i> <a href="https://www.w3schools.com/html/">HTML</a> in the image slot with an automatic background color.</div>',
 		hdrHref: undefined,
 		hdrAlt: '',
 		description:
@@ -24,7 +24,7 @@ export const POSTS: PostData[] = [
 		hdrInline: undefined,
 		hdrHref: 'assets/test/webgl1.json',
 		description:
-			'What are mipmaps and why do we need them?  What is the difference between linear and anisotropic?',
+			'Why do I see low-resolution models pop in and out sometimes?  Why do we need them anyway?  Are there ways to avoid the pop?',
 		body: ''
 	},
 	{
@@ -33,7 +33,13 @@ export const POSTS: PostData[] = [
 		author: 'Chris "Shader" Lambert',
 		dateCreated: 1673525586720,
 		tags: ['Textures', 'Geometry'],
-		hdrInline: '<svg width="100%" height="100%"><rect x="25%" y="25%" width="50%" height="50%" fill="#ff0000" />  <line x1="0" y1="0" x2="100%" y2="100%" style="stroke:rgb(0,0,255);stroke-width:2" /></svg>',
+		hdrInline: `
+		<svg width="100%" height="100%">
+			<rect width="100%" height="100%" fill="white"/>
+			<rect x="25%" y="25%" width="50%" height="50%" fill="#ff0000" />
+			<line x1="0" y1="0" x2="100%" y2="100%" style="stroke:rgb(0,0,255);stroke-width:2" />
+			<rect x="0" y="0" width="100%" height="100%" style="fill-opacity:0;stroke:black;" stroke-dasharray="8" />
+		</svg>`,
 		hdrHref: undefined,
 		hdrAlt: 'A red box with a blue slash across it, signifying nothing',
 		description:

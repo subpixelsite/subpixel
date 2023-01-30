@@ -22,8 +22,9 @@ export class PostItem extends AppElement
 		}
 
 		.post-description {
-			padding: 20px;
+			display: inline-block;
 			background: white;
+			align-self: end;
 		}
 		.post-footer {
 			text-align: right;
@@ -46,7 +47,6 @@ export class PostItem extends AppElement
 			font-size: 1.5rem;
 		}
 		.post-title {
-			//line-height: var(--sl-line-height-loose);
 			font-size: var(--sl-font-size-2x-large);
 			padding-bottom: 5px;
 		}
@@ -67,19 +67,40 @@ export class PostItem extends AppElement
 			display: grid;
 			grid-template: [row1-start] 1fr 1fr [row1-end];
 			justify-content: space-between;
+			max-height: 200;
+			height: 200;
 		}
 		.post-info {
 			grid-column: 1 / 2;
 		}
 		.post-image {
 			grid-column: 2 / 3;
+			display: grid;
+			grid-template: [row1-start] 1fr 1fr [row1-end];
 		}
 		.post-image-content {
-			display: inline;
-			max-height: 168px;
+			grid-column: 2 / 3;
+			margin-left: 5px;
 		}
-		.postImage {
-			min-height: 150px;
+		.post-image-divider {
+			grid-column: 1 / 2;
+			margin-right: 0px;
+			margin-left: 10px;
+			padding-top: 20%;
+			padding-bottom: 20%;
+		}
+		.error-alert {
+			margin-top: 40px;
+			display: block;
+		}
+		.post-visual {
+			min-height: 168px;
+			max-height: 200px;
+			background-color: #efefef;
+		}
+		.post-divider {
+			--width: 2px;
+			--spacing: 15px;
 		}
 	`;
 
@@ -99,7 +120,7 @@ export class PostItem extends AppElement
 		if ( this.post === undefined )
 		{
 			return html`
-				<sl-alert variant="danger" open>
+				<sl-alert class="error-alert" variant="danger" open>
 					<sl-icon slot="icon" name="emoji-frown"></sl-icon>
 					<strong>This space unintentionally left blank...</strong><br>
 					The requested post was not found.  Sorry about that.
@@ -117,15 +138,20 @@ export class PostItem extends AppElement
 						<span class="post-author">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
 							<span class="post-date">on ${this.getDateString()}</span>
 						<div class="post-tag-set">${this.getTagsHTML()}</div>
-						${this.post.description}
+						<div class="post-description">
+							${this.post.description}
+						</div>
 					</div>
 					<div class="post-image">
+						<div class="post-image-divider">
+							<sl-divider vertical style="--width: 2px"></sl-divider>
+						</div>
 						<div class="post-image-content">
 							${visual}
 						</div>
 					</div>
 				</div>
-				<sl-divider></sl-divider>
+				<sl-divider class="post-divider"></sl-divider>
 				<p class="post-content">
 				${unsafeHTML( this.post.body )}
 				</p>

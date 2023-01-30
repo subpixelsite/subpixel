@@ -26,7 +26,6 @@ export class WebGL
 			throw new Error( 'WebGL::initContext: selector is NULL' );
 
 		const instance = WebGL.getInstance();
-
 		instance.gl = canvas.getContext( 'webgl' ) as WebGLRenderingContext;
 		if ( instance.gl === null )
 		{
@@ -96,10 +95,10 @@ export class WebGL
 		const webgl = WebGL.getInstance();
 		const { gl, canvas } = webgl;
 
-		if ( canvas === undefined )
-			throw new Error( 'Unexpected undefined canvas in WebGL::render' );
 		if ( gl === undefined )
 			return;
+		if ( canvas === undefined )
+			throw new Error( 'Unexpected undefined canvas in WebGL::render' );
 
 		const timeAccumSecs = timeAccumMS * 0.001;
 		const timeElapsedSecs = timeAccumSecs - this.lastTimeSecs;

@@ -153,6 +153,9 @@ export class WebGLElement extends LitElement
 		// re-wrap lines and force a render update
 		this.wrappedText = undefined;
 
+		this.style.width = this.width;
+		this.style.height = this.height;
+
 		const errorText = this.getError();
 		if ( errorText === undefined )
 			return;

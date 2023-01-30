@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { LitElement, html, customElement, css } from 'lit-element';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -15,36 +16,42 @@ export class App extends LitElement
 	static styles = [
 		baseStyles,
 		css`
-			.flex {
-				display: flex;
-				flex-wrap: wrap;
-			}
-
 			.topNav {
 				background-image: linear-gradient(to top right, rgb(191 201 241), var(--sl-color-neutral-0));
 			}
 
+			.navContent > .navButtons {
+				display: flex;
+				flex-wrap: wrap;
+				justify-items: space-between;
+			}
+
 			.navContent {
-				justify-content: space-evenly;
+				display: flex;
+				justify-content: space-between;
 				align-items: center;
 				/* align-content: center; */
 				gap: 10px 10px;
-				/* padding-left: 10px;
-				padding-right: 10px; */
+				padding-left: 15px;
+				padding-right: 15px;
 				/* padding-top: 10px;
 				padding-bottom: 10px; */
-				margin: 0 auto;
-				max-width: 1200px;
+				margin: auto;
+				max-width: 1140px;
 				overflow: visible;
 			}
 
-			.navContent > sl-button::part(label) {
+			.navButtons > sl-button {
+				margin: 10px;
+			}
+
+			.navButtons > sl-button::part(label) {
 				font-weight: var(--sl-font-weight-semibold);
 				font-size: var(--sl-font-size-large);
 				margin: 0 20px;
 			}
 			
-			.navContent > sl-button::part(base) {
+			.navButtons > sl-button::part(base) {
 				border-radius: var(--sl-border-radius-large);
 				border-width: 2px;
 				align-items: center;
@@ -52,37 +59,54 @@ export class App extends LitElement
 				transition: var(--sl-transition-medium) transform ease, var(--sl-transition-medium) border ease;
 			}
 			
-			.navContent > sl-button.pageActive::part(base) {
-				border-color: var(--sl-color-primary-500);
+			.navButtons > sl-button.pageActive::part(base) {
+				border-color: var(--sl-color-primary-400);
+				border-width: 3px;
 			}
 			
-			.navContent > sl-button.pageInactive::part(base) {
+			.navButtons > sl-button.pageInactive::part(base) {
 				border-color: var(--sl-color-neutral-300);
 			}
 			
-			.navContent > sl-button::part(base):hover {
+			.navButtons > sl-button::part(base):hover {
 				transform: scale(1.07);
 			}
 			
-			.navContent > sl-button::part(base)::active {
+			.navButtons > sl-button::part(base)::active {
 				transform: scale(1.07);
 			}
 			
-			.navContent > sl-button::part(base):focus-visible {
+			.navButtons > sl-button::part(base):focus-visible {
 				outline: dashed 2px var(--sl-color-primary-500);
 				outline-offset: 2px;
 			}
 
 			.navBrand {
 				justify-content: flex-start;
-				padding-left: 0px;
+				padding-left: 15px;
+				display: inline-block;
+				font-family: monospace;
 			}
 
-			.navBrand > h2 {
+			.brand-text {
 				font-size: var(--sl-font-size-2x-large);
 				font-weight: var(--sl-font-weight-bold);
-				letter-spacing: var(--sl-letter-spacing-normal);
-				color: #b5b5b5
+				letter-spacing: 0.05em;
+				color: #797979;
+			}
+
+			.brand-capital {
+				font-weight: 600;
+				vertical-align: text-top;
+				letter-spacing: 0.00015em;
+				/* color: #797979 */
+			}
+
+			.brand-lower {
+				font-size: 1.75rem;
+				font-weight: var(--sl-font-weight-bolder);
+				vertical-align: 17%;
+				/* color: #797979 */
 			}
 
 			@media(max-width: 768px) {
@@ -105,6 +129,14 @@ export class App extends LitElement
 				.navContent {
 					padding-bottom: 15px;
 				}
+			}
+
+			.content {
+				display: block;
+				width: 1140px;
+				padding-left: 15px;
+				padding-right: 15px;
+				margin: auto;
 			}
 			`];
 
@@ -138,17 +170,20 @@ export class App extends LitElement
 	{
 		return html`
 		<nav class="topNav">
-			<div class="navContent flex">
-				<div class="navBrand flex">
-					<h2>THE SHADER FILES</h2>
+			<div class="navContent">
+				<div class="navBrand">
+					<span class="brand-text"><span class="brand-capital">S</span><span class="brand-lower">UB</span><span class="brand-capital">P</span><span class="brand-lower">IXEL</span></span>
 				</div>
-				<sl-button class=${this.homeClass}  name="Home"  href="/">HOME</sl-button>
-				<sl-button class=${this.postsClass} name="Posts" href="posts">POSTS</sl-button>
-				<sl-button class=${this.aboutClass} name="About" href="about">ABOUT</sl-button>
+				<div class="navButtons">
+					<sl-button class=${this.homeClass}  name="Home"  href="/">HOME</sl-button>
+					<sl-button class=${this.postsClass} name="Posts" href="posts">POSTS</sl-button>
+					<sl-button class=${this.aboutClass} name="About" href="about">ABOUT</sl-button>
+				</div>
 			</div>
 		</nav>
-
-		<slot class="content"></slot>
+		<div class="content">
+			<slot></slot>
+		</div>
 		`;
 	}
 }

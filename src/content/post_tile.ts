@@ -16,18 +16,26 @@ export class PostTile extends AppElement
 {
 	static styles = css`
     .post-tile {
-      margin: 10px;
+      margin: 0px;
       display: flex;
       flex-direction: column;
-      margin-bottom: 15px;
       background: white;
       overflow: hidden;
       border-radius: 10px;
+	  --border-color: #000000;
+	  --border-width: 1px;
+	  --padding: 15px;
+	  --border-radius: 10px;
 
-      max-width: 300px;
+      max-width: 360px;
     }
+	.post-title {
+		font-weight: var(--sl-font-weight-bold);
+		font-size: var(--sl-font-size-large);
+	}
     .post-description {
       padding: 0px;
+	  font-size: var(--sl-font-size-medium);
       background: white;
     }
     .post-footer {
@@ -42,14 +50,19 @@ export class PostTile extends AppElement
 		font-weight: 200;
 		color: #5e5e5e;
 		text-align: left;
-		font-size: var(--sl-font-size-small)
+		font-size: var(--sl-font-size-small);
+		align-self: end;
 	}
-	.postImage {
-		min-height: 150px;
+	.post-visual {
+		min-height: 168px;
+		max-height: 200px;
+		margin: 16px;
+		background-color: #efefef;
 	}
 	.footer-container {
 		display: grid;
 		grid-template-columns: 10fr 1fr;
+		align-items: end;
 	}
     h1 {
       margin: 0;
@@ -77,9 +90,9 @@ export class PostTile extends AppElement
 
 	static errorVisual( text: string ): TemplateResult<2>
 	{
-		const viewWidth = 300;
-		const viewHeight = 150;
-		const stride = 30;
+		const viewWidth = 400;
+		const viewHeight = 180;
+		const stride = 40;
 		const travel = 44;
 		const y1 = -5;
 		const y2 = viewHeight - y1;
@@ -95,14 +108,14 @@ export class PostTile extends AppElement
 		}
 
 		return svg`
-				<svg slot="image" clip-path="url(#clip2)" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
+				<svg slot="image" clip-path="url(#clip2)" class="post-visual" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
 					<defs>
 						<clipPath id="clip">
 							<rect width="100%" height="100%" x="0" y="0"/>
 						</clipPath>
 					</defs>
 					<filter id="visBlur">
-						<feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+						<feGaussianBlur in="SourceGraphic" stdDeviation="8" />
 					</filter>
 					<title id="svgTitle">${text}</title>
 					<rect width="100%" height="100%" fill="#000000"/>
@@ -119,14 +132,8 @@ export class PostTile extends AppElement
 
 	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
 	{
-		// If inline data is present, use that as unsafe HTML
-		// If not and HREF is available, check extension
-		// 	if JSON, load as <web-gl>
-		//	otherwise (including .svg), load as <img>
-		// Fall through to missing visual
-
 		if ( post.hdrInline !== undefined )
-			return html`${unsafeHTML( post.hdrInline )}`;
+			return html`<div slot="image" width="100%" height="auto" class="post-visual">${unsafeHTML( post.hdrInline )}</div>`;
 
 		if ( post.hdrHref !== undefined )
 		{
@@ -134,11 +141,11 @@ export class PostTile extends AppElement
 			if ( href.endsWith( 'json' ) )
 			{
 				// eslint-disable-next-line max-len
-				const embed = `<web-gl slot="image" width="100%" height="100%" class="postImage" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
+				const embed = `<web-gl slot="image" width="100%" height="202px" class="post-visual" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
 				return html`${unsafeHTML( embed )}`;
 			}
 
-			const embed = `<img slot="image" width="100%" height="100%" class="postImage" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
+			const embed = `<img slot="image" width="100%" height="auto" class="post-visual" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
 			return html`${unsafeHTML( embed )}`;
 		}
 
@@ -170,15 +177,13 @@ export class PostTile extends AppElement
 			<sl-card class="post-tile">
 				${visual}
 				<div class="post-description">
-					<strong>${this.post.title}</strong><br>
+					<span class="post-title">${this.post.title}</span><br>
 					<small>${this.post.author}</small>
 					<p>${this.post.description}</p>
 					<sl-divider></sl-divider>
 					<div slot="post-footer" class="footer-container">
-						<div class="footer-item">
-							<p class="post-date">
-								<sl-relative-time .date="${this.getDateObject()}" format="long" sync></sl-relative-time>
-							</p>
+						<div class="footer-item post-date">
+							<sl-relative-time .date="${this.getDateObject()}" format="long" sync></sl-relative-time>
 						</div>
 						<div class="footer-item" align-items="flex-end">
 							<sl-button variant="primary" pill class="post-link" @click="${this.handleClick}">Read More</sl-button>
