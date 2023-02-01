@@ -29,15 +29,27 @@ export class PostTile extends AppElement
 
       max-width: 360px;
     }
-	.post-title {
-		font-weight: var(--sl-font-weight-bold);
-		font-size: var(--sl-font-size-large);
-	}
-    .post-description {
+    .post-info {
       padding: 0px;
 	  font-size: var(--sl-font-size-medium);
       background: white;
     }
+	.post-title {
+		font-weight: var(--sl-font-weight-bold);
+		font-size: var(--sl-font-size-large);
+	}
+	.post-author {
+		font-weight: var(--sl-font-weight-light);
+		font-size: var(--sl-font-size-small);
+		color: #5e5e5e;
+		margin-left: 1em;
+	}
+	.post-description {
+		font-weight: var(--sl-font-weight-light);
+		font-size: var(--sl-font-size-normal);
+		display: inline-block;
+		margin-top: 1em;
+	}
     .post-footer {
       text-align: right;
     }
@@ -55,7 +67,9 @@ export class PostTile extends AppElement
 	}
 	.post-visual {
 		min-height: 168px;
-		max-height: 200px;
+//		max-height: 200px;
+		max-width: 328px;
+		width: 328px;
 		margin: 16px;
 		background-color: #efefef;
 	}
@@ -92,7 +106,7 @@ export class PostTile extends AppElement
 	{
 		const viewWidth = 400;
 		const viewHeight = 180;
-		const stride = 40;
+		const stride = 60;
 		const travel = 44;
 		const y1 = -5;
 		const y2 = viewHeight - y1;
@@ -119,7 +133,7 @@ export class PostTile extends AppElement
 					</filter>
 					<title id="svgTitle">${text}</title>
 					<rect width="100%" height="100%" fill="#000000"/>
-					<polygon points="${points}" style="fill:#ffff00;stroke-width:0" filter="url(#visBlur)"/></polygon>
+					<polygon points="${points}" style="fill:#ffdf00;stroke-width:0" filter="url(#visBlur)"/></polygon>
 					<rect width="100%" height="100%" fill="#ffffff" fill-opacity="80%"/>
 					<text x="50%" y="25%" font-size="16" text-anchor="middle" alignment-baseline="central" fill="#5f5f5f">
 					  <tspan x="50%" dy="1.2em">this space unintentionally</tspan>
@@ -133,7 +147,7 @@ export class PostTile extends AppElement
 	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
 	{
 		if ( post.hdrInline !== undefined )
-			return html`<div slot="image" width="100%" height="auto" class="post-visual">${unsafeHTML( post.hdrInline )}</div>`;
+			return html`<div slot="image" width="100%" height="100%" class="post-visual">${unsafeHTML( post.hdrInline )}</div>`;
 
 		if ( post.hdrHref !== undefined )
 		{
@@ -163,7 +177,7 @@ export class PostTile extends AppElement
 			return html`
 				<sl-card class="post-tile">
 					${visual}
-					<div class="post-description">
+					<div class="post-info">
 						<strong>Error fetching post</strong>
 						<p>Post is undefined</p>
 					</div>
@@ -176,10 +190,10 @@ export class PostTile extends AppElement
 		return html`
 			<sl-card class="post-tile">
 				${visual}
-				<div class="post-description">
+				<div class="post-info">
 					<span class="post-title">${this.post.title}</span><br>
-					<small>${this.post.author}</small>
-					<p>${this.post.description}</p>
+					<span class="post-author">by ${this.post.author}</span><br>
+					<span class="post-description">${this.post.description}</span>
 					<sl-divider></sl-divider>
 					<div slot="post-footer" class="footer-container">
 						<div class="footer-item post-date">

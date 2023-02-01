@@ -5,10 +5,10 @@ export const POSTS: PostData[] = [
 	{
 		id: 0,
 		title: 'Mipmapping',
-		author: 'Chris "Shader" Lambert',
+		author: 'Chris Lambert',
 		dateCreated: 1673735586720,
 		tags: ['Textures', 'Geometry'],
-		hdrInline: '<div style="display:block;margin:10px">If this has no image it\'s just rendered as <i>inline</i> <a href="https://www.w3schools.com/html/">HTML</a> in the image slot with an automatic background color.</div>',
+		hdrInline: '<div style="display:block;padding:10px">If this has no image it\'s just rendered as <i>inline</i> <a href="https://www.w3schools.com/html/">HTML</a> in the image slot with an automatic background color.</div>',
 		hdrHref: undefined,
 		hdrAlt: '',
 		description:
@@ -18,7 +18,7 @@ export const POSTS: PostData[] = [
 	{
 		id: 1,
 		title: 'Level of Detail',
-		author: 'Chris "Shader" Lambert',
+		author: 'Chris Lambert',
 		dateCreated: 1673721586720,
 		tags: ['Geometry'],
 		hdrInline: undefined,
@@ -30,7 +30,7 @@ export const POSTS: PostData[] = [
 	{
 		id: 2,
 		title: 'Texture Filtering',
-		author: 'Chris "Shader" Lambert',
+		author: 'Chris Lambert',
 		dateCreated: 1673525586720,
 		tags: ['Textures', 'Geometry'],
 		hdrInline: `
@@ -49,7 +49,7 @@ export const POSTS: PostData[] = [
 	{
 		id: 3,
 		title: 'Antialiasing',
-		author: 'Chris "Shader" Lambert',
+		author: 'Chris Lambert',
 		dateCreated: 1672725586720,
 		tags: ['Postprocessing'],
 		hdrInline: undefined,
@@ -64,7 +64,7 @@ export const POSTS: PostData[] = [
 	{
 		id: 4,
 		title: 'Anisotropy',
-		author: 'Chris "Shader" Lambert',
+		author: 'Chris Lambert',
 		dateCreated: 1673635586720,
 		tags: ['Textures', 'Geometry'],
 		description:

@@ -1,0 +1,186 @@
+Animation scheme
+---
+Anim:
+	modeDefault
+//	keys[]
+	loopMode
+		repeat
+		pingpong
+		once
+
+
+Key:
+	mode
+		discrete - jump from one key to the next
+		linear - lerp from one key to the next
+		sine start/end/both - sine wave from one key to the next
+		default (undefined) - uses default specified in Animation object
+
+	time
+		point in time of this key
+
+	valueRef
+		array of values (this way, can modify xform or colors of whatever length)
+----
+
+
+
+
+
+
+Server scheme
+-----
+AWS
+	Route 53 to host the domain
+	S3 to store static files (virtual server storage)
+		Pay for storage USED, not PROVISIONED (unlike EC2, which is a dedicated server)
+	Cloudfront as a CDN to connect domain requests to the S3 buckets
+		Free tier: 1TB (1000GB) of Data Transfer Out and 10,000,000 HTTP/HTTPS requests each month
+	DB:
+		DynamoDB (NoSQL and document DB)
+			"Not Only" SQL
+			Basic key/value pair
+			Not ideal for searching or filtering
+			Simple DB, but have to build and maintain your own indexes for searching
+			Can only store strings and numbers
+			Not particularly efficient in bandwidth
+			Could work for my needs
+			Good for high request rate
+				Like post data fetches?
+		RDS
+			Relational Database Service
+			Overkill?
+			Aurora
+				$30/mo for a single-node config
+				Storage through EBS volumes, auto-scaling available
+					Can set up multi-region and backups
+				Or Aurora Serverless as of 9/2018?
+					Charge only for what you use, continuous scaling, high availability
+					Can only be access from within a VPC... so maybe only from EC2?
+					Can't access S3 (say, for bulk-loading data -- probably not a problem)
+					Can't invoke Lambda functions from MySql functions(probably not a significant issue, but who knows)
+					Can't connect via SSL (but can with user/pass) -- but still only within a VPC
+					Storage rate: $0.10 per GB-month
+					I/O rate: $0.20 per 1m requests
+					Data CAN be transferred out to CloudFront, apparently! -- $0.00
+						How does this work?  Would I be able to query the DB via the CDN?
+					Not a huge diff per month from provisioned: ~$15/mo for 1 unit, $72 for 8
+				MySQL 5.6 compatible, but up to 5x faster
+				Managed, so resiliency, automatic failover, monitoring all handled
+				Growth is handled without effort -- going viral is no problem
+	Lambda
+		Access point for AWS functions, such as DB interactions
+		module: aws-sdk
+	Cognito
+		User authentication (ie, me, for admin pages)
+	Electric Beanstalk
+		Managing deploying scalable web applications
+			Way overkill for this project
+			Handles provisioning, load balancing, auto-scaling, health monitoring, zero-downtime deployments
+
+
+Other tech
+	Serverless (Yarn, NPM?)
+		Tool for creating and deploying cloud functions, eg Amazon Lambda
+		Lets me deploy frontend code automatically via plugins:
+			serverless-s3-sync
+			serverless-hooks
+		Basically a script in VSCode to build dist and upload to AWS
+
+Plan
+	Route 53 domain
+	Lambda->Cloudfront->S3
+	Lambda->Cloudfront->Aurora Serverless v1
+	Cognito for admin auth
+----
+
+
+
+
+
+
+
+
+
+
+
+First post!!!1!111
+
+Ideas:
+	Compose in Markdown
+	Use runtime MD/HTML converter?
+		Can I inject custom HTML this way?
+		For <web-gl> and custom float/clear formatting...
+
+Content:
+
+
+
+
+Basic shading: Diffuse and Specular
+-----------------------------------
+[<web-gl href="shaded-box.json"/>]
+
+What do diffuse and specular shading mean?  What is the difference?  How do they work?
+----------------
+Prerequisites:
+[Basic Geometry - Vertices, Indices, Triangles]
+[Rasterization]
+----------------
+
+Displaying triangles on screen in any orientation we choose is all well and good, but they just looks like flat triangles unless you can convey the shape of the surface.  [<web-gl href="unshaded-box.json"/>]
+
+There are two obvious ways to do this on a 2D screen: motion and shading.
+
+If you choose motion, you can move either the camera (ie, the viewer's 'eye') or you can move the surface being viewed.  Motion is definitely cheaper than shading: you have to do the same amount of math to make objects show up on the screen whether their position or rotation changes each frame or not!  Here's what that looks like. [<web-gl href="unshaded-box-spin.json"/>]
+
+Let's say you want to keep the camera where it is, or you have a lot of objects, or you want to convey shape without any motion.  The other option is one your eye has evolved to use reliably: shading.  Here's what that looks like.  [web-gl href="shaded-box.json"/>]
+
+If we're going to see to understand a shape, that means we have light.  And if we have light, we have a light source.  A light source means we have light traveling some direction to interact with the surface.  This will be some combination of reflect, absorb, or pass through, depending on the material -- imagine stainless steel, red brick, and paper, respectively.  The interaction of the light when it reaches the surface is the "shading" to which we refer.
+
+You may have heard of "shaders" in the context of rendering and GPUs.  These refer to any specialized micro-program that runs on a GPU.  A math computation running on the GPU may use a single Compute Shader.  A single triangle can be drawn with just one Vertex Shader and one Fragment Shader (also known as a Pixel Shader).  Some advanced rendering applications use even more exotic versions as well, like Geometry Shaders or Tessellation Shaders.  All of these are simple programs that run exclusively on the GPU over and over again, once on each entry in a list: the only difference is on which list they run.
+
+For more details on different kinds of shaders and how they work, see the post on [Shaders].
+
+The two types that do the kind of shading we're discussing are Vertex and Fragment Shaders.  Vertex Shaders run on a list of vertices (the preferred plural of vertex, though vertexes is acceptable), as you may have guessed, and are responsible for getting the vertices into the right place and facing the right direction.
+
+What?  How can a point face a direction?
+
+Well, each of those points comes with more data than just a position.  You may recall from the post on [Basic Geometry - Vertex, Index, Triangle] that a vertex typically has a normal, as well.  This normal is a unit vector (ie, a vector with a length of 1.0) that points "out" from the resulting triangle's face.
+
+If every triangle had its own set of vertices with normals facing straight out from that triangle's face, we would see what we call "flat shading".  [<web-gl href="flat.json"/>]
+
+If those triangles instead share a vertex (and hence the normal points in a direction that's an average of the triangles' facing), then a sort of smoothing takes place thanks to interpolation.
+
+Now we need to discuss interpolation.  When the data from 3 vertices is combined to become input for 1 fragment, the process to do that is interpolation.  The specific method is known as Gouraud interpolation (<a href="https://casual-effects.blogspot.com/2016/03/computational-graphics-pronunciation.html">pronounced "GOO-row"</a>), described by Henri Gouraud in 1971.  It's actually very simple: to get a smooth value somewhere in the middle of a triangle, the GPU computes the weighted average of the values from the 3 vertices and passes it as an input to the Fragment Shader.  We can see this at work by showing the positions of a cube with one corner at (0,0,0) and the opposite at (1,1,1) as colors.  [<web-gl href="poscol-cube.json"/>]
+
+This is incredibly useful behavior by the GPU.  It's basically free math, per-fragment.  We don't have to pay Vertex Shader or Fragment Shader cycles for it -- it's just part of the pipeline that occurs no matter what.  In this way, offloading work from the Fragment Shader (which runs at least once for every pixel on screen) to the Vertex Shader (which typically runs hundreds or thousands of times less frequently) is usually a massive win for performance.  See the post on [Performance Basics].
+
+We have everything we need to display some basic lighting.  To keep things simple, we'll start with a directional light.  That's a light with only a direction -- no position.  It's considered to be infinitely far away with no falloff or cutoff distance, akin to sunlight but less physically accurate.  The good news is it's very easy to simulate.
+
+All real-time lighting starts with a point in space, a normal, and an incoming light vector.  We have all of that.  The incoming light vector is just the opposite of the "sunlight" direction -- if the light is shining in the direction (1,0,0), then to me all the light is coming from the direction (-1,0,0).  That's the incoming light vector.  Note how it's also unit length?  That's important.
+
+The fundamental calculation that we use throughout real-time lighting is <a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law">Lambert's cosine law</a> (no relation).  Johann Heinrich Lambert, sometime around 1760, observed that the intensity of the light leaving an ideal surface is directly proportional to the cosine of the angle between the normal and the incoming light vector.  [interactive svg or webgl with vector and cosine value and brightness?]
+
+Footnote: this is also where I got my industry nickname.  See the [About] page.
+
+Sorry for the math.  Thankfully, it ends up being pretty easy and the GPU does it all for us.  The cosine sounds expensive to calculate, and it is very expensive.  However, there's actually a nifty mathematical identity we can use, a sort of math shortcut.  See, the cosine of two unit-length vectors is identical to the result of the dot product between those two vectors, and that's extremely inexpensive to calculate.  You might recall from Geometry class that taking the cross product between two vectors gives you a vector, but taking a dot product between two vectors give you a single number (a scalar, we would say in graphics land).  This is the most sacred use of the dot product: it has applications throughout gaming, including in audio, collisions, physics -- anytime you want to calculate the rebound value of something off a surface.
+
+In fact, this one use here, in the Vertex Shader, combined with Gouraud interpolation by the GPU, gives us basic lighting.  This is known as Diffuse vertex lighting.  [<web-gl href="diffuse-vs.json"/>]
+
+// This could be part of a [geometry] post
+If one was to draw a triangle, each point would need a position.  So that's the first step.  But with only a position, we know nothing more about the "shape" of the surface the point is helping to form -- only the location.  Sure, we know there's a surface running through that point in space -- what in what direction does the surface face at that point?  There's a way to say, actually: we can give each point a "normal" vector.  The normal vector is a unit vector, which just means it's of length 1.0, and it points "outwards".  So on the surface of the earth, all normal vectors on all the vertices forming the surface would seem to point straight up into space.
+
+Now we have two data elements for each vertex: a position vector, and a normal vector.
+
+But what if you don't want the adjacent triangles to blend smoothly into each other?  For a sphere, sure, that's desirable.  But for a cube, you want hard edges!  That's actually easy to solve: you just use extra vertices at the corners.  Instead of 1 vertex at each corner, you have 3: one for each face direction.  All three vertices at a corner will have the same exact position, but a different normal.  You make sure the triangles for each face use the correct vertices for that face, and then the fragment shader will process the pixels for the triangles it needs.
+
+For more information, see the post on [Rasterization].
+// 
+
+Now every vertex has two bits of data: a position vector and a normal vector.  The rasterizer will look at the list of triangles (either give
+n by the implied order of the vertices, or an explicit list of indices pointing to them in order) and create a list of fragments needed to create pixels in the final image (depending on antialiasing settings -- see the post on [Antialiasing]).
+
+Let's look at one of those fragments.
+
+

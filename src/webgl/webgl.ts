@@ -101,7 +101,7 @@ export class WebGL
 			throw new Error( 'Unexpected undefined canvas in WebGL::render' );
 
 		const timeAccumSecs = timeAccumMS * 0.001;
-		const timeElapsedSecs = timeAccumSecs - this.lastTimeSecs;
+		const timeDeltaSecs = timeAccumSecs - this.lastTimeSecs;
 		this.lastTimeSecs = timeAccumSecs;
 
 		resizeCanvasToDisplaySize( canvas );
@@ -119,7 +119,7 @@ export class WebGL
 		// Iterate elements to draw each as requested
 		this.viewports.forEach( element =>
 		{
-			element.render( timeElapsedSecs );
+			element.render( timeDeltaSecs, timeAccumSecs );
 		} );
 
 		if ( WebGL.DEBUG_RENDERS )

@@ -21,10 +21,14 @@ export class PostItem extends AppElement
 			margin: 20px;
 		}
 
+		.post-filler {
+			flex-grow: 1
+		}
 		.post-description {
 			display: inline-block;
 			background: white;
 			align-self: end;
+			padding-bottom: 0.5em;
 		}
 		.post-footer {
 			text-align: right;
@@ -72,6 +76,8 @@ export class PostItem extends AppElement
 		}
 		.post-info {
 			grid-column: 1 / 2;
+			display: flex;
+			flex-direction: column;
 		}
 		.post-image {
 			grid-column: 2 / 3;
@@ -95,7 +101,9 @@ export class PostItem extends AppElement
 		}
 		.post-visual {
 			min-height: 168px;
-			max-height: 200px;
+			max-width: 328px;
+			height: 100%;
+			width: 100%;
 			background-color: #efefef;
 		}
 		.post-divider {
@@ -135,12 +143,13 @@ export class PostItem extends AppElement
 				<div class="header-container">
 					<div class="post-info">
 						<h1 class="post-title">${this.post.title}</h1>
-						<span class="post-author">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
-							<span class="post-date">on ${this.getDateString()}</span>
-						<div class="post-tag-set">${this.getTagsHTML()}</div>
-						<div class="post-description">
-							${this.post.description}
+						<div class="post-author-date">
+							<span class="post-author">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
+								<span class="post-date">on ${this.getDateString()}</span>
 						</div>
+						<div class="post-tag-set">${this.getTagsHTML()}</div>
+						<div class="post-filler"></div>
+						<div class="post-description">${this.post.description}</div>
 					</div>
 					<div class="post-image">
 						<div class="post-image-divider">

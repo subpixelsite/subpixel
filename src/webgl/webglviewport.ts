@@ -10,6 +10,8 @@ import { WebGLSphere } from './webglsphere.js';
 
 export class WebGLViewport
 {
+	static fadeInDurSecs: number = 0.2;
+
 	private scene?: WebGLScene;
 	private element: HTMLDivElement;
 	private camera: m4.Mat4 = m4.identity();
@@ -18,6 +20,10 @@ export class WebGLViewport
 
 	private sceneObjects: WebGLObject[] = [];
 	private drawObjects: DrawObject[] = [];
+
+	private texturesLoading: number = 0;
+	private fadeStart: number = 0;
+	private fadeEnd: number = -1;
 
 	constructor( shadowRoot: ShadowRoot, elementName: string )
 	{
@@ -64,6 +70,7 @@ export class WebGLViewport
 			let diffuse: WebGLTexture | undefined;
 			if ( data.diffuse !== undefined )
 			{
+				this.texturesLoading += 1;
 				diffuse = createTexture( gl!, {
 					min: data.diffuse.min ?? WebGLRenderingContext.LINEAR,
 					mag: data.diffuse.mag ?? WebGLRenderingContext.LINEAR,
@@ -71,6 +78,10 @@ export class WebGLViewport
 					color: [0.5, 0.5, 0.5, 1.0]
 				}, () =>
 				{
+					this.texturesLoading -= 1;
+					if ( this.texturesLoading < 0 )
+						throw new Error( 'Texture load reference count mismatch' );
+
 					webgl.requestNewRender();
 				} );
 			}
@@ -101,7 +112,7 @@ export class WebGLViewport
 		webgl.addElement( this );
 	}
 
-	render( timeElapsedSecs: number )
+	render( timeDeltaSecs: number, timeAccumSecs: number )
 	{
 		const webgl = WebGL.getInstance();
 		const { gl, canvas } = webgl;
@@ -112,6 +123,26 @@ export class WebGLViewport
 		if ( rect.bottom < 0 || rect.top > canvas.clientHeight
 			|| rect.right < 0 || rect.left > canvas.clientWidth )
 			return;
+
+		if ( this.texturesLoading > 0 )
+			return;
+
+		if ( this.fadeEnd < 0 )
+		{
+			this.fadeStart = timeAccumSecs;
+			this.fadeEnd = timeAccumSecs + WebGLViewport.fadeInDurSecs;
+		}
+
+		let fadeValue = 1.0;
+		if ( timeAccumSecs > this.fadeEnd )
+		{
+			this.fadeEnd = 0.0;
+		}
+		else
+		{
+			fadeValue = ( timeAccumSecs - this.fadeStart ) / WebGLViewport.fadeInDurSecs;
+			fadeValue = Math.min( fadeValue, 1.0 );
+		}
 
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
@@ -135,7 +166,6 @@ export class WebGLViewport
 		gl.viewport( left, bottom, width, height );
 		gl.scissor( left, bottom, width, height );
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
-		gl.clear( gl.COLOR_BUFFER_BIT );
 
 		gl.enable( gl.CULL_FACE );
 
@@ -154,16 +184,28 @@ export class WebGLViewport
 		m4.inverse( this.camera, view );
 		m4.multiply( projection, view, viewProjection );
 
+		const globalAlpha = fadeValue;
+		if ( fadeValue >= 1.0 )
+		{
+			gl.disable( gl.BLEND );
+			gl.blendFunc( gl.ONE, gl.ZERO );
+		}
+		else
+		{
+			gl.enable( gl.BLEND );
+			gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+		}
+
 		this.sceneObjects?.forEach( object =>
 		{
-			// const { data } = object;
+			// const { datum } = object;
 			const { uniforms } = object;
 			const world = uniforms.u_world;
 
 			m4.identity( world );
 
 			// Perform animation interpolation
-			object.animate( timeElapsedSecs );
+			object.animate( timeDeltaSecs );
 			const xform = object.getTransform();
 			const colorObj = object.getColor();
 
@@ -183,7 +225,7 @@ export class WebGLViewport
 				uniforms.u_worldViewProjection
 			);
 
-			uniforms.u_color = [colorObj.color[0], colorObj.color[1], colorObj.color[2], colorObj.alpha];
+			uniforms.u_color = [colorObj.color[0], colorObj.color[1], colorObj.color[2], colorObj.alpha * globalAlpha];
 		} );
 
 		drawObjectList( gl!, this.drawObjects );
