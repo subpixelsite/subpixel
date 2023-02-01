@@ -166,7 +166,27 @@ Footnote: this is also where I got my industry nickname.  See the [About] page.
 
 Sorry for the math.  Thankfully, it ends up being pretty easy and the GPU does it all for us.  The cosine sounds expensive to calculate, and it is very expensive.  However, there's actually a nifty mathematical identity we can use, a sort of math shortcut.  See, the cosine of two unit-length vectors is identical to the result of the dot product between those two vectors, and that's extremely inexpensive to calculate.  You might recall from Geometry class that taking the cross product between two vectors gives you a vector, but taking a dot product between two vectors give you a single number (a scalar, we would say in graphics land).  This is the most sacred use of the dot product: it has applications throughout gaming, including in audio, collisions, physics -- anytime you want to calculate the rebound value of something off a surface.
 
-In fact, this one use here, in the Vertex Shader, combined with Gouraud interpolation by the GPU, gives us basic lighting.  This is known as Diffuse vertex lighting.  [<web-gl href="diffuse-vs.json"/>]
+In fact, this one use here, in the Vertex Shader, combined with Gouraud interpolation by the GPU, gives us basic lighting.  We take the scalar from the dot product and multiply it against the light color, if there is one, and send the result as a color value to the Fragment Shader.  The Fragment Shader simply shows the interpolated result.  This is known as Diffuse vertex lighting.  [<web-gl href="diffuse-vs.json"/>]
+
+Neat, but it's also very flat.  You can click and drag the camera around the object to see what I mean.  The lighting doesn't change relative to your viewpoint -- that's a hallmark of "Diffuse" lighting.  The next part of the lighting stew adds that view-dependent component, which we call "Specular" lighting.
+
+Specular lighting is calculated in almost the exact same way as Diffuse lighting, except with two more steps and one more bit of info: the direction to the viewer.  
+
+Imagine a wet road with the sun opposite you.  You would expect to see a reflection of the sun, a hot spot, on the ground, some distance between you and the sun.  We can calculate this hotspot with the Diffuse lighting algorithm technique -- we just need to plug in different vectors for the Lambert cosine calculation.  Let's work backwards.  If you're calculating the lighting at the point of the hotspot, one of them would be the normal of the ground, obviously.  The other is going to be "dotted" against the normal to get the lighting strength coefficient for this hotspot.  If we use the vector towards the sun, then we'd just get a view-independent Diffuse lighting value -- no view-relative hotspot at all.  If we use the vector towards the eye, then we'd get a result that never involved the sun at all.  But maybe something in between?  Literally?  That's actually exactly what we use: the average of the vector to the eye and the vector to the light.  We call it the "half vector".  Note that after you average them, the result probably won't be of length 1 anymore, so we have to normalize it again, which involves a square root operation (to get the length of the vector) and thus isn't super cheap.
+
+But with that done, we have a normal and a half vector at the point of our hotspot.  If we now apply Lambert's Cosine Law, we get a scalar result that tells us how powerful the sun's hotspot should be at that point.  And as we move, or as the sun moves, that value will change.  Let's see our Specular vertex lighting in action, in addition to the Diffuse lighting from before.  [<web-gl href="spec-diff-vs.json"/>]
+
+You can see the shape for sure, but you can also see the how it's interpolating between vertices.  As the light source moves around, you can really see the artifacts of Gouraud interpolation on a low-polygon object show up.  You can get around this with more triangles, or by moving the calculation to run per-fragment in a Fragment Shader instead.
+
+Moving work from the Vertex Shader to the Fragment Shader is actually pretty simple.  We just have to make sure the Vertex Shader outputs anything the Fragment Shader needs to do the work, and that the Fragment Shader has access to any constant data (see [GPU Memory]).  In this case, the Vertex Shader outputs the world-space position and world-space normal to the Fragment Shader by assigning them to specially marked variables that were registered as part of the declaration of these shaders.  The GPU will dutifully interpolate these vectors and the Fragment Shader takes the results, performing the same calculations with the same constants.  The results, however, are much nicer: they should be, since instead of running on a few dozen vertices, they're running for thousands of pixels!  [<web-gl href="spec-diff-fs.json"/>]
+
+Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the [Performance] post for more about this.
+
+
+
+
+
+
 
 // This could be part of a [geometry] post
 If one was to draw a triangle, each point would need a position.  So that's the first step.  But with only a position, we know nothing more about the "shape" of the surface the point is helping to form -- only the location.  Sure, we know there's a surface running through that point in space -- what in what direction does the surface face at that point?  There's a way to say, actually: we can give each point a "normal" vector.  The normal vector is a unit vector, which just means it's of length 1.0, and it points "outwards".  So on the surface of the earth, all normal vectors on all the vertices forming the surface would seem to point straight up into space.
@@ -178,9 +198,5 @@ But what if you don't want the adjacent triangles to blend smoothly into each ot
 For more information, see the post on [Rasterization].
 // 
 
-Now every vertex has two bits of data: a position vector and a normal vector.  The rasterizer will look at the list of triangles (either give
-n by the implied order of the vertices, or an explicit list of indices pointing to them in order) and create a list of fragments needed to create pixels in the final image (depending on antialiasing settings -- see the post on [Antialiasing]).
-
-Let's look at one of those fragments.
 
 
