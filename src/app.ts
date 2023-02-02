@@ -8,6 +8,7 @@ import '@shoelace-style/shoelace/dist/components/alert/alert.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import 'reflect-metadata';
+import { initPostData } from './content/post_data.js';
 
 @customElement( 'lit-app' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -151,6 +152,7 @@ export class App extends LitElement
 		super();
 
 		setBasePath( '/dist/shoelace' );
+		initPostData();
 
 		this.addEventListener( 'pageNav', ( e: Event ) =>
 		{

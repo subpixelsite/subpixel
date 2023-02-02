@@ -9,7 +9,7 @@ import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js'
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import { AppElement } from '../appelement.js';
 import { POSTS } from './data.js';
-import { PostData } from './post_data.js';
+import { convertMDtoHTML, PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
 
 @customElement( 'lit-post' )
@@ -138,6 +138,8 @@ export class PostItem extends AppElement
 
 		const visual = PostTile.getPostVisual( this.post );
 
+		const body = convertMDtoHTML( this.post.body );
+
 		return html`
 			<div class="lit-post">
 				<div class="header-container">
@@ -162,7 +164,7 @@ export class PostItem extends AppElement
 				</div>
 				<sl-divider class="post-divider"></sl-divider>
 				<p class="post-content">
-				${unsafeHTML( this.post.body )}
+				${unsafeHTML( body )}
 				</p>
 			</div>
 			`;

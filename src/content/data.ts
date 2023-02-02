@@ -44,7 +44,14 @@ export const POSTS: PostData[] = [
 		hdrAlt: 'A red box with a blue slash across it, signifying nothing',
 		description:
 			'What is the purpose of texture filtering?  Why would I ever choose blurry over sharp?',
-		body: ''
+		body: `# Header 1
+Man I hope this works.
+- maybe a list?
+- Could be!
+- If not, I'm fucked
+
+*__SERIOUSLY FUCKED__*
+		`
 	},
 	{
 		id: 3,
