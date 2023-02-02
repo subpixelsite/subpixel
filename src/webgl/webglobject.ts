@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { BufferInfo, createProgramInfo, ProgramInfo } from 'twgl.js';
 import { shaders } from './shaders.js';
-import { AnimBlendMode, AnimLoopMode, WebGLObjectColor, WebGLObjectData, WebGLObjectTransform } from './webglscene.js';
+import { AnimBlendMode, AnimLoopMode, WebGLObjectColor, WebGLObjectData, WebGLObjectTransform } from './webgldata.js';
 
 export class WebGLObject
 {

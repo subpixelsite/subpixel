@@ -12,6 +12,14 @@ export interface PostData
 	body: string;
 }
 
+declare global
+{
+	interface Window
+	{
+		showdown: any;
+	}
+}
+
 export function initPostData()
 {
 	window.showdown.setOption( 'strikethrough', true );
