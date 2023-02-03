@@ -53,6 +53,14 @@ const routes = [
 				{
 					await import( './about/about.js' );
 				}
+			},
+			{
+				path: 'admin',
+				component: 'lit-admin',
+				action: async () =>
+				{
+					await import( './admin/admin.js' );
+				}
 			}
 		]
 	}
