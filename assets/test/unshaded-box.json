@@ -1,0 +1,94 @@
+{
+	"fovYDeg": "45",
+	"lookAt": ["0", "1", "0"],
+	"objects": [
+		{
+			"vs": "pos.vs",
+			"fs": "col.fs",
+			"xform": [],
+			"plane": {
+				"width": "4",
+				"height": "4"
+			}
+		},
+		{
+			"vs": "postex.vs",
+			"fs": "tex.fs",
+			"anim": {
+				"mode": "2",
+				"loop": "2"
+			},
+			"xform": [
+				{
+					"pos": ["-1.0", "0.5", "-1.0"],
+					"key": { "time": "0.0" }
+				},
+				{
+					"pos": ["1.0", "0.5", "-1.0"],
+					"key": { "time": "2.0", "modeIn": "3" }
+				},
+				{
+					"pos": ["1.0", "0.5", "1.0"],
+					"key": { "time": "4.0", "modeIn": "1" }
+				},
+				{
+					"pos": ["-1.0", "0.5", "1.0"],
+					"key": { "time": "6.0", "modeIn": "3" }
+				},
+				{
+					"pos": ["-1.0", "0.5", "-1.0"],
+					"key": { "time": "8.0" }
+				}
+			],
+			"cube": {
+				"size": "1"
+			},
+			"diffuse": {
+				"url": "https://farm6.staticflickr.com/5795/21506301808_efb27ed699_q_d.jpg"
+			},
+			"color": [
+				{
+					"color": ["0", "0.0", "0.0"],
+					"alpha": "1.0",
+					"key": { "time": "0.0" }
+				},
+				{
+					"color": ["0", "1.0", "1.0"],
+					"alpha": "1.0",
+					"key": { "time": "4.75", "modeIn": 3 }
+				},
+				{
+					"color": ["0", "0.0", "1.0"],
+					"alpha": "1.0",
+					"key": { "time": "5.0" }
+				},
+				{
+					"color": ["0", "0.0", "0.0"],
+					"alpha": "1.0",
+					"key": { "time": "8.0" }
+				}
+			]
+		},
+		{
+			"vs": "pos.vs",
+			"fs": "col.fs",
+			"anim": {
+				"mode": "3",
+				"loop": "2"
+			},
+			"xform": [
+				{
+					"pos": ["0", "1", "0"],
+					"key": { "time": "0" }
+				},
+				{
+					"pos": ["0", "3", "0"],
+					"key": { "time": "1" }
+				}
+			],
+			"sphere": {
+				"radius": "1"
+			}
+		}
+	]
+}

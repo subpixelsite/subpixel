@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { html, css } from 'lit';
+import { css, html } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { property, customElement } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';

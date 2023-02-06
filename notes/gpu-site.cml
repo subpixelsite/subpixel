@@ -17,7 +17,7 @@
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
 = Editor
-	- Move relevant CSS to external file to include with the editor
+	* Move relevant CSS to external file to include with the editor
 = Source code view
 	- Show vs/fs in tab or drawer with <web-gl>
 	- Show with syntax coloring
@@ -26,15 +26,12 @@
 
 == CURRENT
 
-= Editor
-	+ "Admin" page
 = Basic styling
-	* Provide Markdown->HTML live preview editor
-		- Figure out joined scrolling
-		- Add "copy to clipboard" button
+	+ Provide Markdown->HTML live preview editor
+		? Figure out joined scrolling
+		? Add "copy to clipboard" button
 		? Add "paste from clipboard" button
 		? Statistics like word count, image count, embed count
-	+ Figure out how to style content coming from Markdown
 	* Write example post
 		- Create webgl content for example post
 		- Figure out embedding web-gl content from Markdown
@@ -46,5 +43,9 @@
 
 === DONE
 
+= Editor
+	+ "Admin" page
+= Basic styling
+	+ Figure out how to style content coming from Markdown
 = Editor
 	x Override styling to be full-width

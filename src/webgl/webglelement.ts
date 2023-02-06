@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable prefer-template */
 /* eslint-disable max-len */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { customElement, property, LitElement, html, TemplateResult, css } from 'lit-element';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { LitElement, PropertyValueMap, css, html, TemplateResult } from 'lit';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { property, customElement } from 'lit/decorators.js';
 import { svg } from 'lit-html';
 import 'reflect-metadata';
 import { plainToClass } from 'class-transformer';
-import { PropertyValueMap } from 'lit';
 import { WebGL } from './webgl.js';
 import { WebGLViewport } from './webglviewport.js';
 import { WebGLScene } from './webglscene.js';
@@ -100,6 +101,7 @@ export function getPixelHeight( attributeValue: string, parentElement: HTMLEleme
 }
 
 @customElement( 'web-gl' )
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WebGLElement extends LitElement
 {
 	static styles = css`
@@ -119,12 +121,6 @@ export class WebGLElement extends LitElement
 	`;
 
 	private wglViewport?: WebGLViewport;
-
-	@property( { type: String } )
-	width: string = '128px';
-
-	@property( { type: String } )
-	height: string = '128px';
 
 	@property( { type: String } )
 	fontsize: string = '16';
@@ -153,14 +149,11 @@ export class WebGLElement extends LitElement
 		// re-wrap lines and force a render update
 		this.wrappedText = undefined;
 
-		this.style.width = this.width;
-		this.style.height = this.height;
-
 		const errorText = this.getError();
 		if ( errorText === undefined )
 			return;
 
-		const wrapWidthPixels = getPixelWidth( this.width, this.parentElement );
+		const wrapWidthPixels = getPixelWidth( this.style.width, this.parentElement );
 		const fontSizePixels = getPixelWidth( this.fontsize, this.parentElement ) ?? 1;
 
 		const wrapWidth = wrapWidthPixels / fontSizePixels / fontSizeFudgeRatio;
@@ -179,6 +172,7 @@ export class WebGLElement extends LitElement
 		this.onResizeEvent();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	protected firstUpdated( _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown> ): void
 	{
 		this.wglViewport = new WebGLViewport( this.shadowRoot!, `#${this.divID}` );
@@ -290,7 +284,7 @@ export class WebGLElement extends LitElement
 	render()
 	{
 		return html`
-			<div class="web-gl-container" id="${this.divID}" style = "width:${this.width}; max-width:${this.width}; height:${this.height}; max-height:${this.height};" >
+			<div class="web-gl-container" id="${this.divID}" >
 				${this.showError() ?? this.showLoading()}
 			</div>
 			`;

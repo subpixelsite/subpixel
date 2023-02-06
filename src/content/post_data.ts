@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 export interface PostData
 {
 	id: number;
@@ -24,8 +25,10 @@ let bindings: { type: string; regex: RegExp; replace: string; }[] = [];
 const classMap: { [key: string]: string; } = {};
 
 // Define all the classes I want to set for each HTML tag
-classMap.h1 = 'header1';
-classMap.h2 = 'header2';
+classMap['h1'] = 'header1';
+classMap['h2'] = 'header2';
+classMap['web-gl'] = 'webglembed';
+classMap['p'] = 'clearfix';
 
 export function initPostData()
 {

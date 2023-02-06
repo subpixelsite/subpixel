@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { RouterLocation } from '@vaadin/router';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { html, css, TemplateResult } from 'lit';
+import { css, html, TemplateResult } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { property, customElement, state } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';

@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { html, customElement, css, property } from 'lit-element';
+import { customElement, property } from 'lit/decorators.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/card/card.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
-import { svg, TemplateResult } from 'lit-element/lit-element.js';
+import { svg, TemplateResult, html, css } from 'lit';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AppElement } from '../appelement.js';
 import { PostData } from './post_data.js';
@@ -15,25 +15,25 @@ import { PostData } from './post_data.js';
 export class PostTile extends AppElement
 {
 	static styles = css`
-    .post-tile {
-      margin: 0px;
-      display: flex;
-      flex-direction: column;
-      background: white;
-      overflow: hidden;
-      border-radius: 10px;
-	  --border-color: #000000;
-	  --border-width: 1px;
-	  --padding: 15px;
-	  --border-radius: 10px;
+	.post-tile {
+		margin: 0px;
+		display: flex;
+		flex-direction: column;
+		background: white;
+		overflow: hidden;
+		border-radius: 10px;
+		--border-color: #000000;
+		--border-width: 1px;
+		--padding: 15px;
+		--border-radius: 10px;
 
-      max-width: 360px;
-    }
-    .post-info {
-      padding: 0px;
-	  font-size: var(--sl-font-size-medium);
-      background: white;
-    }
+		max-width: 360px;
+	}
+	.post-info {
+		padding: 0px;
+		font-size: var(--sl-font-size-medium);
+		background: white;
+	}
 	.post-title {
 		font-weight: var(--sl-font-weight-bold);
 		font-size: var(--sl-font-size-large);
@@ -50,14 +50,14 @@ export class PostTile extends AppElement
 		display: inline-block;
 		margin-top: 1em;
 	}
-    .post-footer {
-      text-align: right;
-    }
-    .post-link {
-      color: #008cba;
-      // border-width: 0;
-      // background-color: #ffffff;
-    }
+	.post-footer {
+		text-align: right;
+	}
+	.post-link {
+		color: #008cba;
+		/* border-width: 0;
+		background-color: #ffffff; */
+	}
 	.post-date {
 		font-weight: 200;
 		color: #5e5e5e;
@@ -67,7 +67,7 @@ export class PostTile extends AppElement
 	}
 	.post-visual {
 		min-height: 168px;
-//		max-height: 200px;
+		/* max-height: 200px; */
 		max-width: 328px;
 		width: 328px;
 		margin: 16px;
@@ -78,27 +78,27 @@ export class PostTile extends AppElement
 		grid-template-columns: 10fr 1fr;
 		align-items: end;
 	}
-    h1 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-    h2 {
-      font-size: 1rem;
-      font-weight: 300;
-      color: #5e5e5e;
-      margin-top: 5px;
-    }
+	h1 {
+		margin: 0;
+		font-size: 1.5rem;
+	}
+	h2 {
+		font-size: 1rem;
+		font-weight: 300;
+		color: #5e5e5e;
+		margin-top: 5px;
+	}
 
-    .post-tile small {
-      color: var(--sl-color-neutral-500);
-    }
+	.post-tile small {
+		color: var(--sl-color-neutral-500);
+	}
 
-    .post-tile [slot='footer'] {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-  `;
+	.post-tile [slot='footer'] {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	`;
 
 	@property( { type: Object } ) post?: PostData;
 

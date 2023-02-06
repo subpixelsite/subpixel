@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { LitElement, html, customElement } from 'lit-element';
+import { LitElement, html } from 'lit';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { customElement } from 'lit/decorators.js';
 
 @customElement( 'lit-about' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

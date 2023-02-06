@@ -1,4 +1,4 @@
-import { LitElement } from 'lit-element';
+import { LitElement } from 'lit';
 import { AfterLeaveObserver, BeforeEnterObserver, RouterLocation } from '@vaadin/router';
 import { WebGL } from './webgl/webgl.js';
 
