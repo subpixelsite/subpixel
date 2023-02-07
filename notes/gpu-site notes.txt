@@ -156,7 +156,9 @@ If every triangle had its own set of vertices with normals facing straight out f
 
 If those triangles instead share a vertex (and hence the normal points in a direction that's an average of the triangles' facing), then a sort of smoothing takes place thanks to interpolation.
 
-Now we need to discuss interpolation.  When the data from 3 vertices is combined to become input for 1 fragment, the process to do that is interpolation.  The specific method is known as Gouraud interpolation [pronounced "GOO-row"](https://casual-effects.blogspot.com/2016/03/computational-graphics-pronunciation.html), described by Henri Gouraud in 1971.  It's actually very simple: to get a smooth value somewhere in the middle of a triangle, the GPU computes the weighted average of the values from the 3 vertices and passes it as an input to the Fragment Shader.  We can see this at work by showing the positions of a cube with one corner at (0,0,0) and the opposite at (1,1,1) as colors.  <web-gl width="400px" height="200px" src="assets/test/poscol-cube.json"></web-gl>
+<web-gl width="400px" height="200px" src="assets/test/poscol-cube.json"></web-gl>
+
+Now we need to discuss interpolation.  When the data from 3 vertices is combined to become input for 1 fragment, the process to do that is interpolation.  The specific method is known as Gouraud interpolation [pronounced "GOO-row"](https://casual-effects.blogspot.com/2016/03/computational-graphics-pronunciation.html), described by Henri Gouraud in 1971.  It's actually very simple: to get a smooth value somewhere in the middle of a triangle, the GPU computes the weighted average of the values from the 3 vertices and passes it as an input to the Fragment Shader.  We can see this at work by showing the positions of a cube with one corner at (0,0,0) and the opposite at (1,1,1) as colors.
 
 This is incredibly useful behavior by the GPU.  It's basically free math, per-fragment.  We don't have to pay Vertex Shader or Fragment Shader cycles for it -- it's just part of the pipeline that occurs no matter what.  In this way, offloading work from the Fragment Shader (which runs at least once for every pixel on screen) to the Vertex Shader (which typically runs hundreds or thousands of times less frequently) is usually a massive win for performance.  See the post on [Performance Basics](posts/2).
 
@@ -311,3 +313,41 @@ For more information, see the post on [Rasterization].
 			const event = ev.target as HTMLInputElement;
 			previewArea.innerHTML = convertMDtoHTML( event.value );
 		} );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Working example (note space and double newline after </web-gl>)
+----------------
+<web-gl src="assets/test/poscol-cube.json"></web-gl> 
+
+Now we need to discuss interpolation.  When the data from 3 vertices is combined to become input for 1 fragment, the process to do that is interpolation.  The specific method is known as Gouraud interpolation [pronounced "GOO-row"](https://casual-effects.blogspot.com/2016/03/computational-graphics-pronunciation.html), described by Henri Gouraud in 1971.  It's actually very simple: to get a smooth value somewhere in the middle of a triangle, the GPU computes the weighted average of the values from the 3 vertices and passes it as an input to the Fragment Shader.  We can see this at work by showing the positions of a cube with one corner at (0,0,0) and the opposite at (1,1,1) as colors.
+
+<web-gl src="assets/test/poscol-cube.json"></web-gl> 
+
+Now we need to discuss interpolation.  When the data from 3 vertices is combined to become input for 1 fragment, the process to do that is interpolation.  The specific method is known as Gouraud interpolation [pronounced "GOO-row"](https://casual-effects.blogspot.com/2016/03/computational-graphics-pronunciation.html), described by Henri Gouraud in 1971.  It's actually very simple: to get a smooth value somewhere in the middle of a triangle, the GPU computes the weighted average of the values from the 3 vertices and passes it as an input to the Fragment Shader.  We can see this at work by showing the positions of a cube with one corner at (0,0,0) and the opposite at (1,1,1) as colors.
+----------------

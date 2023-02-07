@@ -107,6 +107,8 @@ export class WebGLElement extends LitElement
 	static styles = css`
 		.web-gl-container {
 			display:inline-block;
+			width: 100%;
+			height: 100%;
 		}
 
 		.web-gl-errortext {
@@ -134,6 +136,7 @@ export class WebGLElement extends LitElement
 	private idNumber: number = 0;
 	private divID: string = '';
 	private wrappedText?: string[];
+	private loadEnabled: boolean = true;
 
 	constructor()
 	{
@@ -172,6 +175,13 @@ export class WebGLElement extends LitElement
 		this.onResizeEvent();
 	}
 
+	disconnectedCallback(): void
+	{
+		super.disconnectedCallback();
+
+		window.removeEventListener( 'resize', () => this.onResizeEvent() );
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	protected firstUpdated( _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown> ): void
 	{
@@ -180,17 +190,19 @@ export class WebGLElement extends LitElement
 		this.fetchHref();
 	}
 
-	disconnectedCallback(): void
-	{
-		super.disconnectedCallback();
-
-		window.removeEventListener( 'resize', () => this.onResizeEvent() );
-	}
-
 	setWebGLData( scene: WebGLScene )
 	{
 		if ( this.wglViewport !== undefined )
 			this.wglViewport.init( scene );
+	}
+
+	public setLoadEnabled( enabled: boolean )
+	{
+		this.loadEnabled = enabled;
+
+		// Lazy load any missing data
+		if ( this.wglViewport !== undefined && !this.wglViewport.isInitialized() )
+			this.fetchHref();
 	}
 
 	fetchWebGLData( url: string )
@@ -219,6 +231,9 @@ export class WebGLElement extends LitElement
 	fetchHref()
 	{
 		if ( this.src === undefined )
+			return;
+
+		if ( !this.loadEnabled )
 			return;
 
 		const url = new URL( this.src!, window.location.origin );

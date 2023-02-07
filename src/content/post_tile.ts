@@ -168,8 +168,6 @@ export class PostTile extends AppElement
 
 	render()
 	{
-		this.loadWebGL();
-
 		if ( this.post === undefined )
 		{
 			const visual = PostTile.errorVisual( 'missing post' );
@@ -224,10 +222,5 @@ export class PostTile extends AppElement
 			composed: true
 		} );
 		this.dispatchEvent( event );
-	}
-
-	async loadWebGL()
-	{
-		await import( '../webgl/webglelement.js' );
 	}
 }

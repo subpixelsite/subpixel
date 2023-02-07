@@ -125,8 +125,6 @@ export class PostItem extends AppElement
 
 	render()
 	{
-		this.loadWebGL();
-
 		if ( this.post === undefined )
 		{
 			return html`
@@ -220,10 +218,5 @@ export class PostItem extends AppElement
 				return null;
 			} );
 		}
-	}
-
-	async loadWebGL()
-	{
-		await import( '../webgl/webglelement.js' );
 	}
 }

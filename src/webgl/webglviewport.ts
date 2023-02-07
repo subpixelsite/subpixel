@@ -7,13 +7,15 @@ import { WebGLObject } from './webglobject.js';
 import { WebGLCube } from './webglcube.js';
 import { WebGLPlane } from './webglplane.js';
 import { WebGLSphere } from './webglsphere.js';
+import { WebGLElement } from './webglelement.js';
 
 export class WebGLViewport
 {
 	static fadeInDurSecs: number = 0.2;
 
 	private scene?: WebGLScene;
-	private element: HTMLDivElement;
+	private element: WebGLElement;
+	private container: HTMLDivElement;
 	private camera: m4.Mat4 = m4.identity();
 
 	private programInfo: Map<string, ProgramInfo> = new Map();
@@ -27,11 +29,22 @@ export class WebGLViewport
 
 	constructor( shadowRoot: ShadowRoot, elementName: string )
 	{
-		this.element = shadowRoot.querySelector(
-			elementName
-		) as HTMLDivElement;
-		if ( this.element === null )
+		const div = shadowRoot.querySelector( elementName );
+		if ( div === null )
 			throw new Error( `Couldn't find element by name in specified root: ${elementName}` );
+		this.container = div as HTMLDivElement;
+		this.element = shadowRoot.host as WebGLElement;
+
+		const webgl = WebGL.getInstance();
+		const { gl } = webgl;
+		if ( gl === undefined )
+			return;
+		webgl.addViewport( this );
+	}
+
+	public setLoadEnabled( enabled: boolean )
+	{
+		this.element.setLoadEnabled( enabled );
 	}
 
 	init( scene: WebGLScene )
@@ -109,7 +122,12 @@ export class WebGLViewport
 			this.drawObjects.push( drawObj );
 		} );
 
-		webgl.addElement( this );
+		webgl.setAnimated( this.getAnimated() );
+	}
+
+	public isInitialized(): boolean
+	{
+		return this.scene !== undefined;
 	}
 
 	render( timeDeltaSecs: number, timeAccumSecs: number )
@@ -119,7 +137,7 @@ export class WebGLViewport
 		if ( gl === undefined || canvas === undefined || this.scene === undefined )
 			return;
 
-		const rect = this.element.getBoundingClientRect();
+		const rect = this.container.getBoundingClientRect();
 		if ( rect.bottom < 0 || rect.top > canvas.clientHeight
 			|| rect.right < 0 || rect.left > canvas.clientWidth )
 			return;

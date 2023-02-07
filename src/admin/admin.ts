@@ -1,158 +1,149 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { html, css } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { customElement, eventOptions } from 'lit/decorators.js';
-import { WebGL } from '../webgl/webgl.js';
+import { customElement, property } from 'lit/decorators.js';
 import { AppElement } from '../appelement.js';
 // import { POSTS } from './data.js';
-import { convertMDtoHTML } from '../content/post_data.js';
+import '@shoelace-style/shoelace/dist/components/button/button.js';
 
 @customElement( 'lit-admin' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AdminPage extends AppElement
 {
 	static styles = css`
-		html,
-		body {
+		.admin-top {
+			display:flex;
+			flex-direction:column;
+			height: calc(100vh - 180px);
+			margin: 0 calc(50% - 50vw);
+			margin-top: 0;
+		}
+
+		.topNav {
+			background-image: linear-gradient(to top right, rgb(241 201 191), var(--sl-color-neutral-0));
+		}
+
+		.navContent > .navButtons {
 			display: flex;
-			padding: 20px;
+			flex-wrap: wrap;
+			justify-items: space-between;
 		}
 
-		.buttons-container {
-			margin: 20px;
+		.navContent {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px 10px;
+			padding-left: 15px;
+			padding-right: 15px;
+			margin: auto;
+			max-width: 1140px;
+			overflow: visible;
 		}
 
-		.edit-button > sl-button::part(label) {
+		.navButtons > sl-button {
+			margin: 10px;
+		}
+
+		.navButtons > sl-button::part(label) {
 			font-weight: var(--sl-font-weight-semibold);
 			font-size: var(--sl-font-size-large);
 			margin: 0 20px;
 		}
-
-		.edit-button > sl-button::part(base) {
+		
+		.navButtons > sl-button::part(base) {
 			border-radius: var(--sl-border-radius-large);
 			border-width: 2px;
 			align-items: center;
 			box-shadow: var(--sl-shadow-medium);
 			transition: var(--sl-transition-medium) transform ease, var(--sl-transition-medium) border ease;
-
 		}
-
-		.edit-button > sl-button::part(base):hover {
+		
+		.navButtons > sl-button.pageActive::part(base) {
+			border-color: var(--sl-color-primary-400);
+			border-width: 3px;
+		}
+		
+		.navButtons > sl-button.pageInactive::part(base) {
+			border-color: var(--sl-color-neutral-300);
+		}
+		
+		.navButtons > sl-button::part(base):hover {
 			transform: scale(1.07);
 		}
 		
-		.edit-button > sl-button::part(base)::active {
+		.navButtons > sl-button::part(base)::active {
 			transform: scale(1.07);
 		}
 		
-		.edit-button > sl-button::part(base):focus-visible {
+		.navButtons > sl-button::part(base):focus-visible {
 			outline: dashed 2px var(--sl-color-primary-500);
 			outline-offset: 2px;
 		}
 
-		
-		.top {
-			display:flex;
-			flex-direction:column;
-			height: calc(100vh - 180px);
-			margin: 20px calc(50% - 50vw + 20px)
+		.navTitle {
+			justify-content: flex-start;
+			padding-left: 15px;
+			display: inline-block;
+			font-family: monospace;
 		}
 
-		.admin-container {
-			display: flex;
-			gap: 20px;
-			flex-grow: 1;
+		.title-text {
+			font-size: var(--sl-font-size-2x-large);
+			font-weight: var(--sl-font-weight-bold);
+			letter-spacing: 0.05em;
+			color: #797979;
 		}
 
-		.edit-panel {
-			width: 100%;
+		@media(max-width: 768px) {
+			.grid,
+			.grid-3 {
+				grid-template-columns: 1fr;
+			}
 		}
 
-		.preview-panel {
-			width: 100%;
-			flex-grow: 1;
-			background-color: #efefef;
+		@media(max-width: 520px) {
+			.grid,
+			.grid-3 {
+				grid-template-columns: 1fr;
+			}
+
+			.flex {
+				flex-direction: column;
+			}
+
+			.navContent {
+				padding-bottom: 15px;
+			}
 		}
 
-		#editPostTextBox {
-			width: 100%;
-			height: 100%;
-			font-size: 13px;
-		}
-
-		#previewPostBox {
-			width: 100%;
-			height: 100%;
-			font-size: 15px;
-		}
-
-		.float-left {
-			float: left;
-			align-self: start;
-		}
-
-		.float-right {
-			float: right;
-			align-self: end;
-		}
-
-		.webglembed {
-			float: right;
-			align-self: end;
-			width: 600px;
-			height: 250px;
-			max-width: 50%;
-			margin: 10px;
-		}
-
-		.clearfix:after {
-			content: '';
-			visibility: hidden;
-			height: 0;
+		.content {
 			display: block;
-			clear: both;
+			width: 100vw;
+			margin: auto;
 		}
-`;
+	`;
 
-	protected lastConvert: number = 0;
-	protected convertInterval: number = 1000;
+	@property() editorClass: string = '';
+
+	constructor()
+	{
+		super();
+
+		this.addEventListener( 'pageNav', ( e: Event ) =>
+		{
+			const { detail } = ( e as CustomEvent );
+			const active = 'pageActive';
+			const inactive = 'pageInactive';
+
+			this.editorClass = ( detail === 'editor' ) ? active : inactive;
+		} );
+	}
 
 	protected firstUpdated(): void
 	{
 		this.loadWebGL();
-
-		const textArea = this.shadowRoot!.getElementById( 'editPostTextBox' );
-		if ( textArea === null )
-			throw new Error( 'Couldn\'t find text area DOM element' );
-
-		const previewArea = this.shadowRoot!.getElementById( 'previewPostBox' );
-		if ( previewArea === null )
-			throw new Error( 'Couldn\'t find preview area DOM element' );
-
-		textArea.textContent = '';
-
-		textArea.oninput = ( ev =>
-		{
-			const now = Date.now();
-			if ( now - this.lastConvert > this.convertInterval )
-			{
-				// Reset WebGL
-				const webgl = WebGL.getInstance();
-				webgl.onNavigateAway();
-
-				const event = ev.target as HTMLInputElement;
-				previewArea.innerHTML = convertMDtoHTML( event.value );
-
-				this.lastConvert = now;
-			}
-		} );
 	}
-
-	// @eventOptions( { capture: true, passive: true } )
-	// openEditor()
-	// {
-
-	// }
 
 	async loadWebGL()
 	{
@@ -162,14 +153,19 @@ export class AdminPage extends AppElement
 	render()
 	{
 		return html`
-<div class="top">
-	<div class="admin-container">
-		<div class="edit-panel">
-			<textarea id="editPostTextBox"> </textarea>
+<div class="admin-top">
+	<nav class="topNav">
+		<div class="navContent">
+			<div class="navTitle">
+				<span class="title-text">ADMINISTRATION</span>
+			</div>
+			<div class="navButtons">
+				<sl-button class=${this.editorClass} name="Editor" href="admin/editor">EDITOR</sl-button>
+			</div>
 		</div>
-		<div class="preview-panel">
-			<div id="previewPostBox"> </div>
-		</div>
+	</nav>
+	<div class="content">
+		<slot></slot>
 	</div>
 </div>
 		    `;

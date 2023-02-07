@@ -16,8 +16,9 @@
 	- Support interaction, like click/drag-to-move camera (or button for different ortho)
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
-= Editor
-	* Move relevant CSS to external file to include with the editor
+= Admin page
+	- Editor: map <web-gl...> tag to WebGLElement load and preserve it during content update
+		- Migration command: delete and create new viewport, then reconnect existing element
 = Source code view
 	- Show vs/fs in tab or drawer with <web-gl>
 	- Show with syntax coloring
@@ -27,15 +28,26 @@
 == CURRENT
 
 = Basic styling
+	* Write example post
+		- Create webgl content for example post
+		+ Figure out embedding web-gl content from Markdown
+			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
+		- Finish example post
+= Admin page
 	+ Provide Markdown->HTML live preview editor
-		? Figure out joined scrolling
+		+ Checkbox to enable/disable WebGL embed loads on editor page for performance reasons during editing
+		- Figure out joined scrolling
 		? Add "copy to clipboard" button
 		? Add "paste from clipboard" button
 		? Statistics like word count, image count, embed count
-	* Write example post
-		- Create webgl content for example post
-		- Figure out embedding web-gl content from Markdown
-		- Finish example post
+	+ Every time it translates to HTML it needs to clear the old <web-gl> components
+	+ Edit change debounce - wait for idle, like 250ms since last typing?
+		+ Add timeout for final edit step
+	+ Make editor.ts embed on admin.ts
+	- Make new post list that embeds on admin.ts
+		- When you click on a post you can edit it, opening editor.ts with that post ID
+		- In editor, you can hit Save on a post and it will commit the changes to memory in post data (simulating eventually writing to the DB and updating a backup)
+	? Move relevant CSS to external file to include with the editor
 
 == NEXT
 

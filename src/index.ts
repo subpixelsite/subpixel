@@ -1,7 +1,8 @@
 import { Router } from '@vaadin/router';
 import { setDefaults } from 'twgl.js';
 import { WebGL } from './webgl/webgl.js';
-import './app.js'; // Preload 'app' for better perforance
+import './app.js'; // Preload 'app' for better performance
+import './webgl/webglelement.js'; // Preload 'web-gl' for better performance
 
 const routes = [
 	{
@@ -60,7 +61,17 @@ const routes = [
 				action: async () =>
 				{
 					await import( './admin/admin.js' );
-				}
+				},
+				children: [
+					{
+						path: 'editor',
+						component: 'lit-editor',
+						action: async () =>
+						{
+							await import( './admin/editor.js' );
+						}
+					}
+				]
 			}
 		]
 	}

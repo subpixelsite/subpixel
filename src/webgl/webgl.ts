@@ -56,17 +56,24 @@ export class WebGL
 	private requestId?: number;
 	private lastTimeSecs: number = 0;
 
+	private loadEnabled: boolean = true;
+
 	// Map of vs/fs pair strings to runtime objects
 	// private programInfo: Map<string, ProgramInfo> = new Map();
 
-	public addElement( viewport: WebGLViewport )
+	public setLoadEnabled( enabled: boolean )
+	{
+		this.loadEnabled = enabled;
+		this.viewports.forEach( viewport =>
+		{
+			viewport.setLoadEnabled( enabled );
+		} );
+	}
+
+	public addViewport( viewport: WebGLViewport )
 	{
 		this.viewports.push( viewport );
-
-		if ( viewport.getAnimated() )
-			this.animated += 1;
-
-		this.requestNewRender();
+		viewport.setLoadEnabled( this.loadEnabled );
 	}
 
 	public setAnimated( isAnimated: boolean )
@@ -117,9 +124,9 @@ export class WebGL
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
 
 		// Iterate elements to draw each as requested
-		this.viewports.forEach( element =>
+		this.viewports.forEach( viewport =>
 		{
-			element.render( timeDeltaSecs, timeAccumSecs );
+			viewport.render( timeDeltaSecs, timeAccumSecs );
 		} );
 
 		if ( WebGL.DEBUG_RENDERS )
