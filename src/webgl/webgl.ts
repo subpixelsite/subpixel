@@ -74,6 +74,9 @@ export class WebGL
 	{
 		this.viewports.push( viewport );
 		viewport.setLoadEnabled( this.loadEnabled );
+
+		window.addEventListener( 'resize', () => this.queueRender );
+		window.addEventListener( 'scroll', () => this.queueRender );
 	}
 
 	public setAnimated( isAnimated: boolean )
@@ -134,6 +137,22 @@ export class WebGL
 			console.log( `Rendering... elements ${this.viewports.length}, animated: ${this.animated}` );
 	}
 
+	singleRender( t: number )
+	{
+		if ( WebGL.DEBUG_RENDERS )
+			// eslint-disable-next-line no-console
+			console.log( 'Render requested' );
+
+		this.render( t );
+		this.requestId = undefined;
+	}
+
+	queueRender()
+	{
+		if ( this.requestId === undefined )
+			this.requestId = requestAnimationFrame( () => this.singleRender );
+	}
+
 	public requestNewRender()
 	{
 		if ( this.animated > 0 )
@@ -148,26 +167,7 @@ export class WebGL
 		}
 		else
 		{
-			const singleRender = ( t: number ) =>
-			{
-				if ( WebGL.DEBUG_RENDERS )
-					// eslint-disable-next-line no-console
-					console.log( 'Render requested' );
-
-				this.render( t );
-				this.requestId = undefined;
-			};
-
-			const queueRender = () =>
-			{
-				if ( this.requestId === undefined )
-					this.requestId = requestAnimationFrame( singleRender );
-			};
-
-			window.addEventListener( 'resize', queueRender );
-			window.addEventListener( 'scroll', queueRender );
-
-			queueRender();
+			this.queueRender();
 		}
 	}
 
@@ -176,6 +176,9 @@ export class WebGL
 		// Clear all added elements
 		this.viewports.length = 0;
 		this.animated = 0;
+
+		window.removeEventListener( 'resize', () => this.queueRender );
+		window.removeEventListener( 'scroll', () => this.queueRender );
 
 		this.requestNewRender();
 	}

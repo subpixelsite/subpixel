@@ -44,8 +44,8 @@
 	+ Edit change debounce - wait for idle, like 250ms since last typing?
 		+ Add timeout for final edit step
 	+ Make editor.ts embed on admin.ts
-	- Make new post list that embeds on admin.ts
-		- When you click on a post you can edit it, opening editor.ts with that post ID
+	* Make new post list that embeds on admin.ts
+		+ When you click on a post you can edit it, opening editor.ts with that post ID
 		- In editor, you can hit Save on a post and it will commit the changes to memory in post data (simulating eventually writing to the DB and updating a backup)
 	? Move relevant CSS to external file to include with the editor
 

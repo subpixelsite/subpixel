@@ -64,6 +64,26 @@ const routes = [
 				},
 				children: [
 					{
+						path: '',
+						redirect: 'admin/list'
+					},
+					{
+						path: 'list',
+						component: 'lit-editlist',
+						action: async () =>
+						{
+							await import( './admin/editlist.js' );
+						}
+					},
+					{
+						path: 'editor/:id',
+						component: 'lit-editor',
+						action: async () =>
+						{
+							await import( './admin/editor.js' );
+						}
+					},
+					{
 						path: 'editor',
 						component: 'lit-editor',
 						action: async () =>

@@ -23,14 +23,16 @@ export class PostList extends AppElement
 
 	@property( { type: Array } ) posts?: PostData[];
 
+	pageNavEvent( event: Event )
+	{
+		const post = ( event as CustomEvent ).detail as PostData;
+		Router.go( `/posts/${post.id}` );
+	}
+
 	protected firstUpdated(): void
 	{
 		this.posts = POSTS;
-		this.addEventListener( 'readMore', event =>
-		{
-			const post = ( event as CustomEvent ).detail as PostData;
-			Router.go( `/posts/${post.id}` );
-		} );
+		this.addEventListener( 'readMore', this.pageNavEvent );
 	}
 
 	static async loadPostTile()
@@ -54,5 +56,10 @@ export class PostList extends AppElement
 			${this.posts?.map( post => html`<post-tile .post="${post}"></post-tile>` )}
 		</div>
     `;
+	}
+
+	public onBeforeLeave()
+	{
+		this.removeEventListener( 'readMore', this.pageNavEvent );
 	}
 }

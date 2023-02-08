@@ -1,12 +1,14 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { html, css } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { customElement } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
+import { RouterLocation } from '@vaadin/router';
 import { WebGL } from '../webgl/webgl.js';
 import { AppElement } from '../appelement.js';
 // import { POSTS } from './data.js';
-import { convertMDtoHTML } from '../content/post_data.js';
+import { PostData, convertMDtoHTML } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/checkbox/checkbox.js';
+import { POSTS } from '../content/data.js';
 
 @customElement( 'lit-editor' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -122,6 +124,15 @@ export class EditorPage extends AppElement
 		}
 `;
 
+	@state()
+	postId: number = -1;
+
+	@property( { type: Object } )
+	post?: PostData;
+
+	@property( { type: Array } )
+	posts?: PostData[];
+
 	protected lastConvert: number = 0;
 	protected convertInterval: number = 500;
 	protected loadWebGL: boolean = false;
@@ -145,6 +156,37 @@ export class EditorPage extends AppElement
 		this.lastConvert = Date.now();
 	}
 
+	public onBeforeEnter( location: RouterLocation )
+	{
+		super.onBeforeEnter( location );
+
+		this.posts = POSTS;
+
+		const id = location.params.id as string;
+		this.postId = parseInt( id, 10 );
+
+		if ( this.posts )
+		{
+			this.post = this.posts.find( p =>
+			{
+				if ( p.id === this.postId )
+					return p;
+
+				return null;
+			} );
+		}
+	}
+
+	setLoadEnabled( event: Event )
+	{
+		const webgl = WebGL.getInstance();
+		webgl.setLoadEnabled( this.loadWebGL );
+
+		const target = event.target as HTMLInputElement;
+		this.loadWebGL = target.checked;
+		webgl.setLoadEnabled( this.loadWebGL );
+	}
+
 	protected firstUpdated(): void
 	{
 		const webgl = WebGL.getInstance();
@@ -152,15 +194,10 @@ export class EditorPage extends AppElement
 
 		// Listen to checkbox
 		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
-		webGLCheckbox?.addEventListener( 'sl-change', event =>
-		{
-			const target = event.target as HTMLInputElement;
-			this.loadWebGL = target.checked;
-			webgl.setLoadEnabled( this.loadWebGL );
-		} );
+		webGLCheckbox?.addEventListener( 'sl-change', this.setLoadEnabled );
 
 		// Listen for (and debounce) HTML update on MD input
-		const textArea = this.shadowRoot!.getElementById( 'editPostTextBox' );
+		const textArea = this.shadowRoot!.getElementById( 'editPostTextBox' ) as HTMLInputElement | null;
 		if ( textArea === null )
 			throw new Error( 'Couldn\'t find text area DOM element' );
 
@@ -169,6 +206,11 @@ export class EditorPage extends AppElement
 			throw new Error( 'Couldn\'t find preview area DOM element' );
 
 		textArea.textContent = '';
+		if ( this.post !== undefined )
+		{
+			textArea.value = this.post.body;
+			this.doConversion();
+		}
 
 		textArea.oninput = ( ev =>
 		{
@@ -191,6 +233,13 @@ export class EditorPage extends AppElement
 
 	render()
 	{
+		const event = new CustomEvent( 'pageNav', {
+			detail: 'editor',
+			bubbles: true,
+			composed: true
+		} );
+		this.dispatchEvent( event );
+
 		return html`
 <div class="top">
 	<div class="admin-container">
@@ -206,5 +255,11 @@ export class EditorPage extends AppElement
 	</div>
 </div>
 		    `;
+	}
+
+	public onBeforeLeave()
+	{
+		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
+		webGLCheckbox?.removeEventListener( 'sl-change', this.setLoadEnabled );
 	}
 }

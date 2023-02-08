@@ -20,7 +20,7 @@ export class AdminPage extends AppElement
 		}
 
 		.topNav {
-			background-image: linear-gradient(to top right, rgb(241 201 191), var(--sl-color-neutral-0));
+			background-image: linear-gradient(to top right, #bf8280, var(--sl-color-neutral-0));
 		}
 
 		.navContent > .navButtons {
@@ -89,7 +89,7 @@ export class AdminPage extends AppElement
 		}
 
 		.title-text {
-			font-size: var(--sl-font-size-2x-large);
+			font-size: var(--sl-font-size-x-large);
 			font-weight: var(--sl-font-weight-bold);
 			letter-spacing: 0.05em;
 			color: #797979;
@@ -124,20 +124,25 @@ export class AdminPage extends AppElement
 		}
 	`;
 
+	@property() listClass: string = '';
+
 	@property() editorClass: string = '';
+
+	pageNavEvent( e: Event )
+	{
+		const { detail } = ( e as CustomEvent );
+		const active = 'pageActive';
+		const inactive = 'pageInactive';
+
+		this.listClass = ( detail === 'editlist' ) ? active : inactive;
+		this.editorClass = ( detail === 'editor' ) ? active : inactive;
+	}
 
 	constructor()
 	{
 		super();
 
-		this.addEventListener( 'pageNav', ( e: Event ) =>
-		{
-			const { detail } = ( e as CustomEvent );
-			const active = 'pageActive';
-			const inactive = 'pageInactive';
-
-			this.editorClass = ( detail === 'editor' ) ? active : inactive;
-		} );
+		this.addEventListener( 'pageNav', this.pageNavEvent );
 	}
 
 	protected firstUpdated(): void
@@ -160,6 +165,7 @@ export class AdminPage extends AppElement
 				<span class="title-text">ADMINISTRATION</span>
 			</div>
 			<div class="navButtons">
+				<sl-button class=${this.listClass} name="List" href="admin/list">LIST</sl-button>
 				<sl-button class=${this.editorClass} name="Editor" href="admin/editor">EDITOR</sl-button>
 			</div>
 		</div>
@@ -169,5 +175,10 @@ export class AdminPage extends AppElement
 	</div>
 </div>
 		    `;
+	}
+
+	public onBeforeLeave()
+	{
+		this.removeEventListener( 'pageNav', this.pageNavEvent );
 	}
 }

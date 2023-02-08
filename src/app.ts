@@ -18,7 +18,7 @@ export class App extends LitElement
 		baseStyles,
 		css`
 			.topNav {
-				background-image: linear-gradient(to top right, rgb(191 201 241), var(--sl-color-neutral-0));
+				background-image: linear-gradient(to top right, #6d90ab, var(--sl-color-neutral-0));
 			}
 
 			.navContent > .navButtons {
@@ -147,6 +147,19 @@ export class App extends LitElement
 
 	@property() aboutClass: string = '';
 
+	pageNavEvent( e: Event )
+	{
+		// Ugly and evil but TS is broken like this
+		const { detail } = ( e as CustomEvent );
+
+		const active = 'pageActive';
+		const inactive = 'pageInactive';
+
+		this.homeClass = ( detail === 'home' ) ? active : inactive;
+		this.postsClass = ( detail === 'posts' ) ? active : inactive;
+		this.aboutClass = ( detail === 'about' ) ? active : inactive;
+	}
+
 	constructor()
 	{
 		super();
@@ -154,18 +167,7 @@ export class App extends LitElement
 		setBasePath( '/dist/shoelace' );
 		initPostData();
 
-		this.addEventListener( 'pageNav', ( e: Event ) =>
-		{
-			// Ugly and evil but TS is broken like this
-			const { detail } = ( e as CustomEvent );
-
-			const active = 'pageActive';
-			const inactive = 'pageInactive';
-
-			this.homeClass = ( detail === 'home' ) ? active : inactive;
-			this.postsClass = ( detail === 'posts' ) ? active : inactive;
-			this.aboutClass = ( detail === 'about' ) ? active : inactive;
-		} );
+		this.addEventListener( 'pageNav', this.pageNavEvent );
 	}
 
 	render()
@@ -187,5 +189,10 @@ export class App extends LitElement
 			<slot></slot>
 		</div>
 		`;
+	}
+
+	public onBeforeLeave()
+	{
+		this.removeEventListener( 'pageNav', this.pageNavEvent );
 	}
 }
