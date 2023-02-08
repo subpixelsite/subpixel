@@ -121,7 +121,7 @@ Content:
 
 # Basic shading: Diffuse and Specular
 
-<web-gl width="400px" height="200px" src="assets/test/webgl1.json"></web-gl>
+<web-gl width="400px" height="200px" src="assets/test/webgl1.json"></web-gl> 
 
 ##### What do diffuse and specular shading mean?  What is the difference?  How do they work?
 
@@ -132,13 +132,13 @@ Suggested prior reading:
 
 -------
 
-Displaying triangles on screen in any orientation we choose is all well and good, but they just looks like flat triangles unless you can convey the shape of the surface.  <web-gl width="400px" height="200px" src="assets/test/unshaded-box.json"></web-gl>
+Displaying triangles on screen in any orientation we choose is all well and good, but they just looks like flat triangles unless you can convey the shape of the surface.  <web-gl width="400px" height="200px" src="assets/test/unshaded-box.json"></web-gl> 
 
 There are two obvious ways to do this on a 2D screen: motion and shading.
 
-If you choose motion, you can move either the camera (ie, the viewer's 'eye') or you can move the surface being viewed.  Motion is definitely cheaper than shading: you have to do the same amount of math to make objects show up on the screen whether their position or rotation changes each frame or not!  Here's what that looks like. <web-gl width="400px" height="200px" src="assets/test/unshaded-box-spin.json"></web-gl>
+If you choose motion, you can move either the camera (ie, the viewer's 'eye') or you can move the surface being viewed.  Motion is definitely cheaper than shading: you have to do the same amount of math to make objects show up on the screen whether their position or rotation changes each frame or not!  Here's what that looks like. <web-gl width="400px" height="200px" src="assets/test/unshaded-box-spin.json"></web-gl> 
 
-Let's say you want to keep the camera where it is, or you have a lot of objects, or you want to convey shape without any motion.  The other option is one your eye has evolved to use reliably: shading.  Here's what that looks like.  <web-gl width="400px" height="200px" src="assets/test/shaded-box.json"></web-gl>
+Let's say you want to keep the camera where it is, or you have a lot of objects, or you want to convey shape without any motion.  The other option is one your eye has evolved to use reliably: shading.  Here's what that looks like.  <web-gl width="400px" height="200px" src="assets/test/shaded-box.json"></web-gl> 
 
 If we're going to see to understand a shape, that means we have light.  And if we have light, we have a light source.  A light source means we have light traveling some direction to interact with the surface.  This will be some combination of reflect, absorb, or pass through, depending on the material -- imagine stainless steel, red brick, and paper, respectively.  The interaction of the light when it reaches the surface is the "shading" to which we refer.
 
@@ -152,11 +152,11 @@ What?  How can a point face a direction?
 
 Well, each of those points comes with more data than just a position.  You may recall from the post on [Basic Geometry - Vertex, Index, Triangle] that a vertex typically has a normal, as well.  This normal is a unit vector (ie, a vector with a length of 1.0) that points "out" from the resulting triangle's face.
 
-If every triangle had its own set of vertices with normals facing straight out from that triangle's face, we would see what we call "flat shading".  <web-gl width="400px" height="200px" src="assets/test/flat.json"></web-gl>
+If every triangle had its own set of vertices with normals facing straight out from that triangle's face, we would see what we call "flat shading".  <web-gl width="400px" height="200px" src="assets/test/flat.json"></web-gl> 
 
 If those triangles instead share a vertex (and hence the normal points in a direction that's an average of the triangles' facing), then a sort of smoothing takes place thanks to interpolation.
 
-<web-gl width="400px" height="200px" src="assets/test/poscol-cube.json"></web-gl>
+<web-gl width="400px" height="200px" src="assets/test/poscol-cube.json"></web-gl> 
 
 Now we need to discuss interpolation.  When the data from 3 vertices is combined to become input for 1 fragment, the process to do that is interpolation.  The specific method is known as Gouraud interpolation [pronounced "GOO-row"](https://casual-effects.blogspot.com/2016/03/computational-graphics-pronunciation.html), described by Henri Gouraud in 1971.  It's actually very simple: to get a smooth value somewhere in the middle of a triangle, the GPU computes the weighted average of the values from the 3 vertices and passes it as an input to the Fragment Shader.  We can see this at work by showing the positions of a cube with one corner at (0,0,0) and the opposite at (1,1,1) as colors.
 
@@ -166,13 +166,13 @@ We have everything we need to display some basic lighting.  To keep things simpl
 
 All real-time lighting starts with a point in space, a normal, and an incoming light vector.  We have all of that.  The incoming light vector is just the opposite of the "sunlight" direction -- if the light is shining in the direction (1,0,0), then to me all the light is coming from the direction (-1,0,0).  That's the incoming light vector.  Note how it's also unit length?  That's important.
 
-The fundamental calculation that we use throughout real-time lighting is [Lambert's cosine law](https://en.wikipedia.org/wiki/Lambert%27s_cosine_law) (no relation).  Johann Heinrich Lambert, sometime around 1760, observed that the intensity of the light leaving an ideal surface is directly proportional to the cosine of the angle between the normal and the incoming light vector.  [interactive svg or webgl with vector and cosine value and brightness?]
+The fundamental calculation that we use throughout real-time lighting is [Lambert's cosine law](https://en.wikipedia.org/wiki/Lambert%27s_cosine_law) (no relation).  Johann Heinrich Lambert, sometime around 1760, observed that the intensity of the light leaving an ideal surface is directly proportional to the cosine of the angle between the normal and the incoming light vector.  <svg width="40%" viewbox="0 0 100 56"><rect width="100%" height="100%" fill="white"/><rect x="25%" y="25%" width="50%" height="50%" fill="#ff0000" /><line x1="0" y1="0" x2="100%" y2="100%" style="stroke:rgb(0,0,255);stroke-width:2" /><rect x="0" y="0" width="100%" height="100%" style="fill-opacity:0;stroke:black;" stroke-dasharray="8" /></svg>
 
 Footnote: this is also where I got my industry nickname.  See the [About](about) page.
 
 Sorry for the math.  Thankfully, it ends up being pretty easy and the GPU does it all for us.  The cosine sounds expensive to calculate, and it is very expensive.  However, there's actually a nifty mathematical identity we can use, a sort of math shortcut.  See, the cosine of two unit-length vectors is identical to the result of the dot product between those two vectors, and that's extremely inexpensive to calculate.  You might recall from Geometry class that taking the cross product between two vectors gives you a vector, but taking a dot product between two vectors give you a single number (a scalar, we would say in graphics land).  This is the most sacred use of the dot product: it has applications throughout gaming, including in audio, collisions, physics -- anytime you want to calculate the rebound value of something off a surface.
 
-In fact, this one use here, in the Vertex Shader, combined with Gouraud interpolation by the GPU, gives us basic lighting.  We take the scalar from the dot product and multiply it against the light color, if there is one, and send the result as a color value to the Fragment Shader.  The Fragment Shader simply shows the interpolated result.  This is known as Diffuse vertex lighting.  <web-gl width="400px" height="200px" src="assets/test/diff-vs.json"></web-gl>
+In fact, this one use here, in the Vertex Shader, combined with Gouraud interpolation by the GPU, gives us basic lighting.  We take the scalar from the dot product and multiply it against the light color, if there is one, and send the result as a color value to the Fragment Shader.  The Fragment Shader simply shows the interpolated result.  This is known as Diffuse vertex lighting.  <web-gl width="400px" height="200px" src="assets/test/diff-vs.json"></web-gl> 
 
 Neat, but it's also very flat.  You can click and drag the camera around the object to see what I mean.  The lighting doesn't change relative to your viewpoint -- that's a hallmark of "Diffuse" lighting.  The next part of the lighting stew adds that view-dependent component, which we call "Specular" lighting.
 
@@ -180,15 +180,15 @@ Specular lighting is calculated in almost the exact same way as Diffuse lighting
 
 Imagine a wet road with the sun opposite you.  You would expect to see a reflection of the sun, a hot spot, on the ground, some distance between you and the sun.  We can calculate this hotspot with the Diffuse lighting algorithm technique -- we just need to plug in different vectors for the Lambert cosine calculation.  Let's work backwards.  If you're calculating the lighting at the point of the hotspot, one of them would be the normal of the ground, obviously.  The other is going to be "dotted" against the normal to get the lighting strength coefficient for this hotspot.  If we use the vector towards the sun, then we'd just get a view-independent Diffuse lighting value -- no view-relative hotspot at all.  If we use the vector towards the eye, then we'd get a result that never involved the sun at all.  But maybe something in between?  Literally?  That's actually exactly what we use: the average of the vector to the eye and the vector to the light.  We call it the "half vector".  Note that after you average them, the result probably won't be of length 1 anymore, so we have to normalize it again, which involves a square root operation (to get the length of the vector) and thus isn't super cheap.
 
-But with that done, we have a normal and a half vector at the point of our hotspot.  If we now apply Lambert's Cosine Law, we get a scalar result that tells us how powerful the sun's hotspot should be at that point.  And as we move, or as the sun moves, that value will change.  Let's see our Specular vertex lighting in action, in addition to the Diffuse lighting from before.  <web-gl width="400px" height="200px" src="assets/test/spec-diff-vs.json"></web-gl>
+But with that done, we have a normal and a half vector at the point of our hotspot.  If we now apply Lambert's Cosine Law, we get a scalar result that tells us how powerful the sun's hotspot should be at that point.  And as we move, or as the sun moves, that value will change.  Let's see our Specular vertex lighting in action, in addition to the Diffuse lighting from before.  <web-gl width="400px" height="200px" src="assets/test/spec-diff-vs.json"></web-gl> 
 
 You can see the shape for sure, but you can also see the how it's interpolating between vertices.  As the light source moves around, you can really see the artifacts of Gouraud interpolation on a low-polygon object show up.  You can get around this with more triangles, or by moving the calculation to run per-fragment in a Fragment Shader instead.
 
-Moving work from the Vertex Shader to the Fragment Shader is actually pretty simple.  We just have to make sure the Vertex Shader outputs anything the Fragment Shader needs to do the work, and that the Fragment Shader has access to any constant data (see [GPU Memory](posts/3)).  In this case, the Vertex Shader outputs the world-space position and world-space normal to the Fragment Shader by assigning them to specially marked variables that were registered as part of the declaration of these shaders.  The GPU will dutifully interpolate these vectors and the Fragment Shader takes the results, performing the same calculations with the same constants.  The results, however, are much nicer: they should be, since instead of running on a few dozen vertices, they're running for thousands of pixels!  <web-gl width="400px" height="200px" src="assets/test/spec-diff-fs.json"></web-gl>
+Moving work from the Vertex Shader to the Fragment Shader is actually pretty simple.  We just have to make sure the Vertex Shader outputs anything the Fragment Shader needs to do the work, and that the Fragment Shader has access to any constant data (see [GPU Memory](posts/3)).  In this case, the Vertex Shader outputs the world-space position and world-space normal to the Fragment Shader by assigning them to specially marked variables that were registered as part of the declaration of these shaders.  The GPU will dutifully interpolate these vectors and the Fragment Shader takes the results, performing the same calculations with the same constants.  The results, however, are much nicer: they should be, since instead of running on a few dozen vertices, they're running for thousands of pixels!  <web-gl width="400px" height="200px" src="assets/test/spec-diff-fs.json"></web-gl> 
 
 Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the [Performance](posts/2) post for more about this.
 
--- Shader
+-- Shader 
 
 
 

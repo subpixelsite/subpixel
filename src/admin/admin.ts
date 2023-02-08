@@ -14,9 +14,10 @@ export class AdminPage extends AppElement
 		.admin-top {
 			display:flex;
 			flex-direction:column;
-			height: calc(100vh - 180px);
+			height: calc(100vh - 120px);
 			margin: 0 calc(50% - 50vw);
 			margin-top: 0;
+			overflow: none;
 		}
 
 		.topNav {

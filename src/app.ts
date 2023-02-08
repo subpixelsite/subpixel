@@ -138,6 +138,7 @@ export class App extends LitElement
 				padding-left: 15px;
 				padding-right: 15px;
 				margin: auto;
+				overflow: none;
 			}
 			`];
 

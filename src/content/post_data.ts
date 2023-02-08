@@ -28,6 +28,7 @@ const classMap: { [key: string]: string; } = {};
 classMap['h1'] = 'header1';
 classMap['h2'] = 'header2';
 classMap['web-gl'] = 'webglembed';
+classMap['svg'] = 'svgembed';
 classMap['p'] = 'clearfix';
 
 export function initPostData()

@@ -16,7 +16,7 @@ export class EditList extends AppElement
 {
 	static styles = css`
 		.top {
-			height: calc( 100vh - 200px );
+			height: calc( 100vh - 120px );
 			display: flex;
 			flex-wrap: wrap;
 			flex-direction: column;
@@ -28,7 +28,7 @@ export class EditList extends AppElement
 			justify-content: flex-start;
 			flex-wrap: wrap;
 			overflow-y: scroll;
-			height: 160px;
+			/* height: 160px; */
 			border: 2px solid #000000;
 		}
 
