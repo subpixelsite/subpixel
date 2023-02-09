@@ -11,14 +11,14 @@ export const NavButtonStyles = css`
 	.navButtons > sl-button::part(label) {
 		font-weight: var(--sl-font-weight-semibold);
 		font-size: var(--sl-font-size-x-large);
-		margin: 0 20px;
+		margin: 0 0px;
 		text-shadow: 2px 2px var(--txt-shadow-size) var(--txt-shadow-col);
-		transition: var(--sl-transition-medium) text-shadow ease;
+		transition: var(--sl-transition-fast) text-shadow ease;
 	}
 	
 	.navButtons > sl-button::part(base) {
 		align-items: center;
-		transition: var(--sl-transition-medium) transform ease, var(--sl-transition-medium) color ease;
+		transition: var(--sl-transition-fast) transform ease, var(--sl-transition-fast) color ease;
 	}
 	
 	.navButtons > sl-button.pageActive::part(base) {
@@ -26,7 +26,7 @@ export const NavButtonStyles = css`
 	}
 	
 	.navButtons > sl-button.pageInactive::part(base) {
-		color: #b4b4b4;
+		color: #7ac6ff;
 	}
 
 	.navButtons > sl-button::part(label):hover {
@@ -35,6 +35,7 @@ export const NavButtonStyles = css`
 
 	.navButtons > sl-button::part(base):hover {
 		transform: translate(-2px, -2px);
+		color: white;
 	}
 
 	.navContent > .navButtons {
@@ -93,10 +94,20 @@ export const NavButtonStyles = css`
 
 export const PostStyles = css`
 
+	* {
+		--vis-width: 328px;
+		--vis-height: 200px;
+		--vis-bg-color: #efefef;
+		--vis-padding: 10px;
+		--vis-padded-width: calc(var(--vis-width) + (var(--vis-padding) * 2));
+		--vis-padded-height: calc(var(--vis-height) + (var(--vis-padding) * 2));
+	}
+
 	.post-visual {
-		min-height: 168px;
-		max-width: 328px;
-		width: 328px;
-		background-color: #efefef;
+		height: var(--vis-height);
+		width: var(--vis-width);
+		max-height: var(--vis-height);
+		max-width: var(--vis-width);
+		background-color: var(--vis-bg-color);
 	}
 `;

@@ -20,7 +20,7 @@ export class App extends LitElement
 		NavButtonStyles,
 		css`
 		.topNav {
-			background-color: #6d90ab;
+			background-color: #648198;
 		}
 
 		.title-capital {
@@ -70,8 +70,18 @@ export class App extends LitElement
 
 		setBasePath( '/dist/shoelace' );
 		initPostData();
+	}
 
+	connectedCallback(): void
+	{
+		super.connectedCallback();
 		this.addEventListener( 'pageNav', this.pageNavEvent );
+	}
+
+	disconnectedCallback(): void
+	{
+		super.disconnectedCallback();
+		this.removeEventListener( 'pageNav', this.pageNavEvent );
 	}
 
 	render()
@@ -93,10 +103,5 @@ export class App extends LitElement
 			<slot></slot>
 		</div>
 		`;
-	}
-
-	public onBeforeLeave()
-	{
-		this.removeEventListener( 'pageNav', this.pageNavEvent );
 	}
 }

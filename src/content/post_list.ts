@@ -4,7 +4,7 @@ import { css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 import { AppElement } from '../appelement.js';
-import { POSTS } from './data.js';
+import { getPostData } from './data.js';
 import { PostData } from './post_data.js';
 
 @customElement( 'lit-posts' )
@@ -29,10 +29,11 @@ export class PostList extends AppElement
 		Router.go( `/posts/${post.id}` );
 	}
 
-	protected firstUpdated(): void
+	constructor()
 	{
-		this.posts = POSTS;
-		this.addEventListener( 'readMore', this.pageNavEvent );
+		super();
+		this.posts = getPostData();
+		PostList.loadPostTile();
 	}
 
 	static async loadPostTile()
@@ -40,10 +41,20 @@ export class PostList extends AppElement
 		await import( './post_tile.js' );
 	}
 
+	connectedCallback(): void
+	{
+		super.connectedCallback();
+		this.addEventListener( 'readMore', this.pageNavEvent );
+	}
+
+	disconnectedCallback(): void
+	{
+		super.disconnectedCallback();
+		this.removeEventListener( 'readMore', this.pageNavEvent );
+	}
+
 	render()
 	{
-		PostList.loadPostTile();
-
 		const event = new CustomEvent( 'pageNav', {
 			detail: 'posts',
 			bubbles: true,
@@ -56,10 +67,5 @@ export class PostList extends AppElement
 			${this.posts?.map( post => html`<post-tile .post="${post}"></post-tile>` )}
 		</div>
     `;
-	}
-
-	public onBeforeLeave()
-	{
-		this.removeEventListener( 'readMore', this.pageNavEvent );
 	}
 }

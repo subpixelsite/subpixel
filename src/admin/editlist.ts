@@ -5,7 +5,7 @@ import { css, html } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 import { AppElement } from '../appelement.js';
-import { POSTS } from '../content/data.js';
+import { getPostData, getTagsArray } from '../content/data.js';
 import { PostData } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/tag/tag.js';
@@ -60,6 +60,7 @@ export class EditList extends AppElement
 
 		.posts-table tbody tr {
 			border-bottom: 1px solid #7f7f7f;
+			transition: var(--sl-transition-fast) transform ease, var(--sl-transition-fast) text-shadow ease;
 		}
 
 		.posts-table tbody tr:nth-of-type(even) {
@@ -105,10 +106,6 @@ export class EditList extends AppElement
 		.post-created {
 			font-family: monospace;
 		}
-
-		/* .post-description {
-
-		} */
 	`;
 
 	@state()
@@ -125,15 +122,27 @@ export class EditList extends AppElement
 	constructor()
 	{
 		super();
-		this.posts = POSTS;
+		this.posts = getPostData();
+	}
+
+	connectedCallback(): void
+	{
+		super.connectedCallback();
+
+		this.addEventListener( 'edit', this.pageNavEvent );
+		document.addEventListener( 'keydown', this.dokeydown );
+	}
+
+	disconnectedCallback(): void
+	{
+		super.disconnectedCallback();
+
+		this.removeEventListener( 'edit', this.pageNavEvent );
+		document.removeEventListener( 'keydown', this.dokeydown );
 	}
 
 	protected firstUpdated(): void
 	{
-		this.addEventListener( 'edit', this.pageNavEvent );
-
-		document.addEventListener( 'keydown', this.dokeydown );
-
 		this.updateRows();
 		this.requestUpdate();
 	}
@@ -163,7 +172,7 @@ export class EditList extends AppElement
 				<tr id='${post.id}' @click='${this.goToPost}'>
 					<td class='post-id'>${post.id}</td>
 					<td class='post-title'>${post.title}</td>
-					<td class='post-tags'>${post.tags.map( tag => html`<sl-tag class="post-tag" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
+					<td class='post-tags'>${getTagsArray( post.tags ).map( tag => html`<sl-tag class="post-tag" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
 					<td class='post-created'>${new Date( post.dateCreated ).toLocaleDateString( 'en-US', { day: '2-digit', month: '2-digit', year: 'numeric' } )}</td>
 					<td class='post-description'>${post.description}</td>
 				</tr>
@@ -264,11 +273,5 @@ export class EditList extends AppElement
 			if ( edit.activeRowIndex >= 0 && edit.activeRowIndex < rows.length )
 				rows.item( edit.activeRowIndex )!.scrollIntoView( { behavior: 'smooth', block: 'nearest', inline: 'nearest' } );
 		}
-	}
-
-	public onBeforeLeave()
-	{
-		this.removeEventListener( 'edit', this.pageNavEvent );
-		document.removeEventListener( 'keydown', this.dokeydown );
 	}
 }

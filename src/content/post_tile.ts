@@ -58,8 +58,12 @@ export class PostTile extends AppElement
 	}
 	.post-link {
 		color: #008cba;
-		/* border-width: 0;
-		background-color: #ffffff; */
+	}
+	.footer-item > sl-button::part(base):hover {
+		transform: translate(-2px, -2px);
+	}
+	.footer-item > sl-button::part(base) {
+		transition: var(--sl-transition-fast) transform ease, var(--sl-transition-fast) color ease;
 	}
 	.post-date {
 		font-weight: 200;
@@ -145,7 +149,7 @@ export class PostTile extends AppElement
 	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
 	{
 		if ( post.hdrInline.length > 0 )
-			return html`<div slot="image" width="100%" height="100%" class="post-visual">${unsafeHTML( post.hdrInline )}</div>`;
+			return html`<div slot="image" class="post-visual">${unsafeHTML( post.hdrInline )}</div>`;
 
 		if ( post.hdrHref.length > 0 )
 		{

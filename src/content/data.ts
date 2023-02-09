@@ -1,14 +1,15 @@
 /* eslint-disable max-len */
 import { PostData } from './post_data.js';
 
-export const POSTS: PostData[] = [
+// eslint-disable-next-line prefer-const, @typescript-eslint/no-unused-vars
+let POSTS: PostData[] = [
 	{
 		id: 0,
 		title: 'Mipmapping',
 		author: 'Chris Lambert',
 		dateCreated: 1673735586720,
 		dateModified: 1673735586720,
-		tags: ['Textures', 'Geometry'],
+		tags: 'Textures, Geometry',
 		hdrInline: '<div style="display:block;padding:10px">If this has no image it\'s just rendered as <i>inline</i> <a href="https://www.w3schools.com/html/">HTML</a> in the image slot with an automatic background color.</div>',
 		hdrHref: '',
 		hdrAlt: '',
@@ -22,7 +23,7 @@ export const POSTS: PostData[] = [
 		author: 'Chris Lambert',
 		dateCreated: 1673721586720,
 		dateModified: 1673725586720,
-		tags: ['Geometry'],
+		tags: 'Geometry',
 		hdrInline: '',
 		hdrAlt: '',
 		hdrHref: 'assets/test/webgl1.json',
@@ -36,7 +37,7 @@ export const POSTS: PostData[] = [
 		author: 'Chris Lambert',
 		dateCreated: 1673525586720,
 		dateModified: 1673755586720,
-		tags: ['Textures', 'Geometry'],
+		tags: 'Textures, Geometry',
 		hdrInline: `
 		<svg width="100%" height="100%">
 			<rect width="100%" height="100%" fill="white"/>
@@ -63,7 +64,7 @@ Man I hope this works.
 		author: 'Chris Lambert',
 		dateCreated: 1672725586720,
 		dateModified: 1672735586720,
-		tags: ['Postprocessing'],
+		tags: 'Postprocessing',
 		hdrInline: '',
 		hdrHref: 'https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80',
 		hdrAlt: 'A cat wondering when this is going to get done',
@@ -79,7 +80,7 @@ Man I hope this works.
 		author: 'Chris Lambert',
 		dateCreated: 1673635586720,
 		dateModified: 1673775586720,
-		tags: ['Textures', 'Geometry'],
+		tags: 'Textures, Geometry',
 		hdrInline: '',
 		hdrAlt: '',
 		hdrHref: '',
@@ -88,3 +89,23 @@ Man I hope this works.
 		body: ''
 	}
 ];
+
+export function getPostData(): PostData[]
+{
+	return POSTS;
+}
+
+export function setPostData( posts: PostData[] )
+{
+	POSTS = [...posts];
+}
+
+export function getTagsArray( tagsString: string ): string[]
+{
+	return tagsString.split( /,\w*/ );
+}
+
+export function getTagsString( tagsArray: string[] ): string
+{
+	return tagsArray.join( ',' );
+}

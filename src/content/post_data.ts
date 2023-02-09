@@ -6,7 +6,7 @@ export class PostData
 	author: string = 'Chris Lambert';
 	dateCreated: number = Date.now();
 	dateModified: number = Date.now();
-	tags: string[] = [];
+	tags: string = '';			// comma-delimited list of tags
 	hdrInline: string = '';		// inline header HTML data
 	hdrHref: string = ''; 		// URL to header visual
 	hdrAlt: string = ''; 		// Alt-text for header image

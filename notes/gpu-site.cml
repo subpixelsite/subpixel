@@ -3,6 +3,8 @@
 
 == TOPICS
 
+= QoL
+	- Friendly URL - give each post a mini-URL post string (posts/minimapping)
 = Basic styling
 	- Pick font
 	? Build GPU SVG model
@@ -16,6 +18,13 @@
 	- Support interaction, like click/drag-to-move camera (or button for different ortho)
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
+	! Massive inefficiency in WebGL with viewports, resizing/scrolling, rendering
+		- Right now, it sets up new global window listeners for resize and scroll for each new viewport
+			> It only cleans up one each on navigate away
+		- If any resize or scroll event happens, it does a full render for each listener that fires, rendering ALL viewports no matter which was actually affected
+		- Ideal version: one listener set for each viewport, rendering only the affected ones on events
+			- Viewports hold the listeners, trigger renders, and clean them up themselves
+			- WebGL object can still do global renders, but it seems like de-centralizing would be a win here
 = Wrap <svg> with component that supports aspect-ratio
 	> Note: giving a width="" and viewbox="0 0 100 77" or similar makes it preserve that aspect ratio
 	- Take "aspect-ratio" property
@@ -33,8 +42,9 @@
 == CURRENT
 
 # WebGL not clipping to owning window properly (see test post in Editor preview)
-# app.ts pageActive class can stop changing if you click through pages quickly
-# Refreshing on a post item (posts/1) will have all the nav buttons with no class
++ # app.ts pageActive class can stop changing if you click through pages quickly
++ # Refreshing on a post item (posts/1) will have all the nav buttons with no class
+# Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
 = Basic styling
 	* Write example post
 		- Create webgl content for example post
@@ -63,7 +73,7 @@
 		- Update modified date (create modified date too)
 		? Post Visual refresh button
 		+ Do Grid-Garden game to see if I can make this grid work properly
-	? Move relevant CSS to external file to include with the editor
+	+ Move relevant CSS to external file to include with the editor
 
 == NEXT
 

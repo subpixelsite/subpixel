@@ -24,7 +24,7 @@ export class AdminPage extends AppElement
 		}
 
 		.topNav {
-			background-color: #be908e;
+			background-color: #ba2828;
 		}
 
 		.title-text {
@@ -56,17 +56,24 @@ export class AdminPage extends AppElement
 	{
 		super();
 
-		this.addEventListener( 'pageNav', this.pageNavEvent );
-	}
-
-	protected firstUpdated(): void
-	{
 		this.loadWebGL();
 	}
 
 	async loadWebGL()
 	{
 		await import( '../webgl/webglelement.js' );
+	}
+
+	connectedCallback(): void
+	{
+		super.connectedCallback();
+		this.addEventListener( 'pageNav', this.pageNavEvent );
+	}
+
+	disconnectedCallback(): void
+	{
+		super.disconnectedCallback();
+		this.removeEventListener( 'pageNav', this.pageNavEvent );
 	}
 
 	render()
@@ -89,10 +96,5 @@ export class AdminPage extends AppElement
 	</div>
 </div>
 		    `;
-	}
-
-	public onBeforeLeave()
-	{
-		this.removeEventListener( 'pageNav', this.pageNavEvent );
 	}
 }

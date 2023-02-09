@@ -75,6 +75,7 @@ export class WebGL
 		this.viewports.push( viewport );
 		viewport.setLoadEnabled( this.loadEnabled );
 
+		// See task in CML file, this is not ideal
 		window.addEventListener( 'resize', () => this.queueRender );
 		window.addEventListener( 'scroll', () => this.queueRender );
 	}

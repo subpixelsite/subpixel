@@ -13,13 +13,16 @@ import '@shoelace-style/shoelace/dist/components/switch/switch.js';
 import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/textarea/textarea.js';
 import '@shoelace-style/shoelace/dist/components/details/details.js';
-import { POSTS } from '../content/data.js';
+import { getPostData, getTagsArray } from '../content/data.js';
+import { PostStyles } from '../styles.js';
 
 @customElement( 'lit-editor' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class EditorPage extends AppElement
 {
-	static styles = css`
+	static styles = [
+		PostStyles,
+		css`
 		* {
 			box-sizing: border-box;
 			--body-edit-height: calc( 100vh - 274px );
@@ -241,11 +244,27 @@ export class EditorPage extends AppElement
 			margin-top: 1em;
 		}
 
+		.header-img {
+			display: block;
+			justify-self: center;
+			outline: 1px solid black;
+			padding: var(--vis-padding);
+			margin: 10px;
+			width: var(--vis-padded-width);
+			max-width: var(--vis-padded-width);
+			height: var(--vis-padded-height);
+			max-height: var(--vis-padded-height);
+		}
+
 		.post-visual {
 			justify-self: center;
-			margin: 16px;
+			height: var(--vis-height);
+			width: var(--vis-width);
+			max-height: var(--vis-height);
+			max-width: var(--vis-width);
+			background-color: var(--vis-bg-color);
 		}
-`;
+	`];
 
 	@state()
 	postId: number = -1;
@@ -290,7 +309,7 @@ export class EditorPage extends AppElement
 	{
 		super.onBeforeEnter( location );
 
-		this.posts = POSTS;
+		this.posts = getPostData();
 
 		const id = location.params.id as string;
 		this.postId = parseInt( id, 10 );
@@ -369,6 +388,29 @@ export class EditorPage extends AppElement
 		}
 	}
 
+	connectedCallback(): void
+	{
+		super.connectedCallback();
+
+		// Listeners are added after first update so that DOM objects to listen on exist
+	}
+
+	disconnectedCallback(): void
+	{
+		super.disconnectedCallback();
+
+		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
+		webGLCheckbox?.removeEventListener( 'sl-change', this.setLoadEnabled );
+
+		const textArea = this.shadowRoot!.getElementById( 'editPostTextBox' ) as HTMLInputElement | null;
+		if ( textArea !== null )
+			textArea.removeEventListener( 'scroll', () => this.scrollPreview() );
+
+		const previewArea = this.shadowRoot!.getElementById( 'previewPostBox' );
+		if ( previewArea !== null )
+			previewArea.removeEventListener( 'scroll', () => this.scrollTextArea() );
+	}
+
 	protected firstUpdated(): void
 	{
 		const webgl = WebGL.getInstance();
@@ -436,14 +478,18 @@ export class EditorPage extends AppElement
 				<div class="input-panel-left">
 					<sl-input class="edit-input" size=small label="ID" pill disabled readonly id="edit-id" .value=${this.post!.id.toString()}></sl-input>
 					<sl-input class="edit-input" size=small label="Title" pill id="edit-title" .value=${this.post!.title}></sl-input>
-					<sl-input class="edit-input" size=small label="Tags" pill id="edit-tags" .value=${this.post!.tags.join( ', ' )}></sl-input>
+					<sl-input class="edit-input" size=small label="Tags" pill id="edit-tags" .value=${getTagsArray( this.post!.tags ).join( ', ' )}></sl-input>
 					<sl-input class="edit-input" size=small label="Created" pill disabled readonly id="edit-created" .value=${new Date( this.post!.dateCreated ).toString()}></sl-input>
 					<sl-input class="edit-input" size=small label="Modified" pill disabled readonly id="edit-modified" .value=${new Date( this.post!.dateModified ).toString()}></sl-input>
 					<sl-input class="edit-input" size=small label="Author" pill id="edit-author" .value=${this.post!.author}></sl-input>
 					<sl-textarea class="edit-description" size=small label="Description" id="edit-description" autocomplete='off' autocorrect='on' spellcheck='true' inputmode='text' resize='none' .value=${this.post!.description}></sl-textarea>
 				</div>
 				<div class="input-panel-right">
-					${visual}
+					<div class="header-img">
+						<div class="post-visual">
+							${visual}
+						</div>
+					</div>
 					<sl-input class="edit-input" size=small label="Header Alt" pill id="edit-hdr-alt" .value=${this.post!.hdrAlt}></sl-input>
 					<sl-input class="edit-input" size=small label="Header HREF" pill id="edit-hdr-href" .value=${this.post!.hdrHref}></sl-input>
 					<sl-textarea class="edit-input" size=small label="Header Inline" id="edit-hdr-inline" autocomplete='off' autocorrect='on' spellcheck='true' inputmode='text' resize='none' .value=${this.post!.hdrInline}></sl-textarea>
@@ -466,19 +512,5 @@ export class EditorPage extends AppElement
 	</div>
 </div>
 		    `;
-	}
-
-	public onBeforeLeave()
-	{
-		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
-		webGLCheckbox?.removeEventListener( 'sl-change', this.setLoadEnabled );
-
-		const textArea = this.shadowRoot!.getElementById( 'editPostTextBox' ) as HTMLInputElement | null;
-		if ( textArea !== null )
-			textArea.removeEventListener( 'scroll', () => this.scrollPreview() );
-
-		const previewArea = this.shadowRoot!.getElementById( 'previewPostBox' );
-		if ( previewArea !== null )
-			previewArea.addEventListener( 'scroll', () => this.scrollTextArea() );
 	}
 }

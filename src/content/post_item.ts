@@ -10,7 +10,7 @@ import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import { AppElement } from '../appelement.js';
-import { POSTS } from './data.js';
+import { getPostData, getTagsArray } from './data.js';
 import { convertMDtoHTML, PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
 import { PostStyles } from '../styles.js';
@@ -73,12 +73,14 @@ export class PostItem extends AppElement
 			margin-top: 5px;
 		}
 		.header-container {
+			display: block;
+			height: var(--vis-padded-height);
+		}
+		.header {
 			display: grid;
 			/* grid-template: rowpx row% rowfr / column% columnpx columnfr */
-			grid-template: [row1-start] 1fr 1fr [row1-end];
-			justify-content: space-between;
-			max-height: 200;
-			height: 200;
+			grid-template: 1fr 10px var(--vis-padded-width);
+			height: 100%;
 		}
 		.post-info {
 			grid-column: 1 / 2;
@@ -86,27 +88,37 @@ export class PostItem extends AppElement
 			flex-direction: column;
 		}
 		.post-image {
-			grid-column: 2 / 3;
+			grid-column: 3 / 4;
 			display: grid;
 			grid-template: [row1-start] 1fr 1fr [row1-end];
+			min-height: var(--vis-padded-height);
 		}
 		.post-image-content {
-			grid-column: 2 / 3;
-			margin-left: 5px;
-		}
-		.post-image-divider {
-			grid-column: 1 / 2;
-			margin-right: 0px;
+			/* min-height: var(--vis-padded-height);
+			height: 100%; */
+
+			align-self: center;
+			justify-self: center;
 			margin-left: 10px;
-			padding-top: 20%;
-			padding-bottom: 20%;
+	
+			/* outline: 1px solid #afafaf; */
+			padding: var(--vis-padding);
+			width: var(--vis-width);
+			max-width: var(--vis-width);
+			height: var(--vis-height);
+			max-height: var(--vis-height);
 		}
 		.error-alert {
 			margin-top: 40px;
 			display: block;
 		}
 		.post-visual {
-			height: 100%;
+			height: var(--vis-height);
+			width: var(--vis-width);
+			max-height: var(--vis-height);
+			max-width: var(--vis-width);
+
+			/* height: 100%; */
 		}
 		.post-divider {
 			--width: 2px;
@@ -125,6 +137,13 @@ export class PostItem extends AppElement
 
 	render()
 	{
+		const event = new CustomEvent( 'pageNav', {
+			detail: 'posts',
+			bubbles: true,
+			composed: true
+		} );
+		this.dispatchEvent( event );
+
 		if ( this.post === undefined )
 		{
 			return html`
@@ -143,22 +162,21 @@ export class PostItem extends AppElement
 		return html`
 			<div class="lit-post">
 				<div class="header-container">
-					<div class="post-info">
-						<h1 class="post-title">${this.post.title}</h1>
-						<div class="post-author-date">
-							<span class="post-author">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
-								<span class="post-date">on ${this.getDateString()}</span>
+					<div class="header">
+						<div class="post-info">
+							<h1 class="post-title">${this.post.title}</h1>
+							<div class="post-author-date">
+								<span class="post-author">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
+									<span class="post-date">on ${this.getDateString()}</span>
+							</div>
+							<div class="post-tag-set">${this.getTagsHTML()}</div>
+							<div class="post-filler"></div>
+							<div class="post-description">${this.post.description}</div>
 						</div>
-						<div class="post-tag-set">${this.getTagsHTML()}</div>
-						<div class="post-filler"></div>
-						<div class="post-description">${this.post.description}</div>
-					</div>
-					<div class="post-image">
-						<div class="post-image-divider">
-							<sl-divider vertical style="--width: 2px"></sl-divider>
-						</div>
-						<div class="post-image-content">
-							${visual}
+						<div class="post-image">
+							<div class="post-image-content">
+								${visual}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -174,10 +192,13 @@ export class PostItem extends AppElement
 	{
 		let htmlString = '';
 
-		this.post?.tags.forEach( tag =>
+		if ( this.post !== undefined )
 		{
-			htmlString += `<sl-tag class="post-tag" size="medium" variant="primary" pill>${tag}</sl-tag>`;
-		} );
+			getTagsArray( this.post.tags ).forEach( tag =>
+			{
+				htmlString += `<sl-tag class="post-tag" size="medium" variant="primary" pill>${tag}</sl-tag>`;
+			} );
+		}
 
 		return html`${unsafeHTML( htmlString )} `;
 	}
@@ -203,7 +224,7 @@ export class PostItem extends AppElement
 	{
 		super.onBeforeEnter( location );
 
-		this.posts = POSTS;
+		this.posts = getPostData();
 
 		const id = location.params.id as string;
 		this.postId = parseInt( id, 10 );
