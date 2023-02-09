@@ -1,16 +1,17 @@
 /* eslint-disable dot-notation */
-export interface PostData
+export class PostData
 {
-	id: number;
-	title: string;
-	author: string;
-	dateCreated: number;
-	tags: string[];
-	hdrInline?: string;		// inline header HTML data
-	hdrHref?: string; 		// URL to header visual
-	hdrAlt?: string; 		// Alt-text for header image
-	description: string;
-	body: string;
+	id: number = -1;
+	title: string = '';
+	author: string = 'Chris Lambert';
+	dateCreated: number = Date.now();
+	dateModified: number = Date.now();
+	tags: string[] = [];
+	hdrInline: string = '';		// inline header HTML data
+	hdrHref: string = ''; 		// URL to header visual
+	hdrAlt: string = ''; 		// Alt-text for header image
+	description: string = '';
+	body: string = '';
 }
 
 declare global

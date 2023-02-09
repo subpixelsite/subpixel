@@ -133,6 +133,9 @@ export class WebGLElement extends LitElement
 	@property( { type: String } )
 	src?: string;
 
+	@property( { type: Boolean } )
+	alwaysload?: boolean;
+
 	private idNumber: number = 0;
 	private divID: string = '';
 	private wrappedText?: string[];
@@ -233,7 +236,7 @@ export class WebGLElement extends LitElement
 		if ( this.src === undefined )
 			return;
 
-		if ( !this.loadEnabled )
+		if ( !this.loadEnabled && this.alwaysload !== true )
 			return;
 
 		const url = new URL( this.src!, window.location.origin );

@@ -9,12 +9,15 @@ import { svg, TemplateResult, html, css } from 'lit';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AppElement } from '../appelement.js';
 import { PostData } from './post_data.js';
+import { PostStyles } from '../styles.js';
 
 @customElement( 'post-tile' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PostTile extends AppElement
 {
-	static styles = css`
+	static styles = [
+		PostStyles,
+		css`
 	.post-tile {
 		margin: 0px;
 		display: flex;
@@ -66,12 +69,7 @@ export class PostTile extends AppElement
 		align-self: end;
 	}
 	.post-visual {
-		min-height: 168px;
-		/* max-height: 200px; */
-		max-width: 328px;
-		width: 328px;
 		margin: 16px;
-		background-color: #efefef;
 	}
 	.footer-container {
 		display: grid;
@@ -98,7 +96,7 @@ export class PostTile extends AppElement
 		justify-content: space-between;
 		align-items: center;
 	}
-	`;
+	`];
 
 	@property( { type: Object } ) post?: PostData;
 
@@ -146,16 +144,16 @@ export class PostTile extends AppElement
 
 	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
 	{
-		if ( post.hdrInline !== undefined )
+		if ( post.hdrInline.length > 0 )
 			return html`<div slot="image" width="100%" height="100%" class="post-visual">${unsafeHTML( post.hdrInline )}</div>`;
 
-		if ( post.hdrHref !== undefined )
+		if ( post.hdrHref.length > 0 )
 		{
 			const href = post.hdrHref.toLowerCase();
 			if ( href.endsWith( 'json' ) )
 			{
 				// eslint-disable-next-line max-len
-				const embed = `<web-gl slot="image" width="100%" height="202px" class="post-visual" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
+				const embed = `<web-gl slot="image" width="100%" height="202px" alwaysload=true class="post-visual" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
 				return html`${unsafeHTML( embed )}`;
 			}
 

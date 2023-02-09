@@ -13,12 +13,15 @@ import { AppElement } from '../appelement.js';
 import { POSTS } from './data.js';
 import { convertMDtoHTML, PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
+import { PostStyles } from '../styles.js';
 
 @customElement( 'lit-post' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PostItem extends AppElement
 {
-	static styles = css`
+	static styles = [
+		PostStyles,
+		css`
 		.lit-post {
 			margin: 20px;
 		}
@@ -71,6 +74,7 @@ export class PostItem extends AppElement
 		}
 		.header-container {
 			display: grid;
+			/* grid-template: rowpx row% rowfr / column% columnpx columnfr */
 			grid-template: [row1-start] 1fr 1fr [row1-end];
 			justify-content: space-between;
 			max-height: 200;
@@ -102,17 +106,13 @@ export class PostItem extends AppElement
 			display: block;
 		}
 		.post-visual {
-			min-height: 168px;
-			max-width: 328px;
 			height: 100%;
-			width: 100%;
-			background-color: #efefef;
 		}
 		.post-divider {
 			--width: 2px;
 			--spacing: 15px;
 		}
-	`;
+	`];
 
 	@state()
 	postId: number = -1;

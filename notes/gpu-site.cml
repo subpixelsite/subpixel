@@ -33,6 +33,8 @@
 == CURRENT
 
 # WebGL not clipping to owning window properly (see test post in Editor preview)
+# app.ts pageActive class can stop changing if you click through pages quickly
+# Refreshing on a post item (posts/1) will have all the nav buttons with no class
 = Basic styling
 	* Write example post
 		- Create webgl content for example post
@@ -43,8 +45,8 @@
 	+ Provide Markdown->HTML live preview editor
 		+ Checkbox to enable/disable WebGL embed loads on editor page for performance reasons during editing
 		+ Figure out joined scrolling
-		? Add "copy to clipboard" button
-		? Add "paste from clipboard" button
+		x Add "copy to clipboard" button
+		x Add "paste from clipboard" button
 		? Statistics like word count, image count, embed count
 	+ Every time it translates to HTML it needs to clear the old <web-gl> components
 	+ Edit change debounce - wait for idle, like 250ms since last typing?
@@ -54,11 +56,13 @@
 		+ When you click on a post you can edit it, opening editor.ts with that post ID
 	* Finish editor MVP
 		- In editor, you can hit Save on a post and it will commit the changes to memory in post data (simulating eventually writing to the DB and updating a backup)
-		- Edit title
-		- Edit description
-		- Edit tags
-		- Swap BG colors
+		+ Edit title
+		+ Edit description
+		+ Edit tags
+		+ Swap BG colors
 		- Update modified date (create modified date too)
+		? Post Visual refresh button
+		+ Do Grid-Garden game to see if I can make this grid work properly
 	? Move relevant CSS to external file to include with the editor
 
 == NEXT

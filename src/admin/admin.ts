@@ -3,6 +3,7 @@ import { html, css } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { customElement, property } from 'lit/decorators.js';
 import { AppElement } from '../appelement.js';
+import { NavButtonStyles } from '../styles.js';
 // import { POSTS } from './data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 
@@ -10,7 +11,9 @@ import '@shoelace-style/shoelace/dist/components/button/button.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AdminPage extends AppElement
 {
-	static styles = css`
+	static styles = [
+		NavButtonStyles,
+		css`
 		.admin-top {
 			display:flex;
 			flex-direction:column;
@@ -21,101 +24,11 @@ export class AdminPage extends AppElement
 		}
 
 		.topNav {
-			background-image: linear-gradient(to top right, #bf8280, var(--sl-color-neutral-0));
-		}
-
-		.navContent > .navButtons {
-			display: flex;
-			flex-wrap: wrap;
-			justify-items: space-between;
-		}
-
-		.navContent {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			gap: 10px 10px;
-			padding-left: 15px;
-			padding-right: 15px;
-			margin: auto;
-			max-width: 1140px;
-			overflow: visible;
-		}
-
-		.navButtons > sl-button {
-			margin: 10px;
-		}
-
-		.navButtons > sl-button::part(label) {
-			font-weight: var(--sl-font-weight-semibold);
-			font-size: var(--sl-font-size-large);
-			margin: 0 20px;
-		}
-		
-		.navButtons > sl-button::part(base) {
-			border-radius: var(--sl-border-radius-large);
-			border-width: 2px;
-			align-items: center;
-			box-shadow: var(--sl-shadow-medium);
-			transition: var(--sl-transition-medium) transform ease, var(--sl-transition-medium) border ease;
-		}
-		
-		.navButtons > sl-button.pageActive::part(base) {
-			border-color: var(--sl-color-primary-400);
-			border-width: 3px;
-		}
-		
-		.navButtons > sl-button.pageInactive::part(base) {
-			border-color: var(--sl-color-neutral-300);
-		}
-		
-		.navButtons > sl-button::part(base):hover {
-			transform: scale(1.07);
-		}
-		
-		.navButtons > sl-button::part(base)::active {
-			transform: scale(1.07);
-		}
-		
-		.navButtons > sl-button::part(base):focus-visible {
-			outline: dashed 2px var(--sl-color-primary-500);
-			outline-offset: 2px;
-		}
-
-		.navTitle {
-			justify-content: flex-start;
-			padding-left: 15px;
-			display: inline-block;
-			font-family: monospace;
+			background-color: #be908e;
 		}
 
 		.title-text {
 			font-size: var(--sl-font-size-x-large);
-			font-weight: var(--sl-font-weight-bold);
-			letter-spacing: 0.05em;
-			color: #797979;
-		}
-
-		@media(max-width: 768px) {
-			.grid,
-			.grid-3 {
-				grid-template-columns: 1fr;
-			}
-		}
-
-		@media(max-width: 520px) {
-			.grid,
-			.grid-3 {
-				grid-template-columns: 1fr;
-			}
-
-			.flex {
-				flex-direction: column;
-			}
-
-			.navContent {
-				padding-bottom: 15px;
-			}
 		}
 
 		.content {
@@ -123,7 +36,7 @@ export class AdminPage extends AppElement
 			width: 100vw;
 			margin: auto;
 		}
-	`;
+	`];
 
 	@property() listClass: string = '';
 
@@ -163,11 +76,11 @@ export class AdminPage extends AppElement
 	<nav class="topNav">
 		<div class="navContent">
 			<div class="navTitle">
-				<span class="title-text">ADMINISTRATION</span>
+				<span class="title-text">ADMIN</span>
 			</div>
 			<div class="navButtons">
-				<sl-button class=${this.listClass} name="List" href="admin/list">LIST</sl-button>
-				<sl-button class=${this.editorClass} name="Editor" href="admin/editor">EDITOR</sl-button>
+				<sl-button class=${this.listClass}   variant="text" name="List"   href="admin/list">LIST</sl-button>
+				<sl-button class=${this.editorClass} variant="text" name="Editor" href="admin/editor">EDITOR</sl-button>
 			</div>
 		</div>
 	</nav>
