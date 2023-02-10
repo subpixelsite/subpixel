@@ -8,7 +8,7 @@ import '@shoelace-style/shoelace/dist/components/alert/alert.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import 'reflect-metadata';
-import { NavButtonStyles } from './styles.js';
+import { Colors, NavButtonStyles } from './styles.js';
 import { initPostData } from './content/post_data.js';
 
 @customElement( 'lit-app' )
@@ -17,10 +17,11 @@ export class App extends LitElement
 {
 	static styles = [
 		baseStyles,
+		Colors,
 		NavButtonStyles,
 		css`
 		.topNav {
-			background-color: #648198;
+			background-color: var(--col-primary-dark);
 		}
 
 		.title-capital {

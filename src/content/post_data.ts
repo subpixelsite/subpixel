@@ -1,7 +1,7 @@
 /* eslint-disable dot-notation */
 export class PostData
 {
-	id: number = -1;
+	id: string = '';
 	title: string = '';
 	author: string = 'Chris Lambert';
 	dateCreated: number = Date.now();

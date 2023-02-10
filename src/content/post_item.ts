@@ -10,7 +10,7 @@ import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import { AppElement } from '../appelement.js';
-import { getPostData, getTagsArray } from './data.js';
+import { Database, getTagsArray } from './data.js';
 import { convertMDtoHTML, PostData } from './post_data.js';
 import { PostTile } from './post_tile.js';
 import { PostStyles } from '../styles.js';
@@ -31,7 +31,6 @@ export class PostItem extends AppElement
 		}
 		.post-description {
 			display: inline-block;
-			background: white;
 			align-self: end;
 			padding-bottom: 0.5em;
 		}
@@ -123,17 +122,12 @@ export class PostItem extends AppElement
 		.post-divider {
 			--width: 2px;
 			--spacing: 15px;
+			--color: #cfcfcf;
 		}
 	`];
 
-	@state()
-	postId: number = -1;
-
 	@property( { type: Object } )
 	post?: PostData;
-
-	@property( { type: Array } )
-	posts?: PostData[];
 
 	render()
 	{
@@ -224,20 +218,8 @@ export class PostItem extends AppElement
 	{
 		super.onBeforeEnter( location );
 
-		this.posts = getPostData();
-
-		const id = location.params.id as string;
-		this.postId = parseInt( id, 10 );
-
-		if ( this.posts )
-		{
-			this.post = this.posts.find( p =>
-			{
-				if ( p.id === this.postId )
-					return p;
-
-				return null;
-			} );
-		}
+		const postId = location.params.id as string;
+		const db = Database.getDB();
+		this.post = db.getPostData( postId );
 	}
 }

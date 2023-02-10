@@ -107,7 +107,7 @@ export class PostTile extends AppElement
 	static errorVisual( text: string ): TemplateResult<2>
 	{
 		const viewWidth = 400;
-		const viewHeight = 180;
+		const viewHeight = 220;
 		const stride = 60;
 		const travel = 44;
 		const y1 = -5;
@@ -136,7 +136,7 @@ export class PostTile extends AppElement
 					<title id="svgTitle">${text}</title>
 					<rect width="100%" height="100%" fill="#000000"/>
 					<polygon points="${points}" style="fill:#ffdf00;stroke-width:0" filter="url(#visBlur)"/></polygon>
-					<rect width="100%" height="100%" fill="#ffffff" fill-opacity="80%"/>
+					<rect width="100%" height="100%" fill="#ffffff" fill-opacity="85%"/>
 					<text x="50%" y="25%" font-size="16" text-anchor="middle" alignment-baseline="central" fill="#5f5f5f">
 					  <tspan x="50%" dy="1.2em">this space unintentionally</tspan>
 					  <tspan x="50%" dy="1.2em">left blank</tspan>

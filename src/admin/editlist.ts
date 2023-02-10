@@ -5,7 +5,7 @@ import { css, html } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 import { AppElement } from '../appelement.js';
-import { getPostData, getTagsArray } from '../content/data.js';
+import { Database, getTagsArray } from '../content/data.js';
 import { PostData } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/tag/tag.js';
@@ -64,7 +64,7 @@ export class EditList extends AppElement
 		}
 
 		.posts-table tbody tr:nth-of-type(even) {
-			background-color: #f3f3f3;
+			background-color: #dfdfdf;
 		}
 
 		.posts-table tbody tr:last-of-type {
@@ -83,8 +83,8 @@ export class EditList extends AppElement
 
 		.post-id {
 			font-family: monospace;
-			font-size: 1.2em;
-			max-width: 15px;
+			font-size: 1.0em;
+			max-width: fit-content
 		}
 
 		.post-title {
@@ -111,7 +111,7 @@ export class EditList extends AppElement
 	@state()
 	activeRowIndex: number = -1;
 
-	@property( { type: Array } ) posts?: PostData[];
+	@property( { type: Array } ) posts: PostData[];
 
 	pageNavEvent( event: Event )
 	{
@@ -122,7 +122,8 @@ export class EditList extends AppElement
 	constructor()
 	{
 		super();
-		this.posts = getPostData();
+		const db = Database.getDB();
+		this.posts = db.getPostsList();
 	}
 
 	connectedCallback(): void
@@ -199,7 +200,12 @@ export class EditList extends AppElement
 		}
 	}
 
-	private goToPostID( postID: number | string )
+	private goToPostIndex( postIndex: number )
+	{
+		this.goToPostID( this.posts[postIndex].id );
+	}
+
+	private goToPostID( postID: string )
 	{
 		Router.go( `/admin/editor/${postID}` );
 	}
@@ -226,9 +232,6 @@ export class EditList extends AppElement
 		if ( edit === null )
 			throw new Error( 'Couldn\'t find editlist in admin edit list' );
 
-		if ( edit.posts === undefined )
-			return;
-
 		let handled: boolean = false;
 
 		if ( event.code === 'ArrowUp' )
@@ -248,8 +251,8 @@ export class EditList extends AppElement
 
 		if ( event.code === 'Enter' )
 		{
-			if ( edit.posts !== undefined && edit.activeRowIndex >= 0 && edit.activeRowIndex < edit.posts.length )
-				edit.goToPostID( edit.activeRowIndex );
+			if ( edit.activeRowIndex >= 0 && edit.activeRowIndex < edit.posts.length )
+				edit.goToPostIndex( edit.activeRowIndex );
 			handled = true;
 		}
 

@@ -4,7 +4,7 @@ import { css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 import { AppElement } from '../appelement.js';
-import { getPostData } from './data.js';
+import { Database } from './data.js';
 import { PostData } from './post_data.js';
 
 @customElement( 'lit-posts' )
@@ -32,7 +32,7 @@ export class PostList extends AppElement
 	constructor()
 	{
 		super();
-		this.posts = getPostData();
+
 		PostList.loadPostTile();
 	}
 
@@ -62,9 +62,12 @@ export class PostList extends AppElement
 		} );
 		this.dispatchEvent( event );
 
+		const db = Database.getDB();
+		const posts = db.getPostsList();
+
 		return html`
 		<div class="posts-container">
-			${this.posts?.map( post => html`<post-tile .post="${post}"></post-tile>` )}
+			${posts?.map( post => html`<post-tile .post="${post}"></post-tile>` )}
 		</div>
     `;
 	}

@@ -1,5 +1,13 @@
 import { css } from 'lit';
 
+export const Colors = css`
+	* {
+		--col-primary-dark: #648198;
+		--col-primary-light: #7ac6ff;
+		--col-bg-light: #efefef;
+	}
+`;
+
 export const NavButtonStyles = css`
 
 	.navButtons > sl-button {
@@ -26,7 +34,7 @@ export const NavButtonStyles = css`
 	}
 	
 	.navButtons > sl-button.pageInactive::part(base) {
-		color: #7ac6ff;
+		color: var(--col-primary-light);
 	}
 
 	.navButtons > sl-button::part(label):hover {
@@ -97,7 +105,7 @@ export const PostStyles = css`
 	* {
 		--vis-width: 328px;
 		--vis-height: 200px;
-		--vis-bg-color: #efefef;
+		--vis-bg-color: var(--col-bg-light);
 		--vis-padding: 10px;
 		--vis-padded-width: calc(var(--vis-width) + (var(--vis-padding) * 2));
 		--vis-padded-height: calc(var(--vis-height) + (var(--vis-padding) * 2));

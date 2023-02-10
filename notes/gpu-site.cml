@@ -3,8 +3,18 @@
 
 == TOPICS
 
-= QoL
-	- Friendly URL - give each post a mini-URL post string (posts/minimapping)
+# WebGL not clipping to owning window properly (see test post in Editor preview)
+# Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
+# After editing with webgl load off, main post page doesn't load webgl either
+= Admin page
+	* Editor: map <web-gl...> tag to WebGLElement load and preserve it during content update
+		- Migration command: delete and create new viewport, then reconnect existing element
+= Basic styling
+	* Write example post
+		- Create webgl content for example post
+		+ Figure out embedding web-gl content from Markdown
+			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
+		- Finish example post
 = Basic styling
 	- Pick font
 	? Build GPU SVG model
@@ -26,61 +36,47 @@
 			- Viewports hold the listeners, trigger renders, and clean them up themselves
 			- WebGL object can still do global renders, but it seems like de-centralizing would be a win here
 = Wrap <svg> with component that supports aspect-ratio
-	> Note: giving a width="" and viewbox="0 0 100 77" or similar makes it preserve that aspect ratio
 	- Take "aspect-ratio" property
 	? Override "width" and "height"
 	- Watch "aspect-ratio", "width", "height" for change and fill in the other attribute if the other is undefined based on "aspect-ratio", if defined
-= Admin page
-	- Editor: map <web-gl...> tag to WebGLElement load and preserve it during content update
-		- Migration command: delete and create new viewport, then reconnect existing element
 = Source code view
 	- Show vs/fs in tab or drawer with <web-gl>
 	- Show with syntax coloring
 	- Use source code font - Source Code Pro?
 	? "Copy to Clipboard" button
 
-== CURRENT
 
-# WebGL not clipping to owning window properly (see test post in Editor preview)
+=== DONE
+
+= QoL
+	+ Friendly URL - give each post a mini-URL post string (posts/minimapping)
+= Wrap <svg> with component that supports aspect-ratio
+	> Note: giving a width="" and viewbox="0 0 100 77" or similar makes it preserve that aspect ratio
 + # app.ts pageActive class can stop changing if you click through pages quickly
 + # Refreshing on a post item (posts/1) will have all the nav buttons with no class
-# Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
-= Basic styling
-	* Write example post
-		- Create webgl content for example post
-		+ Figure out embedding web-gl content from Markdown
-			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
-		- Finish example post
 = Admin page
 	+ Provide Markdown->HTML live preview editor
 		+ Checkbox to enable/disable WebGL embed loads on editor page for performance reasons during editing
 		+ Figure out joined scrolling
 		x Add "copy to clipboard" button
 		x Add "paste from clipboard" button
-		? Statistics like word count, image count, embed count
+		x Statistics like word count, image count, embed count
 	+ Every time it translates to HTML it needs to clear the old <web-gl> components
 	+ Edit change debounce - wait for idle, like 250ms since last typing?
 		+ Add timeout for final edit step
 	+ Make editor.ts embed on admin.ts
 	+ Make new post list that embeds on admin.ts
 		+ When you click on a post you can edit it, opening editor.ts with that post ID
-	* Finish editor MVP
-		- In editor, you can hit Save on a post and it will commit the changes to memory in post data (simulating eventually writing to the DB and updating a backup)
+	+ Finish editor MVP
+		+ In editor, you can hit Save on a post and it will commit the changes to memory in post data (simulating eventually writing to the DB and updating a backup)
 		+ Edit title
 		+ Edit description
 		+ Edit tags
 		+ Swap BG colors
-		- Update modified date (create modified date too)
-		? Post Visual refresh button
+		+ Update modified date (create modified date too)
+		x Post Visual refresh button
 		+ Do Grid-Garden game to see if I can make this grid work properly
 	+ Move relevant CSS to external file to include with the editor
-
-== NEXT
-
-
-
-=== DONE
-
 = Editor
 	+ "Admin" page
 = Basic styling

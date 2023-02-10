@@ -4,29 +4,32 @@ import { html, css } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { customElement, property, state } from 'lit/decorators.js';
 import { RouterLocation } from '@vaadin/router';
+import { serialize } from '@shoelace-style/shoelace/dist/utilities/form.js';
 import { PostTile } from '../content/post_tile.js';
 import { WebGL } from '../webgl/webgl.js';
 import { AppElement } from '../appelement.js';
-// import { POSTS } from './data.js';
 import { PostData, convertMDtoHTML } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/switch/switch.js';
 import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/textarea/textarea.js';
 import '@shoelace-style/shoelace/dist/components/details/details.js';
-import { getPostData, getTagsArray } from '../content/data.js';
-import { PostStyles } from '../styles.js';
+import { Database } from '../content/data.js';
+import { Colors, PostStyles } from '../styles.js';
 
 @customElement( 'lit-editor' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class EditorPage extends AppElement
 {
 	static styles = [
+		Colors,
 		PostStyles,
 		css`
 		* {
 			box-sizing: border-box;
-			--body-edit-height: calc( 100vh - 274px );
+			--body-edit-height: calc( 100vh - 234px );
 			--input-spacing: 8px;
+			--label-width: 100px;
+			--gap-width: 0.5rem;
 		}
 
 		html,
@@ -74,13 +77,33 @@ export class EditorPage extends AppElement
 			height: 100%;
 			padding: 20px;
 			overflow: none;
-			background-color: #efefef
+			background-color: white;
 		}
 
-		.edit-tools {
+		.info-container {
 			display: grid;
-			height: 20px;
-			justify-items: flex-end;
+			grid-template: 1fr / 1fr auto auto;
+			height: auto;
+		}
+
+		.info-details::part(base) {
+			grid-column: 1 / 2;
+			background-color: #dfdfdf;
+			outline: 1px solid black;
+		}
+
+		#load-webgl {
+			grid-column: 2 / 3;
+			margin: 10px;
+			justify-self: center;
+			align-self: center;
+		}
+
+		.btn-commit {
+			grid-column: 3 / 4;
+			width: 100px;
+			justify-self: center;
+			align-self: center;
 		}
 
 		.admin-container {
@@ -90,16 +113,11 @@ export class EditorPage extends AppElement
 			flex: 1 1 1px;
 		}
 
-		.edit-container {
+		.body-container {
 			display: flex;
 			flex: 1 1 1px;
-			max-height: 100%;
-		}
-
-		.edit-body {
-			display: flex;
 			gap: 20px;
-			flex: 1 1 1px;
+			max-height: 100%;
 		}
 
 		.edit-panel {
@@ -141,7 +159,7 @@ export class EditorPage extends AppElement
 			max-height: 100vh - 160px;
 			font-size: 15px;
 			width: 100%;
-			background-color: white;
+			background-color: var(--col-bg-light);
 			padding: 5px;
 			
 			overflow-y: auto;
@@ -180,11 +198,6 @@ export class EditorPage extends AppElement
 			clear: both;
 		}
 
-		.info-details::part(base) {
-			background-color: #dfdfdf;
-			outline: 1px solid black;
-		}
-
 		.info-panel {
 			display: grid;
 			/* grid-template: rowpx row% rowfr / column% columnpx columnfr */
@@ -209,11 +222,6 @@ export class EditorPage extends AppElement
 
 		.edit-inputs {
 			width: 100%;
-		}
-
-		.edit-input {
-			--label-width: 100px;
-			--gap-width: 0.5rem;
 		}
 
 		.edit-input + .edit-input {
@@ -250,6 +258,7 @@ export class EditorPage extends AppElement
 			outline: 1px solid black;
 			padding: var(--vis-padding);
 			margin: 10px;
+			margin-left: calc( 10px + var(--label-width) + var(--gap-width));
 			width: var(--vis-padded-width);
 			max-width: var(--vis-padded-width);
 			height: var(--vis-padded-height);
@@ -266,14 +275,8 @@ export class EditorPage extends AppElement
 		}
 	`];
 
-	@state()
-	postId: number = -1;
-
 	@property( { type: Object } )
 	post: PostData;
-
-	@property( { type: Array } )
-	posts?: PostData[];
 
 	protected lastConvert: number = 0;
 	protected convertInterval: number = 500;
@@ -309,21 +312,14 @@ export class EditorPage extends AppElement
 	{
 		super.onBeforeEnter( location );
 
-		this.posts = getPostData();
+		const db = Database.getDB();
 
-		const id = location.params.id as string;
-		this.postId = parseInt( id, 10 );
+		this.post = new PostData();
+		this.post.id = location.params.id as string;
 
-		if ( this.posts )
-		{
-			this.post = this.posts.find( p =>
-			{
-				if ( p.id === this.postId )
-					return p;
-
-				return null;
-			} ) ?? new PostData();
-		}
+		const dbPost = db.getPostData( this.post.id );
+		if ( dbPost !== undefined )
+			this.post = { ...dbPost };
 	}
 
 	setLoadEnabled( event: Event )
@@ -459,6 +455,33 @@ export class EditorPage extends AppElement
 		previewArea.addEventListener( 'scroll', () => this.scrollTextArea() );
 	}
 
+	private handleCommit()
+	{
+		const form = this.shadowRoot!.querySelector( '.post-form' ) as HTMLFormElement | null;
+		if ( form === null )
+			throw new Error( 'Couldn\'t find form' );
+		const data = serialize( form );
+
+		// manually copy the data into the post
+		this.post.id = data.id as string;
+		this.post.title = data.title as string;
+		this.post.author = data.author as string;
+		// this.post.dateCreated doesn't change
+		this.post.dateModified = Date.now();
+		this.post.tags = data.tags as string;
+		this.post.hdrInline = data.hdrInline as string;
+		this.post.hdrHref = data.hdrHref as string;
+		this.post.hdrAlt = data.hdrAlt as string;
+		this.post.description = data.description as string;
+		this.post.body = data.body as string;
+
+		// save the post
+		const db = Database.getDB();
+		db.setPostData( this.post.id, this.post );
+
+		this.requestUpdate();
+	}
+
 	render()
 	{
 		const event = new CustomEvent( 'pageNav', {
@@ -472,44 +495,45 @@ export class EditorPage extends AppElement
 
 		return html`
 <div class="top">
-	<div class="admin-container">
-		<sl-details summary="Post Info" class="info-details">
-			<div class="info-panel">
-				<div class="input-panel-left">
-					<sl-input class="edit-input" size=small label="ID" pill disabled readonly id="edit-id" .value=${this.post!.id.toString()}></sl-input>
-					<sl-input class="edit-input" size=small label="Title" pill id="edit-title" .value=${this.post!.title}></sl-input>
-					<sl-input class="edit-input" size=small label="Tags" pill id="edit-tags" .value=${getTagsArray( this.post!.tags ).join( ', ' )}></sl-input>
-					<sl-input class="edit-input" size=small label="Created" pill disabled readonly id="edit-created" .value=${new Date( this.post!.dateCreated ).toString()}></sl-input>
-					<sl-input class="edit-input" size=small label="Modified" pill disabled readonly id="edit-modified" .value=${new Date( this.post!.dateModified ).toString()}></sl-input>
-					<sl-input class="edit-input" size=small label="Author" pill id="edit-author" .value=${this.post!.author}></sl-input>
-					<sl-textarea class="edit-description" size=small label="Description" id="edit-description" autocomplete='off' autocorrect='on' spellcheck='true' inputmode='text' resize='none' .value=${this.post!.description}></sl-textarea>
-				</div>
-				<div class="input-panel-right">
-					<div class="header-img">
-						<div class="post-visual">
-							${visual}
+	<form class="post-form">
+		<div class="admin-container">
+			<div class="info-container">
+				<sl-details summary="Post Data" class="info-details">
+					<div class="info-panel">
+						<div class="input-panel-left">
+							<sl-input class="edit-input" size=small label="ID" pill readonly name="id" .value=${this.post!.id.toString()}></sl-input>
+							<sl-input class="edit-input" size=small label="Title" pill name="title" .value=${this.post!.title}></sl-input>
+							<sl-input class="edit-input" size=small label="Tags" pill name="tags" .value=${this.post!.tags}></sl-input>
+							<sl-input class="edit-input" size=small label="Created" pill disabled readonly name="dateCreated" .value=${new Date( this.post!.dateCreated ).toString()}></sl-input>
+							<sl-input class="edit-input" size=small label="Modified" pill disabled readonly name="dateModified" .value=${new Date( this.post!.dateModified ).toString()}></sl-input>
+							<sl-input class="edit-input" size=small label="Author" pill name="author" .value=${this.post!.author}></sl-input>
+							<sl-textarea class="edit-input" size=small label="Description" name="description" autocomplete='off' autocorrect='on' spellcheck='true' inputmode='text' resize='none' .value=${this.post!.description}></sl-textarea>
+						</div>
+						<div class="input-panel-right">
+							<div class="header-img">
+								<div class="post-visual">
+									${visual}
+								</div>
+							</div>
+							<sl-input class="edit-input" size=small label="Header Alt" pill name="hdrAlt" .value=${this.post!.hdrAlt}></sl-input>
+							<sl-input class="edit-input" size=small label="Header HREF" pill name="hdrHref" .value=${this.post!.hdrHref}></sl-input>
+							<sl-textarea class="edit-input" size=small label="Header Inline" name="hdrInline" autocomplete='off' autocorrect='on' spellcheck='true' inputmode='text' resize='none' .value=${this.post!.hdrInline}></sl-textarea>
 						</div>
 					</div>
-					<sl-input class="edit-input" size=small label="Header Alt" pill id="edit-hdr-alt" .value=${this.post!.hdrAlt}></sl-input>
-					<sl-input class="edit-input" size=small label="Header HREF" pill id="edit-hdr-href" .value=${this.post!.hdrHref}></sl-input>
-					<sl-textarea class="edit-input" size=small label="Header Inline" id="edit-hdr-inline" autocomplete='off' autocorrect='on' spellcheck='true' inputmode='text' resize='none' .value=${this.post!.hdrInline}></sl-textarea>
-				</div>
+				</sl-details>
+				<sl-switch id="load-webgl" ?checked=${this.loadWebGL}>Load WebGL Elements</sl-switch>
+				<sl-button variant="success" pill class="btn-commit" @click="${this.handleCommit}">Save</sl-button>
 			</div>
-		</sl-details>
-		<div class="edit-tools">
-			<sl-switch id="load-webgl" ?checked=${this.loadWebGL}>Load WebGL Elements</sl-switch>
-		</div>
-		<div class="edit-container">
-			<div class="edit-body">
+			<div class="body-container">
 				<div class="edit-panel">
-					<textArea id="editPostTextBox"> </textArea>
+					<textArea id="editPostTextBox" name="body"> </textArea>
 				</div>
 				<div class="preview-panel">
 					<div id="previewPostBox"> </div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</form>
 </div>
 		    `;
 	}
