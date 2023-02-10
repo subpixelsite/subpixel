@@ -19,15 +19,7 @@ const routes = [
 				children: [
 					{
 						path: '',
-						redirect: 'home'
-					},
-					{
-						path: 'home',
-						component: 'lit-home',
-						action: async () =>
-						{
-							await import( './content/home.js' );
-						}
+						redirect: 'posts'
 					},
 					{
 						path: 'posts',
@@ -48,11 +40,11 @@ const routes = [
 				]
 			},
 			{
-				path: 'about',
-				component: 'lit-about',
+				path: 'faq',
+				component: 'lit-faq',
 				action: async () =>
 				{
-					await import( './about/about.js' );
+					await import( './faq/faq.js' );
 				}
 			},
 			{

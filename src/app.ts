@@ -46,11 +46,9 @@ export class App extends LitElement
 		}
 		`];
 
-	@property() homeClass: string = '';
-
 	@property() postsClass: string = '';
 
-	@property() aboutClass: string = '';
+	@property() faqClass: string = '';
 
 	pageNavEvent( e: Event )
 	{
@@ -60,9 +58,8 @@ export class App extends LitElement
 		const active = 'pageActive';
 		const inactive = 'pageInactive';
 
-		this.homeClass = ( detail === 'home' ) ? active : inactive;
 		this.postsClass = ( detail === 'posts' ) ? active : inactive;
-		this.aboutClass = ( detail === 'about' ) ? active : inactive;
+		this.faqClass = ( detail === 'faq' ) ? active : inactive;
 	}
 
 	constructor()
@@ -94,9 +91,8 @@ export class App extends LitElement
 					<span class="title-text"><span class="title-capital">S</span><span class="title-lower">UB</span><span class="title-capital">P</span><span class="title-lower">IXEL</span></span>
 				</div>
 				<div class="navButtons">
-					<sl-button class=${this.homeClass}  variant="text" name="Home"  href="/">HOME</sl-button>
 					<sl-button class=${this.postsClass} variant="text" name="Posts" href="posts">POSTS</sl-button>
-					<sl-button class=${this.aboutClass} variant="text" name="About" href="about">ABOUT</sl-button>
+					<sl-button class=${this.faqClass} variant="text" name="FAQ" href="faq">FAQ</sl-button>
 				</div>
 			</div>
 		</nav>

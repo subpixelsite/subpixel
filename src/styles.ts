@@ -2,8 +2,10 @@ import { css } from 'lit';
 
 export const Colors = css`
 	* {
+		--col-primary-darker: rgb( 63, 82, 97);
 		--col-primary-dark: #648198;
 		--col-primary-light: #7ac6ff;
+		--col-primary-lighter: rgb( 185, 225, 255 );
 		--col-bg-light: #efefef;
 	}
 `;
