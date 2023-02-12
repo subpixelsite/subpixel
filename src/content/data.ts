@@ -88,13 +88,14 @@ export class Database
 				hdrAlt: 'A red box with a blue slash across it, signifying nothing',
 				description:
 					'What is the purpose of texture filtering?  Why would I ever choose blurry over sharp?',
-				body: `# Header 1
-	Man I hope this works.
-	- maybe a list?
-	- Could be!
-	- If not, I'm fucked
+				body: `
+# Header 1 
+Man I hope this works. 
+- maybe a list? 
+- Could be! 
+- If not, I'm fucked 
 
-	*__SERIOUSLY FUCKED__*
+*__SERIOUSLY FUCKED__* 
 			`
 			}
 		);
@@ -113,9 +114,13 @@ export class Database
 				hdrAlt: 'A cat wondering when this is going to get done',
 				description:
 					"Why do we need it?  What is the best kind, and why can't we always do that?",
-				body: `<b>WebGL Test</b><p>
-			<web-gl width="128px" height="128px" fontsize="24" src="assets/test/webgl1.json"/><p>
-			<web-gl width="100%" height="256px" fontsize="24" src="assets/test/webgl1.json"/>`
+				body: `<b>WebGL Test</b><p> 
+
+<web-gl fontsize="24" src="assets/test/webgl1.json"></web-gl> 
+
+<web-gl fontsize="24" src="assets/test/webgl1.json"></web-gl> 
+
+`
 			}
 		);
 

@@ -107,6 +107,7 @@ export class WebGLElement extends LitElement
 	static styles = css`
 		.web-gl-container {
 			display:inline-block;
+			overflow: hidden;
 			width: 100%;
 			height: 100%;
 		}
@@ -267,6 +268,7 @@ export class WebGLElement extends LitElement
 					<tspan dx="0%">.<animate attributeName="opacity" values="0.2;1;1;0.2" dur="2s" begin="-0.5s" repeatCount="indefinite"/></tspan>
 					<tspan dx="0%">.<animate attributeName="opacity" values="0.2;1;1;0.2" dur="2s" repeatCount="indefinite"/></tspan>
 				</text>
+				<rect width="100%" height="100%" opacity="0%" fill="#dfdfdf"><animate attributeName="opacity" values="1;1;0" dur="1.0s"></rect>
 			</svg>`;
 	}
 

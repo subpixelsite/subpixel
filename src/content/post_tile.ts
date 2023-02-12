@@ -157,7 +157,7 @@ export class PostTile extends AppElement
 			if ( href.endsWith( 'json' ) )
 			{
 				// eslint-disable-next-line max-len
-				const embed = `<web-gl slot="image" width="100%" height="202px" alwaysload=true class="post-visual" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
+				const embed = `<web-gl slot="image" width="100%" height="200px" alwaysload=true class="post-visual" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
 				return html`${unsafeHTML( embed )}`;
 			}
 

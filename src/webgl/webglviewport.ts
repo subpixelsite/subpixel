@@ -9,6 +9,26 @@ import { WebGLPlane } from './webglplane.js';
 import { WebGLSphere } from './webglsphere.js';
 import { WebGLElement } from './webglelement.js';
 
+class Rect
+{
+	top: number = 0;
+	bottom: number = 0;
+	left: number = 0;
+	right: number = 0;
+
+	static fromDOMREct( domRect: DOMRect ): Rect
+	{
+		const rect = new Rect();
+
+		rect.top = domRect.top;
+		rect.bottom = domRect.bottom;
+		rect.left = domRect.left;
+		rect.right = domRect.right;
+
+		return rect;
+	}
+}
+
 export class WebGLViewport
 {
 	static fadeInDurSecs: number = 0.2;
@@ -130,16 +150,49 @@ export class WebGLViewport
 		return this.scene !== undefined;
 	}
 
+	rectIntersect( rect1: Rect, rect2: Rect ): Rect
+	{
+		const rect = new Rect();
+
+		rect.top = Math.max( rect1.top, rect2.top );
+		rect.bottom = Math.min( rect1.bottom, rect2.bottom );
+		rect.right = Math.min( rect1.right, rect2.right );
+		rect.left = Math.max( rect1.left, rect2.left );
+
+		// keep the rect from going inside out
+		if ( rect.top > rect.bottom )
+			rect.top = rect.bottom;
+		if ( rect.left > rect.right )
+			rect.left = rect.right;
+
+		return rect;
+	}
+
+	getVisibleBoundingRect( rect: Rect, element: HTMLElement | null ): Rect
+	{
+		if ( element === null )
+			throw new Error( 'Starting element in getVisibleBoundingRect is null' );
+
+		do
+		{
+			const parent: HTMLElement | null = element!.parentElement;
+			if ( parent !== null )
+			{
+				const parentRect = Rect.fromDOMREct( parent.getBoundingClientRect() );
+				rect = this.rectIntersect( rect, parentRect );
+			}
+
+			element = parent;
+		} while ( element !== document.body && element !== null );
+
+		return rect;
+	}
+
 	render( timeDeltaSecs: number, timeAccumSecs: number )
 	{
 		const webgl = WebGL.getInstance();
 		const { gl, canvas } = webgl;
 		if ( gl === undefined || canvas === undefined || this.scene === undefined )
-			return;
-
-		const rect = this.container.getBoundingClientRect();
-		if ( rect.bottom < 0 || rect.top > canvas.clientHeight
-			|| rect.right < 0 || rect.left > canvas.clientWidth )
 			return;
 
 		if ( this.texturesLoading > 0 )
@@ -155,6 +208,9 @@ export class WebGLViewport
 		if ( timeAccumSecs > this.fadeEnd )
 		{
 			this.fadeEnd = 0.0;
+			// turn off loading SVG so it doesn't interfere with visibility DOM calculations
+			for ( let i = 0; i < this.container.children.length; i++ )
+				this.container.children.item( i )?.remove();
 		}
 		else
 		{
@@ -162,14 +218,26 @@ export class WebGLViewport
 			fadeValue = Math.min( fadeValue, 1.0 );
 		}
 
+		// The boundingClientRect from WebGLElement isn't trustworthy, so use the Div rect but start from the web-gl element.
+		const viewRect = this.container.getBoundingClientRect();
+		const visRect = this.getVisibleBoundingRect( viewRect, this.element );
+		const visWidth = visRect.right - visRect.left;
+		const visHeight = visRect.bottom - visRect.top;
+
+		if ( visWidth === 0 || visHeight === 0 )
+			return;
+
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
 			console.log( 'Rendering element' );
 
-		const width = rect.right - rect.left;
-		const height = rect.bottom - rect.top;
-		const { left } = rect;
-		const bottom = canvas.clientHeight - rect.bottom - 1;
+		const vpWidth = viewRect.right - viewRect.left;
+		const vpHeight = viewRect.bottom - viewRect.top;
+		const vpLeft = viewRect.left;
+		const vpBottom = canvas.clientHeight - viewRect.bottom - 1;
+
+		const visLeft = visRect.left;
+		const visBottom = canvas.clientHeight - visRect.bottom - 1;
 
 		gl.enable( gl.SCISSOR_TEST );
 		gl.clearColor(
@@ -181,8 +249,8 @@ export class WebGLViewport
 		gl.clearDepth( this.scene.clearDepth! );
 		gl.clearStencil( this.scene.clearStencil! );
 
-		gl.viewport( left, bottom, width, height );
-		gl.scissor( left, bottom, width, height );
+		gl.viewport( vpLeft, vpBottom, vpWidth, vpHeight );
+		gl.scissor( visLeft, visBottom, visWidth, visHeight );
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
 
 		gl.enable( gl.CULL_FACE );
@@ -190,7 +258,7 @@ export class WebGLViewport
 		// Calculate common matrices to update each object's uniforms
 		const projection = m4.perspective(
 			( this.scene.fovYDeg! * Math.PI ) / 180,
-			width / height,
+			vpWidth / vpHeight,
 			this.scene.near!,
 			this.scene.far!
 		);
