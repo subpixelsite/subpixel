@@ -36,6 +36,8 @@ export class WebGL
 		instance.canvas = canvas;
 
 		instance.render = instance.render.bind( instance );
+
+		instance.addEventListeners();
 	}
 
 	public static getNextID(): number
@@ -50,10 +52,10 @@ export class WebGL
 	public gl?: WebGLRenderingContext;
 	public canvas?: HTMLCanvasElement;
 
-	private animated: number = 0;
+	private animated: boolean = false;
 	private viewports: WebGLViewport[] = [];
 
-	private requestId?: number;
+	private singleRequestId?: number;
 	private lastTimeSecs: number = 0;
 
 	private loadEnabled: boolean = true;
@@ -74,20 +76,39 @@ export class WebGL
 	{
 		this.viewports.push( viewport );
 		viewport.setLoadEnabled( this.loadEnabled );
-
-		// See task in CML file, this is not ideal
-		window.addEventListener( 'resize', () => this.queueRender );
-		window.addEventListener( 'scroll', () => this.queueRender );
 	}
 
-	public setAnimated( isAnimated: boolean )
+	public addEventListeners()
 	{
-		this.animated += isAnimated ? 1 : -1;
+		window.addEventListener( 'resize', () => this.resizeEvent() );
+		document.body.addEventListener( 'scroll', () => this.scrollEvent() );
+	}
 
-		if ( this.animated < 0 )
-			throw new Error( 'WebGL animated refcount is less than zero' );
+	public updateAnimated()
+	{
+		this.animated = false;
+
+		for ( let i = 0; i < this.viewports.length; i++ )
+		{
+			if ( this.viewports.at( i )!.getAnimated() )
+			{
+				this.animated = true;
+				break;
+			}
+		}
 
 		this.requestNewRender();
+	}
+
+	public isAnyFading()
+	{
+		for ( let i = 0; i < this.viewports.length; i++ )
+		{
+			if ( this.viewports.at( i )!.isFading() )
+				return true;
+		}
+
+		return false;
 	}
 
 	// public setProgramInfo( vs: string, fs: string, obj: WebGLObject )
@@ -136,32 +157,55 @@ export class WebGL
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
 			console.log( `Rendering... elements ${this.viewports.length}, animated: ${this.animated}` );
+
+		this.singleRequestId = undefined;
 	}
 
-	singleRender( t: number )
+	private singleRender( t: number )
 	{
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
-			console.log( 'Render requested' );
+			console.log( 'Single render' );
 
 		this.render( t );
-		this.requestId = undefined;
 	}
 
-	queueRender()
+	private queueRender()
 	{
-		if ( this.requestId === undefined )
-			this.requestId = requestAnimationFrame( () => this.singleRender );
+		if ( WebGL.DEBUG_RENDERS )
+			// eslint-disable-next-line no-console
+			console.log( `queue render event animated:${this.animated} id:${this.singleRequestId}` );
+
+		// If a render isn't already in flight (eg, animated), request a new single
+		if ( this.singleRequestId === undefined )
+			this.singleRequestId = requestAnimationFrame( ( t: number ) => this.singleRender( t ) );
+	}
+
+	public resizeEvent()
+	{
+		for ( let i = 0; i < this.viewports.length; i++ )
+			this.viewports.at( i )!.onResizeEvent();
+
+		this.requestNewRender();
+	}
+
+	public scrollEvent()
+	{
+		this.requestNewRender();
 	}
 
 	public requestNewRender()
 	{
-		if ( this.animated > 0 )
+		if ( WebGL.DEBUG_RENDERS )
+			// eslint-disable-next-line no-console
+			console.log( 'request new render' );
+
+		if ( this.animated || this.isAnyFading() )
 		{
 			const renderContinuously = ( t: number ) =>
 			{
 				this.render( t );
-				if ( this.animated > 0 )
+				if ( this.animated || this.isAnyFading() )
 					requestAnimationFrame( renderContinuously );
 			};
 			requestAnimationFrame( renderContinuously );
@@ -176,10 +220,7 @@ export class WebGL
 	{
 		// Clear all added elements
 		this.viewports.length = 0;
-		this.animated = 0;
-
-		window.removeEventListener( 'resize', () => this.queueRender );
-		window.removeEventListener( 'scroll', () => this.queueRender );
+		this.animated = false;
 
 		this.requestNewRender();
 	}

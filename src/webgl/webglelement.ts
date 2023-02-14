@@ -149,7 +149,7 @@ export class WebGLElement extends LitElement
 		this.divID = `web-gl-container-${this.idNumber}`;
 	}
 
-	private onResizeEvent()
+	public onResizeEvent()
 	{
 		const fontSizeFudgeRatio = 0.6;
 
@@ -174,7 +174,6 @@ export class WebGLElement extends LitElement
 	{
 		super.connectedCallback();
 
-		window.addEventListener( 'resize', () => this.onResizeEvent(), { capture: false, passive: true } );
 		// Fire off an initial resize event to get an SVG text update if needed
 		this.onResizeEvent();
 	}
@@ -182,8 +181,6 @@ export class WebGLElement extends LitElement
 	disconnectedCallback(): void
 	{
 		super.disconnectedCallback();
-
-		window.removeEventListener( 'resize', () => this.onResizeEvent() );
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

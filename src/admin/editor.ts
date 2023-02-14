@@ -382,6 +382,9 @@ export class EditorPage extends AppElement
 			textArea.scrollTop = ( textArea.scrollHeight - textArea.clientHeight ) * scrollScale;
 			this.resetScrollTimer();
 		}
+
+		const webgl = WebGL.getInstance();
+		webgl.requestNewRender();
 	}
 
 	connectedCallback(): void
@@ -451,8 +454,8 @@ export class EditorPage extends AppElement
 		} );
 
 		// Try to make scrolling match by document %
-		textArea.addEventListener( 'scroll', () => this.scrollPreview() );
-		previewArea.addEventListener( 'scroll', () => this.scrollTextArea() );
+		textArea.addEventListener( 'scroll', () => this.scrollPreview(), { capture: false, passive: true } );
+		previewArea.addEventListener( 'scroll', () => this.scrollTextArea(), { capture: false, passive: true } );
 	}
 
 	private handleCommit()
@@ -501,7 +504,7 @@ export class EditorPage extends AppElement
 				<sl-details summary="Post Data" class="info-details">
 					<div class="info-panel">
 						<div class="input-panel-left">
-							<sl-input class="edit-input" size=small label="ID" pill readonly name="id" .value=${this.post!.id.toString()}></sl-input>
+							<sl-input class="edit-input" size=small label="ID" pill readonly name="id" .value=${this.post!.id}></sl-input>
 							<sl-input class="edit-input" size=small label="Title" pill name="title" .value=${this.post!.title}></sl-input>
 							<sl-input class="edit-input" size=small label="Tags" pill name="tags" .value=${this.post!.tags}></sl-input>
 							<sl-input class="edit-input" size=small label="Created" pill disabled readonly name="dateCreated" .value=${new Date( this.post!.dateCreated ).toString()}></sl-input>

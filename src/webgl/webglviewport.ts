@@ -69,6 +69,10 @@ export class WebGLViewport
 
 	init( scene: WebGLScene )
 	{
+		if ( WebGL.DEBUG_RENDERS )
+			// eslint-disable-next-line no-console
+			console.log( `begin init: ${this.container.id}` );
+
 		const webgl = WebGL.getInstance();
 		const { gl } = webgl;
 		if ( gl === undefined )
@@ -115,6 +119,10 @@ export class WebGLViewport
 					if ( this.texturesLoading < 0 )
 						throw new Error( 'Texture load reference count mismatch' );
 
+					if ( WebGL.DEBUG_RENDERS )
+						// eslint-disable-next-line no-console
+						console.log( `texture loaded: ${this.container.id}: '${data.diffuse!.url}'` );
+
 					webgl.requestNewRender();
 				} );
 			}
@@ -142,12 +150,26 @@ export class WebGLViewport
 			this.drawObjects.push( drawObj );
 		} );
 
-		webgl.setAnimated( this.getAnimated() );
+		webgl.updateAnimated();
+
+		if ( WebGL.DEBUG_RENDERS )
+			// eslint-disable-next-line no-console
+			console.log( `begin init: ${this.container.id}` );
 	}
 
 	public isInitialized(): boolean
 	{
 		return this.scene !== undefined;
+	}
+
+	public isFading(): boolean
+	{
+		return this.fadeEnd !== 0.0;
+	}
+
+	public onResizeEvent()
+	{
+		this.element?.onResizeEvent();
 	}
 
 	rectIntersect( rect1: Rect, rect2: Rect ): Rect
@@ -229,7 +251,7 @@ export class WebGLViewport
 
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
-			console.log( 'Rendering element' );
+			console.log( `Rendering element ${this.container.id}: ${this.drawObjects.length} objects` );
 
 		const vpWidth = viewRect.right - viewRect.left;
 		const vpHeight = viewRect.bottom - viewRect.top;

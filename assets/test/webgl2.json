@@ -1,0 +1,48 @@
+{
+	"fovYDeg": "45",
+	"lookAt": ["0", "1", "0"],
+	"objects": [
+		{
+			"vs": "pos.vs",
+			"fs": "col.fs",
+			"xform": [],
+			"plane": {
+				"width": "4",
+				"height": "4"
+			}
+		},
+		{
+			"vs": "postex.vs",
+			"fs": "tex.fs",
+			"xform": [
+				{
+					"pos": ["-1.0", "0.5", "-1.0"]
+				}
+			],
+			"cube": {
+				"size": "1"
+			},
+			"diffuse": {
+				"url": "https://farm6.staticflickr.com/5795/21506301808_efb27ed699_q_d.jpg"
+			},
+			"color": [
+				{
+					"color": ["1.0", "1.0", "0.0"],
+					"alpha": "1.0"
+				}
+			]
+		},
+		{
+			"vs": "pos.vs",
+			"fs": "col.fs",
+			"xform": [
+				{
+					"pos": ["0", "2", "0"]
+				}
+			],
+			"sphere": {
+				"radius": "1"
+			}
+		}
+	]
+}

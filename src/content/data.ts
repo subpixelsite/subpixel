@@ -138,7 +138,11 @@ Man I hope this works.
 				hdrHref: '',
 				description:
 					"What is it?  How do you control it, and why don't you always use it?",
-				body: ''
+				body: `<b>WebGL Test</b><p> 
+
+<web-gl fontsize="24" src="assets/test/webgl2.json"></web-gl> 
+
+`
 			}
 		);
 	}

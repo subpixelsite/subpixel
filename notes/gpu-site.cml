@@ -3,7 +3,7 @@
 
 == TOPICS
 
-# WebGL not clipping to owning window properly (see test post in Editor preview)
++ # WebGL not clipping to owning window properly (see test post in Editor preview)
 # Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
 # After editing with webgl load off, main post page doesn't load webgl either
 = Admin page
@@ -28,13 +28,19 @@
 	- Support interaction, like click/drag-to-move camera (or button for different ortho)
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
-	! Massive inefficiency in WebGL with viewports, resizing/scrolling, rendering
-		- Right now, it sets up new global window listeners for resize and scroll for each new viewport
+	+ Massive inefficiency in WebGL with viewports, resizing/scrolling, rendering
+		+ Right now, it sets up new global window listeners for resize and scroll for each new viewport
 			> It only cleans up one each on navigate away
-		- If any resize or scroll event happens, it does a full render for each listener that fires, rendering ALL viewports no matter which was actually affected
-		- Ideal version: one listener set for each viewport, rendering only the affected ones on events
-			- Viewports hold the listeners, trigger renders, and clean them up themselves
-			- WebGL object can still do global renders, but it seems like de-centralizing would be a win here
+		+ If any resize or scroll event happens, it does a full render for each listener that fires, rendering ALL viewports no matter which was actually affected
+		x Ideal version: one listener set for each viewport, rendering only the affected ones on events
+			x Viewports hold the listeners, trigger renders, and clean them up themselves
+				> Elements already clean up their resize listener
+			+ WebGL object can still do global renders, but it seems like de-centralizing would be a win here
+			> Unfortunately, knowing which <web-gl> is under which scrolling <div> is very difficult due to Shadow DOM, so a single global re-render on scroll is best
+		+ The WebGL instance can hold a single listener each for window.resize and document.body.scroll -- it never needs to clean them up
+			+ WebGLElement will handle its own scroll logic based on calls via WebGLViewport
+		+ # There is a bug with rendering single anims that has them failing to draw the first frame due to fade-in
+			+ Animate when fading in regardless of anim status of scene
 = Wrap <svg> with component that supports aspect-ratio
 	- Take "aspect-ratio" property
 	? Override "width" and "height"
