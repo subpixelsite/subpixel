@@ -37,6 +37,12 @@ export class App extends withTwind( LitElement )
 		}
 		`];
 
+	private quips = [
+		'Join the army, they say',
+		'See the world, they say',
+		"I'd rather be sailing"
+	]
+
 	@property() postsClass: string = '';
 
 	@property() faqClass: string = '';
@@ -78,6 +84,11 @@ export class App extends withTwind( LitElement )
 		window.location.href = '/';
 	}
 
+	getQuip(): string
+	{
+		return this.quips[Math.floor( Math.random() * this.quips.length )];
+	}
+
 	render()
 	{
 		return html`
@@ -104,7 +115,7 @@ export class App extends withTwind( LitElement )
 							</g>
 						</svg>
 					</div>
-					<div class="self-end justify-self-start pb-1 text-sm text-white font-sans">I'd rather be sailing</div>
+					<div class="self-end justify-self-start pb-1 text-sm text-white font-sans">${this.getQuip()}</div>
 					<div class="grow"></div>
 					<div class="navButtons m-[var(--navbutton-margin)] flex flex-wrap">
 						<sl-button class="${this.postsClass}" variant="text" name="Posts" href="posts">POSTS</sl-button>
