@@ -36,16 +36,16 @@ const routes = [
 						{
 							await import( './content/post_item.js' );
 						}
+					},
+					{
+						path: 'faq',
+						component: 'lit-faq',
+						action: async () =>
+						{
+							await import( './faq/faq.js' );
+						}
 					}
 				]
-			},
-			{
-				path: 'faq',
-				component: 'lit-faq',
-				action: async () =>
-				{
-					await import( './faq/faq.js' );
-				}
 			},
 			{
 				path: 'admin',

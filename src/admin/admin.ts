@@ -3,7 +3,7 @@ import { html, css } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { customElement, property } from 'lit/decorators.js';
 import { AppElement } from '../appelement.js';
-import { NavButtonStyles } from '../styles.js';
+import { Geometry, NavBarStyles } from '../styles.js';
 // import { POSTS } from './data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 
@@ -12,15 +12,15 @@ import '@shoelace-style/shoelace/dist/components/button/button.js';
 export class AdminPage extends AppElement
 {
 	static styles = [
-		NavButtonStyles,
+		NavBarStyles,
+		Geometry,
 		css`
 		.admin-top {
 			display:flex;
 			flex-direction:column;
+			width: 100vw;
 			height: calc(100vh - 120px);
-			margin: 0 calc(50% - 50vw);
 			margin-top: 0;
-			overflow: none;
 		}
 
 		.topNav {
@@ -79,11 +79,11 @@ export class AdminPage extends AppElement
 	render()
 	{
 		return html`
-<div class="admin-top">
-	<nav class="topNav">
-		<div class="navContent">
-			<div class="navTitle">
-				<span class="title-text">ADMIN</span>
+<div class="admin-top !w-screen font-sans bg-gray-200">
+	<nav class="bg-gray-500">
+		<div class="bg-[#ba2828] flex justify-between items-center gap-2.5 px-4 m-auto w-pw max-w-pw overflow-visible">
+			<div class="justify-start pl-5 inline-block">
+				<span class="title-text text-white font-semibold">ADMIN</span>
 			</div>
 			<div class="navButtons">
 				<sl-button class=${this.listClass}   variant="text" name="List"   href="admin/list">LIST</sl-button>

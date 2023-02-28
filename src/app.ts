@@ -1,3 +1,4 @@
+/* eslint-disable lit-a11y/click-events-have-key-events */
 /* eslint-disable max-len */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { LitElement, html, css } from 'lit';
@@ -8,41 +9,31 @@ import '@shoelace-style/shoelace/dist/components/alert/alert.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import 'reflect-metadata';
-import { Colors, NavButtonStyles } from './styles.js';
+import install from '@twind/with-web-components';
+import config from './twind.config.js';
+import { Geometry, Colors, NavBarStyles } from './styles.js';
 import { initPostData } from './content/post_data.js';
+
+const withTwind = install( config );
 
 @customElement( 'lit-app' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export class App extends LitElement
+export class App extends withTwind( LitElement )
 {
 	static styles = [
 		baseStyles,
+		Geometry,
 		Colors,
-		NavButtonStyles,
+		NavBarStyles,
 		css`
-		.topNav {
-			background-color: var(--col-primary-dark);
+		.title-link {
+			position: relative;
 		}
 
-		.title-capital {
-			font-weight: 600;
-			vertical-align: text-top;
-			letter-spacing: 0.00015em;
-		}
-
-		.title-lower {
-			font-size: 1.75rem;
-			font-weight: var(--sl-font-weight-bolder);
-			vertical-align: 17%;
-		}
-
-		.content {
-			display: block;
-			width: 1140px;
-			padding-left: 15px;
-			padding-right: 15px;
-			margin: auto;
-			overflow: none;
+		.title {
+			position: absolute;
+			left: 0;
+			top: 0;
 		}
 		`];
 
@@ -82,22 +73,46 @@ export class App extends LitElement
 		this.removeEventListener( 'pageNav', this.pageNavEvent );
 	}
 
+	goHome(): void
+	{
+		window.location.href = '/';
+	}
+
 	render()
 	{
 		return html`
-		<nav class="topNav">
-			<div class="navContent">
-				<div class="navTitle">
-					<span class="title-text"><span class="title-capital">S</span><span class="title-lower">UB</span><span class="title-capital">P</span><span class="title-lower">IXEL</span></span>
+		<div class="bg-gray-200 min-w-screen h-screen">
+			<nav class="bg-gray-500">
+				<div class="bg-primary-700 flex justify-between items-center gap-2.5 px-4 m-auto max-w-pw overflow-visible">
+					<div class="justify-start pl-4 inline-block font-mono">
+						<svg width="216px" height="40px" viewBox="0 0 216 40">
+							<title>SUBPIXEL</title>
+							<g style="overflow:hidden; font-size:45; font-weight: 800; font-family: Fira Code">
+								<defs>
+									<mask id="textMask">
+										<text style="fill:white;" x="0" y="35">SUBPIXEL</text>
+									</mask>
+									<filter id="innerShadow" x="-20%" y="-20%" width="140%" height="140%">
+										<feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+										<feOffset in="blur" dx="2" dy="2"/>
+									</filter>
+								</defs>
+								<g mask="url(#textMask)">
+									<rect x="0" y="0" width="216" height="40" style="fill:#7f7f7f"/>
+									<text style="fill: #ffffff; filter: url(#innerShadow)" x="0" y="35" @click=${() => this.goHome()} cursor="pointer">SUBPIXEL</text>
+								</g>
+							</g>
+						</svg>
+					</div>
+					<div class="self-end justify-self-start pb-1 text-sm text-white font-sans">I'd rather be sailing</div>
+					<div class="grow"></div>
+					<div class="navButtons m-[var(--navbutton-margin)] flex flex-wrap">
+						<sl-button class="${this.postsClass}" variant="text" name="Posts" href="posts">POSTS</sl-button>
+						<sl-button class="${this.faqClass}" variant="text" name="FAQ" href="faq">FAQ</sl-button>
+					</div>
 				</div>
-				<div class="navButtons">
-					<sl-button class=${this.postsClass} variant="text" name="Posts" href="posts">POSTS</sl-button>
-					<sl-button class=${this.faqClass} variant="text" name="FAQ" href="faq">FAQ</sl-button>
-				</div>
-			</div>
-		</nav>
-		<div class="content">
-			<slot></slot>
+			</nav>
+				<slot></slot>
 		</div>
 		`;
 	}

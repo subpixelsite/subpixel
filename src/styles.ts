@@ -1,19 +1,71 @@
 import { css } from 'lit';
 
-export const Colors = css`
+export const Geometry = css`
 	* {
-		--col-primary-darker: rgb( 63, 82, 97);
-		--col-primary-dark: #648198;
-		--col-primary-light: #7ac6ff;
-		--col-primary-lighter: rgb( 185, 225, 255 );
-		--col-bg-light: #efefef;
+		--pw: 60rem;
+	}
+
+	.max-w-pw {
+		max-width: var(--pw);
+	}
+
+	.w-pw {
+		width: var(--pw);
 	}
 `;
 
-export const NavButtonStyles = css`
+export const Colors = css`
+	* {
+		--col-bg-light: #efefef;
+	}
+	/* Shoelace theme - #1b8ceb, #70889d */
+	:root,
+	:host,
+	.sl-theme-light {
+		--sl-color-primary-50: #FFFFFF;
+		--sl-color-primary-100: #FCFEFF;
+		--sl-color-primary-200: #D6EAFB;
+		--sl-color-primary-300: #9ACCF6;
+		--sl-color-primary-400: #53A8F0;
+		--sl-color-primary-500: #1b8ceb;
+		--sl-color-primary-600: #1172C4;
+		--sl-color-primary-700: #0E5DA0;
+		--sl-color-primary-800: #0C5089;
+		--sl-color-primary-900: #0A4577;
+		--sl-color-primary-950: #072C4B;
+
+		--sl-color-gray-50: #f9fafb;
+		--sl-color-gray-100: #f3f4f6;
+		--sl-color-gray-200: #e5e7eb;
+		--sl-color-gray-300: #d1d5db;
+		--sl-color-gray-400: #9ca3af;
+		--sl-color-gray-500: #6b7280;
+		--sl-color-gray-600: #4b5563;
+		--sl-color-gray-700: #374151;
+		--sl-color-gray-800: #1f2937;
+		--sl-color-gray-900: #111827;
+		--sl-color-gray-950: #0d131e;
+	}
+
+	:root {
+		a {
+			color: red;
+		}
+	}
+`;
+
+export const NavBarStyles = css`
+
+	* {
+		--navbutton-margin: 4px;
+		/* specified in svg */
+		--navbar-text-height: 40px;
+
+		--navbar-height: calc(var(--navbutton-margin) * 2 + var(--navbar-text-height));
+		--h-content: calc(100vh - var(--navbar-height));
+	}
 
 	.navButtons > sl-button {
-		margin: 10px;
 		--txt-shadow-size: 8px;
 		--txt-shadow-col: rgba(0, 0, 0, 0.5);
 	}
@@ -36,7 +88,7 @@ export const NavButtonStyles = css`
 	}
 	
 	.navButtons > sl-button.pageInactive::part(base) {
-		color: var(--col-primary-light);
+		color: var(--sl-color-gray-400);
 	}
 
 	.navButtons > sl-button::part(label):hover {
@@ -46,38 +98,6 @@ export const NavButtonStyles = css`
 	.navButtons > sl-button::part(base):hover {
 		transform: translate(-2px, -2px);
 		color: white;
-	}
-
-	.navContent > .navButtons {
-		display: flex;
-		flex-wrap: wrap;
-		justify-items: space-between;
-	}
-
-	.navContent {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 10px 10px;
-		padding-left: 15px;
-		padding-right: 15px;
-		margin: auto;
-		max-width: 1140px;
-		overflow: visible;
-	}
-	
-	.navTitle {
-		justify-content: flex-start;
-		padding-left: 15px;
-		display: inline-block;
-		font-family: monospace;
-	}
-
-	.title-text {
-		font-size: var(--sl-font-size-2x-large);
-		font-weight: var(--sl-font-weight-bold);
-		letter-spacing: 0.05em;
-		color: #ffffff;
 	}
 
 	@media(max-width: 768px) {

@@ -48,16 +48,13 @@ export class PostTile extends AppElement
 		margin-left: 1em;
 	}
 	.post-description {
-		font-weight: var(--sl-font-weight-light);
+		font-weight: var(--sl-font-weight-normal);
 		font-size: var(--sl-font-size-normal);
 		display: inline-block;
 		margin-top: 1em;
 	}
 	.post-footer {
 		text-align: right;
-	}
-	.post-link {
-		color: #008cba;
 	}
 	.footer-item > sl-button::part(base):hover {
 		transform: translate(-2px, -2px);
@@ -200,7 +197,7 @@ export class PostTile extends AppElement
 							<sl-relative-time .date="${this.getDateObject()}" format="long" sync></sl-relative-time>
 						</div>
 						<div class="footer-item" align-items="flex-end">
-							<sl-button variant="primary" pill class="post-link" @click="${this.handleClick}">Read More</sl-button>
+							<sl-button variant="primary" pill @click="${this.handleClick}">Read More</sl-button>
 						</div>
 					</div>
 				</div>

@@ -11,15 +11,8 @@ import { PostData } from './post_data.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PostList extends AppElement
 {
-	static styles = css`
-		.posts-container {
-			padding-top: 30px;
-			display: flex;
-			justify-content: flex-start;
-			flex-wrap: wrap;
-			gap: 30px 30px;
-		}
-	`;
+	// static styles = css`
+	// `;
 
 	@property( { type: Array } ) posts?: PostData[];
 
@@ -66,7 +59,8 @@ export class PostList extends AppElement
 		const posts = db.getPostsList();
 
 		return html`
-		<div class="posts-container">
+
+		<div class="flex flex-wrap justify-around p-8 gap-8">
 			${posts?.map( post => html`<post-tile .post="${post}"></post-tile>` )}
 		</div>
     `;
