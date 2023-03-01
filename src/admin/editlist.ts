@@ -15,29 +15,8 @@ import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 export class EditList extends AppElement
 {
 	static styles = css`
-		.top {
-			height: calc( 100vh - 120px );
-			display: flex;
-			flex-wrap: wrap;
-			flex-direction: column;
-			justify-content: flex-start;
-		}
-
-		.posts-container {
-			display: flex;
-			justify-content: flex-start;
-			flex-wrap: wrap;
-			overflow-y: scroll;
-			/* height: 160px; */
-			border: 2px solid #000000;
-		}
-
-		.posts-table {
-			border-collapse: collapse;
-			margin: 0;
-			font-size: 0.9em;
-			width: 100%;
-			box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+		* {
+			--h-admin-top: calc( 100vh - var(--h-navbar) * 2 );
 		}
 
 		.posts-table thead tr {
@@ -76,34 +55,8 @@ export class EditList extends AppElement
 
 		.posts-table tbody tr:hover {
 			transform: translate( -1px, -1px );
-			text-shadow: 4px 4px 4px #d2d2d2, 0 0 20px #39a9ff;
+			text-shadow: 4px 4px 4px #d2d2d2, 0 0 20px var(--sl-color-primary-600);
 			cursor: pointer;
-		}
-
-		.post-id {
-			font-family: monospace;
-			font-size: 1.0em;
-			max-width: fit-content
-		}
-
-		.post-title {
-			font-weight: var(--sl-font-weight-bold);
-			min-width: 15vw;
-		}
-
-		.post-tags {
-			display: flex;
-			flex: wrap;
-			min-width: 10vw;
-		}
-
-		.post-tag {
-			display: flex;
-			margin-left: 5px;
-		}
-
-		.post-created {
-			font-family: monospace;
 		}
 	`;
 
@@ -157,9 +110,9 @@ export class EditList extends AppElement
 		this.dispatchEvent( event );
 
 		return html`
-<div class="top">
-	<div class="posts-container">
-		<table class="posts-table">
+<div class="h-[var(--h-admin-top)] flex flex-wrap flex-col justify-start">
+	<div class="overflow-y-auto flex flex-wrap justify-start border-solid border-2 border-black">
+		<table class="posts-table border-collapse m-0 text-sm w-full">
 			<thead><tr>
 				<th>ID</th>
 				<th>Title</th>
@@ -167,14 +120,14 @@ export class EditList extends AppElement
 				<th>Created</th>
 				<th>Description</th>
 			</tr></thead>
-			<tbody>
+			<tbody class="text-xs">
 				${this.posts?.map( post => html`
 				<tr id='${post.id}' @click='${this.goToPost}'>
-					<td class='post-id'>${post.id}</td>
-					<td class='post-title'>${post.title}</td>
-					<td class='post-tags'>${getTagsArray( post.tags ).map( tag => html`<sl-tag class="post-tag" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
-					<td class='post-created'>${new Date( post.dateCreated ).toLocaleDateString( 'en-US', { day: '2-digit', month: '2-digit', year: 'numeric' } )}</td>
-					<td class='post-description'>${post.description}</td>
+					<td class='font-mono text-sm min-w-max'>${post.id}</td>
+					<td class='font-bold min-w-max'>${post.title}</td>
+					<td class='flex flex-wrap min-w-max gap-1'>${getTagsArray( post.tags ).map( tag => html`<sl-tag class="" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
+					<td class='font-mono'>${new Date( post.dateCreated ).toLocaleDateString( 'en-US', { day: '2-digit', month: '2-digit', year: 'numeric' } )}</td>
+					<td class=''>${post.description}</td>
 				</tr>
 				` )}
 			</tbody>

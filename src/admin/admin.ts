@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { html, css } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -15,26 +16,8 @@ export class AdminPage extends AppElement
 		NavBarStyles,
 		Geometry,
 		css`
-		.admin-top {
-			display:flex;
-			flex-direction:column;
-			width: 100vw;
-			height: calc(100vh - 120px);
-			margin-top: 0;
-		}
-
-		.topNav {
-			background-color: #ba2828;
-		}
-
-		.title-text {
-			font-size: var(--sl-font-size-x-large);
-		}
-
-		.content {
-			display: block;
-			width: 100vw;
-			margin: auto;
+		* {
+			--h-admin-top: calc(100vh - var( --h-navbar ) * 2 );
 		}
 	`];
 
@@ -79,11 +62,11 @@ export class AdminPage extends AppElement
 	render()
 	{
 		return html`
-<div class="admin-top !w-screen font-sans bg-gray-200">
+<div class="flex flex-col align-middle !w-screen h-[var(--h-admin-top)] mt-0 font-sans bg-gray-200">
 	<nav class="bg-gray-500">
-		<div class="bg-[#ba2828] flex justify-between items-center gap-2.5 px-4 m-auto w-pw max-w-pw overflow-visible">
+		<div class="bg-[#ba2828] pb-1 flex justify-between items-center gap-2.5 px-4 m-auto w-pw max-w-pw overflow-visible h-[var(--h-navbar)]">
 			<div class="justify-start pl-5 inline-block">
-				<span class="title-text text-white font-semibold">ADMIN</span>
+				<span class="inline-block align-top title-text text-4xl text-white font-mono font-semibold">ADMIN</span>
 			</div>
 			<div class="navButtons">
 				<sl-button class=${this.listClass}   variant="text" name="List"   href="admin/list">LIST</sl-button>
@@ -91,7 +74,7 @@ export class AdminPage extends AppElement
 			</div>
 		</div>
 	</nav>
-	<div class="content">
+	<div class="block w-full m-auto">
 		<slot></slot>
 	</div>
 </div>

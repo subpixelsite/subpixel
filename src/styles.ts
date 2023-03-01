@@ -61,8 +61,8 @@ export const NavBarStyles = css`
 		/* specified in svg */
 		--navbar-text-height: 40px;
 
-		--navbar-height: calc(var(--navbutton-margin) * 2 + var(--navbar-text-height));
-		--h-content: calc(100vh - var(--navbar-height));
+		--h-navbar: calc(var(--navbutton-margin) * 2 + var(--navbar-text-height));
+		--h-content: calc(100vh - var(--h-navbar));
 	}
 
 	.navButtons > sl-button {

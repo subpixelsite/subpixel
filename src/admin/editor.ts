@@ -26,16 +26,11 @@ export class EditorPage extends AppElement
 		css`
 		* {
 			box-sizing: border-box;
-			--body-edit-height: calc( 100vh - 234px );
+			--body-edit-height: calc( 100vh - 200px );
+			--w-post: 960px;
 			--input-spacing: 8px;
 			--label-width: 100px;
 			--gap-width: 0.5rem;
-		}
-
-		html,
-		body {
-			display: flex;
-			padding: 20px;
 		}
 
 		.buttons-container {
@@ -70,20 +65,8 @@ export class EditorPage extends AppElement
 			outline-offset: 2px;
 		}
 
-		
-		.top {
-			display:flex;
-			flex-direction:column;
-			height: 100%;
-			padding: 20px;
-			overflow: none;
-			background-color: white;
-		}
-
 		.info-container {
-			display: grid;
 			grid-template: 1fr / 1fr auto auto;
-			height: auto;
 		}
 
 		.info-details::part(base) {
@@ -99,71 +82,12 @@ export class EditorPage extends AppElement
 			align-self: center;
 		}
 
-		.btn-commit {
-			grid-column: 3 / 4;
-			width: 100px;
-			justify-self: center;
-			align-self: center;
-		}
-
-		.admin-container {
-			display: flex;
-			flex-direction: column;
-			gap: 20px;
-			flex: 1 1 1px;
-		}
-
-		.body-container {
-			display: flex;
-			flex: 1 1 1px;
-			gap: 20px;
-			max-height: 100%;
-		}
-
 		.edit-panel {
-			display: flex;
 			flex: 1 1 1px;
-			max-height: 100%;
-
-			flex-direction: column;
-			overflow: hidden;
-			height: 100%;
 		}
 
 		.preview-panel {
-			display: flex;
-			max-width: 1140px;
 			flex: 2 1 1px;
-			max-height: 100%;
-			border: 1px solid #000000;
-
-			flex-direction: column;
-			overflow: hidden;
-
-			height: 100%;
-		}
-
-		#editPostTextBox {
-			width: 100%;
-			font-size: 13px;
-			background-color: #ebeae5;
-			resize: none;
-
-			height: var(--body-edit-height);
-			overflow-y: auto;
-			padding: 1rem;
-		}
-
-		#previewPostBox {
-			max-width: 100%;
-			max-height: 100vh - 160px;
-			font-size: 15px;
-			width: 100%;
-			background-color: var(--col-bg-light);
-			padding: 5px;
-			
-			overflow-y: auto;
-			height: var(--body-edit-height);
 		}
 
 		.float-left {
@@ -199,31 +123,9 @@ export class EditorPage extends AppElement
 		}
 
 		.info-panel {
-			display: grid;
-			/* grid-template: rowpx row% rowfr / column% columnpx columnfr */
 			grid-template: 1fr / 1fr 1fr;
-			gap: 0px 10px;
-			overflow: none;
 		}
 		
-		.input-panel-left {
-			display: grid;
-			grid-column: 1 / 2;
-			width: 100%;
-			padding: 2px;
-		}
-
-		.input-panel-right {
-			display: grid;
-			grid-column: 2 / 3;
-			width: 100%;
-			padding: 2px;
-		}
-
-		.edit-inputs {
-			width: 100%;
-		}
-
 		.edit-input + .edit-input {
 			margin-top: var(--input-spacing);
 		}
@@ -248,16 +150,8 @@ export class EditorPage extends AppElement
 			padding-left: calc(var(--label-width) + var(--gap-width));
 		}
 
-		.edit-description {
-			margin-top: 1em;
-		}
-
 		.header-img {
-			display: block;
-			justify-self: center;
-			outline: 1px solid black;
 			padding: var(--vis-padding);
-			margin: 10px;
 			margin-left: calc( 10px + var(--label-width) + var(--gap-width));
 			width: var(--vis-padded-width);
 			max-width: var(--vis-padded-width);
@@ -266,7 +160,6 @@ export class EditorPage extends AppElement
 		}
 
 		.post-visual {
-			justify-self: center;
 			height: var(--vis-height);
 			width: var(--vis-width);
 			max-height: var(--vis-height);
@@ -497,13 +390,13 @@ export class EditorPage extends AppElement
 		const visual = PostTile.getPostVisual( this.post );
 
 		return html`
-<div class="top">
+<div class="flex flex-col h-full p-5 overflow-hidden bg-white">
 	<form class="post-form">
-		<div class="admin-container">
-			<div class="info-container">
+		<div class="flex flex-col gap-5 flex-auto">
+			<div class="info-container grid h-auto">
 				<sl-details summary="Post Data" class="info-details">
-					<div class="info-panel">
-						<div class="input-panel-left">
+					<div class="info-panel grid gap-x-2.5 overflow-hidden">
+						<div class="grid col-start-1 col-span-1 w-full p-0.5">
 							<sl-input class="edit-input" size=small label="ID" pill readonly name="id" .value=${this.post!.id}></sl-input>
 							<sl-input class="edit-input" size=small label="Title" pill name="title" .value=${this.post!.title}></sl-input>
 							<sl-input class="edit-input" size=small label="Tags" pill name="tags" .value=${this.post!.tags}></sl-input>
@@ -512,9 +405,9 @@ export class EditorPage extends AppElement
 							<sl-input class="edit-input" size=small label="Author" pill name="author" .value=${this.post!.author}></sl-input>
 							<sl-textarea class="edit-input" size=small label="Description" name="description" autocomplete='off' autocorrect='on' spellcheck='true' inputmode='text' resize='none' .value=${this.post!.description}></sl-textarea>
 						</div>
-						<div class="input-panel-right">
-							<div class="header-img">
-								<div class="post-visual">
+						<div class="grid col-auto w-full p-0.5">
+							<div class="header-img block justify-self-center outline-1 outline outline-black m-2.5">
+								<div class="post-visual justify-self-center">
 									${visual}
 								</div>
 							</div>
@@ -525,14 +418,14 @@ export class EditorPage extends AppElement
 					</div>
 				</sl-details>
 				<sl-switch id="load-webgl" ?checked=${this.loadWebGL}>Load WebGL Elements</sl-switch>
-				<sl-button variant="success" pill class="btn-commit" @click="${this.handleCommit}">Save</sl-button>
+				<sl-button variant="success" pill class="col-start-3 col-span-1 w-[100px] justify-self-center align-self-center" @click="${this.handleCommit}">Save</sl-button>
 			</div>
-			<div class="body-container">
-				<div class="edit-panel">
-					<textArea id="editPostTextBox" name="body"> </textArea>
+			<div class="flex gap-5 max-h-full">
+				<div class="edit-panel flex flex-col max-h-full h-full overflow-hidden">
+					<textArea id="editPostTextBox" class="w-full h-[var(--body-edit-height)] resize-none overflow-y-auto p-1 text-sm bg-[#ebeae5]" name="body"> </textArea>
 				</div>
-				<div class="preview-panel">
-					<div id="previewPostBox"> </div>
+				<div class="preview-panel flex flex-col max-w-[var(--w-post)] max-h-full h-full overflow-hidden border border-black">
+					<div id="previewPostBox" class="max-w-full max-h-[100vh-160px] w-100 h-[var(--body-edit-height)] overflow-y-auto p-1 bg-[var(--col-bg-light)] text-sm"> </div>
 				</div>
 			</div>
 		</div>

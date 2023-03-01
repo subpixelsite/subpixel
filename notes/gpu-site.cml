@@ -29,8 +29,8 @@
 		+ Rebuild post-list
 		- Rebuild post-tile
 		- Rebuild post-item
-		- Rebuild edit list
-		- Rebuild editor
+		+ Rebuild edit list
+		+ Rebuild editor
 = Backend first pass
 	- Integrate Showdown for Markdown conversion on the server side
 	* Research how AWS would work

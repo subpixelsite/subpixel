@@ -13,6 +13,7 @@ import install from '@twind/with-web-components';
 import config from './twind.config.js';
 import { Geometry, Colors, NavBarStyles } from './styles.js';
 import { initPostData } from './content/post_data.js';
+import { quips } from './quips.js';
 
 const withTwind = install( config );
 
@@ -36,12 +37,6 @@ export class App extends withTwind( LitElement )
 			top: 0;
 		}
 		`];
-
-	private quips = [
-		'Join the army, they say',
-		'See the world, they say',
-		"I'd rather be sailing"
-	]
 
 	@property() postsClass: string = '';
 
@@ -86,7 +81,8 @@ export class App extends withTwind( LitElement )
 
 	getQuip(): string
 	{
-		return this.quips[Math.floor( Math.random() * this.quips.length )];
+		const lines = quips.split( '\n' ).filter( str => str );
+		return lines[Math.floor( Math.random() * lines.length )];
 	}
 
 	render()
@@ -94,7 +90,7 @@ export class App extends withTwind( LitElement )
 		return html`
 		<div class="bg-gray-200 min-w-screen h-screen">
 			<nav class="bg-gray-500">
-				<div class="bg-primary-700 flex justify-between items-center gap-2.5 px-4 m-auto max-w-pw overflow-visible">
+				<div class="bg-primary-700 flex justify-between items-center gap-2.5 px-4 m-auto max-w-pw max-h-[var(--h-navbar)] overflow-visible">
 					<div class="justify-start pl-4 inline-block font-mono">
 						<svg width="216px" height="40px" viewBox="0 0 216 40">
 							<title>SUBPIXEL</title>
@@ -104,7 +100,7 @@ export class App extends withTwind( LitElement )
 										<text style="fill:white;" x="0" y="35">SUBPIXEL</text>
 									</mask>
 									<filter id="innerShadow" x="-20%" y="-20%" width="140%" height="140%">
-										<feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+										<feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
 										<feOffset in="blur" dx="2" dy="2"/>
 									</filter>
 								</defs>
@@ -115,15 +111,14 @@ export class App extends withTwind( LitElement )
 							</g>
 						</svg>
 					</div>
-					<div class="self-end justify-self-start pb-1 text-sm text-white font-sans">${this.getQuip()}</div>
-					<div class="grow"></div>
-					<div class="navButtons m-[var(--navbutton-margin)] flex flex-wrap">
+					<div class="self-end grow justify-self-start pb-[0.25rem] text-xs text-gray-200 font-sans overflow-x-clip">${this.getQuip()}</div>
+					<div class="navButtons pb-1 my-[var(--navbutton-margin)] min-w-max flex flex-wrap">
 						<sl-button class="${this.postsClass}" variant="text" name="Posts" href="posts">POSTS</sl-button>
 						<sl-button class="${this.faqClass}" variant="text" name="FAQ" href="faq">FAQ</sl-button>
 					</div>
 				</div>
 			</nav>
-				<slot></slot>
+			<slot></slot>
 		</div>
 		`;
 	}
