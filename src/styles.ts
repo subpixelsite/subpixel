@@ -3,6 +3,7 @@ import { css } from 'lit';
 export const Geometry = css`
 	* {
 		--pw: 60rem;
+		--post-gap: 2rem;
 	}
 
 	.max-w-pw {
@@ -125,19 +126,12 @@ export const NavBarStyles = css`
 export const PostStyles = css`
 
 	* {
-		--vis-width: 328px;
+		--post-width: 400px;
+		--vis-padding: 16px;
+		--vis-width: calc(var(--post-width) - var(--vis-padding) * 2);
 		--vis-height: 200px;
 		--vis-bg-color: var(--col-bg-light);
-		--vis-padding: 10px;
 		--vis-padded-width: calc(var(--vis-width) + (var(--vis-padding) * 2));
 		--vis-padded-height: calc(var(--vis-height) + (var(--vis-padding) * 2));
-	}
-
-	.post-visual {
-		height: var(--vis-height);
-		width: var(--vis-width);
-		max-height: var(--vis-height);
-		max-width: var(--vis-width);
-		background-color: var(--vis-bg-color);
 	}
 `;

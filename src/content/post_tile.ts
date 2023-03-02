@@ -9,7 +9,7 @@ import { svg, TemplateResult, html, css } from 'lit';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AppElement } from '../appelement.js';
 import { PostData } from './post_data.js';
-import { PostStyles } from '../styles.js';
+import { Geometry, PostStyles } from '../styles.js';
 
 @customElement( 'post-tile' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,44 +17,23 @@ export class PostTile extends AppElement
 {
 	static styles = [
 		PostStyles,
+		Geometry,
 		css`
-	.post-tile {
-		margin: 0px;
-		display: flex;
-		flex-direction: column;
-		background: white;
-		overflow: hidden;
-		border-radius: 10px;
-		--border-color: #000000;
-		--border-width: 1px;
-		--padding: 15px;
-		--border-radius: 10px;
+	* {
+		--grad-col-1: var(--sl-color-gray-200);
+		--grad-col-2: white;
+	}
 
-		max-width: 360px;
+	.post-tile {
+		--border-width: 0px;
+		--padding: 15px;
+		--border-radius: 12px;
 	}
-	.post-info {
-		padding: 0px;
-		font-size: var(--sl-font-size-medium);
-		background: white;
+	.post-tile::part(base) {
+		background-color: var(--sl-color-gray-300);
 	}
-	.post-title {
-		font-weight: var(--sl-font-weight-bold);
-		font-size: var(--sl-font-size-large);
-	}
-	.post-author {
-		font-weight: var(--sl-font-weight-light);
-		font-size: var(--sl-font-size-small);
-		color: #5e5e5e;
-		margin-left: 1em;
-	}
-	.post-description {
-		font-weight: var(--sl-font-weight-normal);
-		font-size: var(--sl-font-size-normal);
-		display: inline-block;
-		margin-top: 1em;
-	}
-	.post-footer {
-		text-align: right;
+	.post-tile::part(body) {
+		padding-top: 0px;
 	}
 	.footer-item > sl-button::part(base):hover {
 		transform: translate(-2px, -2px);
@@ -62,40 +41,21 @@ export class PostTile extends AppElement
 	.footer-item > sl-button::part(base) {
 		transition: var(--sl-transition-fast) transform ease, var(--sl-transition-fast) color ease;
 	}
-	.post-date {
-		font-weight: 200;
-		color: #5e5e5e;
-		text-align: left;
-		font-size: var(--sl-font-size-small);
-		align-self: end;
-	}
 	.post-visual {
-		margin: 16px;
+		height: var(--vis-height);
+		width: var(--vis-width);
+		max-height: var(--vis-height);
+		max-width: var(--vis-width);
+	}
+	.letterbox {
+		background-color: var(--sl-color-gray-900);
+	}
+	.visual-border {
+		border: 2px solid var(--sl-color-gray-400);
 	}
 	.footer-container {
 		display: grid;
 		grid-template-columns: 10fr 1fr;
-		align-items: end;
-	}
-	h1 {
-		margin: 0;
-		font-size: 1.5rem;
-	}
-	h2 {
-		font-size: 1rem;
-		font-weight: 300;
-		color: #5e5e5e;
-		margin-top: 5px;
-	}
-
-	.post-tile small {
-		color: var(--sl-color-neutral-500);
-	}
-
-	.post-tile [slot='footer'] {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
 	}
 	`];
 
@@ -121,7 +81,7 @@ export class PostTile extends AppElement
 		}
 
 		return svg`
-				<svg slot="image" clip-path="url(#clip2)" class="post-visual" width="100%" height="100%" role="img" aria-labelledby="svgTitle">
+				<svg slot="image" width="100%" height="100%" clip-path="url(#clip2)" class="overflow-clip" role="img" aria-labelledby="svgTitle">
 					<defs>
 						<clipPath id="clip">
 							<rect width="100%" height="100%" x="0" y="0"/>
@@ -146,20 +106,22 @@ export class PostTile extends AppElement
 	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
 	{
 		if ( post.hdrInline.length > 0 )
-			return html`<div slot="image" class="post-visual">${unsafeHTML( post.hdrInline )}</div>`;
+			return html`${unsafeHTML( post.hdrInline )}`;
 
 		if ( post.hdrHref.length > 0 )
 		{
 			const href = post.hdrHref.toLowerCase();
 			if ( href.endsWith( 'json' ) )
 			{
-				// eslint-disable-next-line max-len
-				const embed = `<web-gl slot="image" width="100%" height="200px" alwaysload=true class="post-visual" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
-				return html`${unsafeHTML( embed )}`;
+				// esli=nt-disable-next-line max-len
+				return html`<web-gl width="100%" height="200px" alwaysload=true alt="${post.hdrAlt}" src='${post.hdrHref}'></web-gl>`;
 			}
 
-			const embed = `<img slot="image" width="100%" height="auto" class="post-visual" alt="${post.hdrAlt}" src='${post.hdrHref}'/>`;
-			return html`${unsafeHTML( embed )}`;
+			return html`
+				<div width='100%' height='200px' max-height='var(--vis-height)' class="letterbox">
+					<img class="object-scale-down max-h-[var(--vis-height)] m-auto" alt="${post.hdrAlt}" src='${post.hdrHref}'/>
+				</div>
+			`;
 		}
 
 		return PostTile.errorVisual( 'missing visual' );
@@ -185,18 +147,22 @@ export class PostTile extends AppElement
 		const visual = PostTile.getPostVisual( this.post );
 
 		return html`
-			<sl-card class="post-tile">
-				${visual}
-				<div class="post-info">
-					<span class="post-title">${this.post.title}</span><br>
-					<span class="post-author">by ${this.post.author}</span><br>
-					<span class="post-description">${this.post.description}</span>
+			<sl-card class="post-tile drop-shadow-md flex flex-col overflow-hidden max-w-[var(--post-width)] m-0 mb-2 rounded-xl">
+				<div slot="image" class="post-visual m-4">
+					<div class="bg-[#efefef] w-full h-full visual-border">
+						${visual}
+					</div>
+				</div>
+				<div class="px-4 text-base">
+					<span class="pt-0 text-xl font-bold">${this.post.title}</span><br>
+					<span class="text-sm font-light text-gray-600 ml-6">by ${this.post.author}</span><br>
+					<span class="inline-block font-normal text-base mt-4">${this.post.description}</span>
 					<sl-divider></sl-divider>
-					<div slot="post-footer" class="footer-container">
-						<div class="footer-item post-date">
+					<div slot="text-right" class="footer-container items-end">
+						<div class="footer-item font-light text-gray-500 text-left text-sm self-end">
 							<sl-relative-time .date="${this.getDateObject()}" format="long" sync></sl-relative-time>
 						</div>
-						<div class="footer-item" align-items="flex-end">
+						<div class="footer-item items-end">
 							<sl-button variant="primary" pill @click="${this.handleClick}">Read More</sl-button>
 						</div>
 					</div>

@@ -3,6 +3,7 @@ import { css, html } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { property, customElement } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
+import { Geometry } from '../styles.js';
 import { AppElement } from '../appelement.js';
 import { Database } from './data.js';
 import { PostData } from './post_data.js';
@@ -11,8 +12,11 @@ import { PostData } from './post_data.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PostList extends AppElement
 {
-	// static styles = css`
-	// `;
+	static styles = [
+		Geometry,
+		css`
+		`
+	];
 
 	@property( { type: Array } ) posts?: PostData[];
 
@@ -60,7 +64,7 @@ export class PostList extends AppElement
 
 		return html`
 
-		<div class="flex flex-wrap justify-around p-8 gap-8">
+		<div class="flex flex-wrap justify-evenly p-[var(--post-gap)] gap-[var(--post-gap)]">
 			${posts?.map( post => html`<post-tile .post="${post}"></post-tile>` )}
 		</div>
     `;

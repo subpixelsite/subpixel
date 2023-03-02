@@ -111,7 +111,7 @@ export class App extends withTwind( LitElement )
 							</g>
 						</svg>
 					</div>
-					<div class="self-end grow justify-self-start pb-[0.25rem] text-xs text-gray-200 font-sans overflow-x-clip">${this.getQuip()}</div>
+					<div class="self-end grow justify-self-start pb-[0.25rem] text-xs text-gray-200 font-sans italic overflow-x-clip">${this.getQuip()}</div>
 					<div class="navButtons pb-1 my-[var(--navbutton-margin)] min-w-max flex flex-wrap">
 						<sl-button class="${this.postsClass}" variant="text" name="Posts" href="posts">POSTS</sl-button>
 						<sl-button class="${this.faqClass}" variant="text" name="FAQ" href="faq">FAQ</sl-button>
