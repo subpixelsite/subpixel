@@ -128,7 +128,7 @@ export class FAQ extends AppElement
 <ul>
 <li>I have no known relation to Johann Heinrich Lambert, who in <i>Photometria</i> (1760) described the
 <a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law">"cosine law"</a>, the formula fundamental to real-time rendering (and many other descriptions of natural phenomena, like physics).</li>
-<li>The phrase "Lambert shading" is common in computer graphics, and widely known to artists.  <a href="https://en.wikipedia.org/wiki/Nominative_determinism">Nominative determinism</a> strikes again.</li>
+<li>"<a href="https://en.wikipedia.org/wiki/Lambertian_reflectance">Lambert shading</a>" is common in computer graphics, and widely known to artists.  <a href="https://en.wikipedia.org/wiki/Nominative_determinism">Nominative determinism</a> strikes again.</li>
 <li>When I introduced myself at my first Infinity Ward all-hands meeting, I gave my full name and one of the artists 
 shouted out "ohhhh SHADER".&nbsp Ever since, "Shader" has been my industry nickname / callsign.</li>
 </ul>

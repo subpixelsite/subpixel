@@ -48,6 +48,7 @@ export class WebGL
 	}
 
 	public static DEBUG_RENDERS = false;
+	public static DEBUG_VIEWPORT_LEVEL = 0;		// 1: basic info, 2: detailed info
 
 	public gl?: WebGLRenderingContext;
 	public canvas?: HTMLCanvasElement;

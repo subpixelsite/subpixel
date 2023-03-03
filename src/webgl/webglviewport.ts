@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-bitwise */
 import { createTexture, DrawObject, drawObjectList, m4, ProgramInfo } from 'twgl.js';
@@ -172,6 +173,13 @@ export class WebGLViewport
 		this.element?.onResizeEvent();
 	}
 
+	debugLogRect( name: string, rect: Rect, debugLevel: number = 2 )
+	{
+		if ( WebGL.DEBUG_VIEWPORT_LEVEL >= debugLevel )
+			// eslint-disable-next-line no-console
+			console.log( `${name.padStart( 32 ).substring( 0, 32 )}:  ${rect.left} - ${rect.right}, ${rect.top} - ${rect.bottom}` );
+	}
+
 	rectIntersect( rect1: Rect, rect2: Rect ): Rect
 	{
 		const rect = new Rect();
@@ -195,6 +203,8 @@ export class WebGLViewport
 		if ( element === null )
 			throw new Error( 'Starting element in getVisibleBoundingRect is null' );
 
+		this.debugLogRect( 'getVisibleBoundingRect', rect );
+
 		do
 		{
 			const parent: HTMLElement | null = element!.parentElement;
@@ -202,10 +212,20 @@ export class WebGLViewport
 			{
 				const parentRect = Rect.fromDOMREct( parent.getBoundingClientRect() );
 				rect = this.rectIntersect( rect, parentRect );
+				this.debugLogRect( `${parent.outerHTML}`, rect );
 			}
 
 			element = parent;
 		} while ( element !== document.body && element !== null );
+
+		// Finally, intersect with content rect
+		const content = document.getElementsByTagName( 'lit-content' );
+		if ( content === null || content.length === 0 )
+			throw new Error( 'Can\'t find content container element' );
+		const contentRect = Rect.fromDOMREct( content[0].getBoundingClientRect() );
+		rect = this.rectIntersect( rect, contentRect );
+
+		this.debugLogRect( '<div id=\'content\'>', rect );
 
 		return rect;
 	}
@@ -246,20 +266,24 @@ export class WebGLViewport
 		const visWidth = visRect.right - visRect.left;
 		const visHeight = visRect.bottom - visRect.top;
 
-		if ( visWidth === 0 || visHeight === 0 )
+		this.debugLogRect( 'vis', visRect );
+		this.debugLogRect( 'view', viewRect );
+
+		if ( visWidth <= 0 || visHeight <= 0 )
 			return;
 
-		if ( WebGL.DEBUG_RENDERS )
+		if ( WebGL.DEBUG_RENDERS || WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
 			// eslint-disable-next-line no-console
 			console.log( `Rendering element ${this.container.id}: ${this.drawObjects.length} objects` );
 
-		const vpWidth = viewRect.right - viewRect.left;
+		const vpWidth = viewRect.right - viewRect.left + 1;
 		const vpHeight = viewRect.bottom - viewRect.top;
 		const vpLeft = viewRect.left;
-		const vpBottom = canvas.clientHeight - viewRect.bottom - 1;
+		const vpBottom = canvas.clientHeight - viewRect.bottom;
 
 		const visLeft = visRect.left;
-		const visBottom = canvas.clientHeight - visRect.bottom - 1;
+		const visBottom = canvas.clientHeight - visRect.bottom;
+		const scisWidth = visWidth + 1;
 
 		gl.enable( gl.SCISSOR_TEST );
 		gl.clearColor(
@@ -272,7 +296,7 @@ export class WebGLViewport
 		gl.clearStencil( this.scene.clearStencil! );
 
 		gl.viewport( vpLeft, vpBottom, vpWidth, vpHeight );
-		gl.scissor( visLeft, visBottom, visWidth, visHeight );
+		gl.scissor( visLeft, visBottom, scisWidth, visHeight );
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
 
 		gl.enable( gl.CULL_FACE );

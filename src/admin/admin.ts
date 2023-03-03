@@ -17,7 +17,8 @@ export class AdminPage extends AppElement
 		Geometry,
 		css`
 		* {
-			--h-admin-top: calc(100vh - var( --h-navbar ) * 2 );
+			--h-content: calc(100vh - var( --h-navbar ) * 2);
+			--pw: 100vw;
 		}
 	`];
 
@@ -62,9 +63,9 @@ export class AdminPage extends AppElement
 	render()
 	{
 		return html`
-<div class="flex flex-col align-middle !w-screen h-[var(--h-admin-top)] mt-0 font-sans bg-gray-200">
+<div class="flex flex-col align-middle !w-screen h-[var(--h-content)] mt-0 font-sans bg-gray-200">
 	<nav class="bg-gray-500">
-		<div class="bg-[#ba2828] pb-1 flex justify-between items-center gap-2.5 px-4 m-auto w-pw max-w-pw overflow-visible h-[var(--h-navbar)]">
+		<div class="bg-[#ba2828] pb-1 flex justify-between items-center gap-2.5 px-4 m-auto w-[var(--page-width)] max-w-[var(--page-width)] overflow-visible h-[var(--h-navbar)]">
 			<div class="justify-start pl-5 inline-block">
 				<span class="inline-block align-top title-text text-4xl text-white font-mono font-semibold">ADMIN</span>
 			</div>
@@ -74,7 +75,7 @@ export class AdminPage extends AppElement
 			</div>
 		</div>
 	</nav>
-	<div class="block w-full m-auto">
+	<div id="admin-content" class="block w-full m-auto">
 		<slot></slot>
 	</div>
 </div>

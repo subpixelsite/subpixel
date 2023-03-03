@@ -9,15 +9,18 @@ import { Database, getTagsArray } from '../content/data.js';
 import { PostData } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/tag/tag.js';
+import { ScrollBarStyles } from '../styles.js';
 
 @customElement( 'lit-editlist' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class EditList extends AppElement
 {
-	static styles = css`
-		* {
+	static styles = [
+		ScrollBarStyles,
+		css`
+		/* * {
 			--h-admin-top: calc( 100vh - var(--h-navbar) * 2 );
-		}
+		} */
 
 		.posts-table thead tr {
 			background-color: #13476f;
@@ -58,7 +61,8 @@ export class EditList extends AppElement
 			text-shadow: 4px 4px 4px #d2d2d2, 0 0 20px var(--sl-color-primary-600);
 			cursor: pointer;
 		}
-	`;
+		`
+	];
 
 	@state()
 	activeRowIndex: number = -1;
@@ -110,7 +114,7 @@ export class EditList extends AppElement
 		this.dispatchEvent( event );
 
 		return html`
-<div class="h-[var(--h-admin-top)] flex flex-wrap flex-col justify-start">
+<div class="h-[var(--h-content)] flex flex-wrap flex-col justify-start">
 	<div class="overflow-y-auto flex flex-wrap justify-start border-solid border-2 border-black">
 		<table class="posts-table border-collapse m-0 text-sm w-full">
 			<thead><tr>

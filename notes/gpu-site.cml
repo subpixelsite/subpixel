@@ -6,7 +6,10 @@
 # Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
 # After editing with webgl load off, main post page doesn't load webgl either
 # Scroll to top on navigate is broken
-# WebGL not clipping on post list when scrolled under navbar
++ # WebGL not clipping on post list when scrolled under navbar
++ # <web-gl> not rendering properly after Twind conversion
+	> Looks like a sizing problem -- needs display: block to use size params
+	> Nope, it was drop-shadow *facepalm*
 = Admin page
 	* Editor: map <web-gl...> tag to WebGLElement load and preserve it during content update
 		- Migration command: delete and create new viewport, then reconnect existing element
@@ -27,7 +30,7 @@
 		+ Rebuild navbar
 		+ Rebuild FAQ
 		+ Rebuild post-list
-		- Rebuild post-tile
+		+ Rebuild post-tile
 		- Rebuild post-item
 		+ Rebuild edit list
 		+ Rebuild editor
@@ -40,6 +43,7 @@
 	- Support interaction, like click/drag-to-move camera (or button for different ortho)
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
+	* Use existing font-size attribute instead of custom fontsize
 = Wrap <svg> with component that supports aspect-ratio
 	- Take "aspect-ratio" property
 	? Override "width" and "height"

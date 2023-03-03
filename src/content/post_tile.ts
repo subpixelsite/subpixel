@@ -51,11 +51,16 @@ export class PostTile extends AppElement
 		background-color: var(--sl-color-gray-900);
 	}
 	.visual-border {
-		border: 2px solid var(--sl-color-gray-400);
+		border: var(--vis-image-border) solid var(--sl-color-gray-400);
 	}
 	.footer-container {
 		display: grid;
 		grid-template-columns: 10fr 1fr;
+	}
+	web-gl {
+		display: block;
+		width: 100%;
+		height: 100%;
 	}
 	`];
 
@@ -114,12 +119,12 @@ export class PostTile extends AppElement
 			if ( href.endsWith( 'json' ) )
 			{
 				// esli=nt-disable-next-line max-len
-				return html`<web-gl width="100%" height="200px" alwaysload=true alt="${post.hdrAlt}" src='${post.hdrHref}'></web-gl>`;
+				return html`<web-gl alwaysload=true alt="${post.hdrAlt}" src='${post.hdrHref}'></web-gl>`;
 			}
 
 			return html`
 				<div width='100%' height='200px' max-height='var(--vis-height)' class="letterbox">
-					<img class="object-scale-down max-h-[var(--vis-height)] m-auto" alt="${post.hdrAlt}" src='${post.hdrHref}'/>
+					<img class="object-scale-down max-h-[calc(var(--vis-height)-var(--vis-image-border)*2)] m-auto" alt="${post.hdrAlt}" src='${post.hdrHref}'/>
 				</div>
 			`;
 		}
@@ -147,7 +152,7 @@ export class PostTile extends AppElement
 		const visual = PostTile.getPostVisual( this.post );
 
 		return html`
-			<sl-card class="post-tile drop-shadow-md flex flex-col overflow-hidden max-w-[var(--post-width)] m-0 mb-2 rounded-xl">
+			<sl-card class="post-tile flex flex-col overflow-hidden shadow-md max-w-[var(--post-width)] m-0 mb-2 rounded-xl">
 				<div slot="image" class="post-visual m-4">
 					<div class="bg-[#efefef] w-full h-full visual-border">
 						${visual}
@@ -168,7 +173,7 @@ export class PostTile extends AppElement
 					</div>
 				</div>
 			</sl-card>
-    	`;
+		`;
 	}
 
 	getDateObject(): Date

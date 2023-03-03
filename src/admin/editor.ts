@@ -418,7 +418,7 @@ export class EditorPage extends AppElement
 					</div>
 				</sl-details>
 				<sl-switch id="load-webgl" ?checked=${this.loadWebGL}>Load WebGL Elements</sl-switch>
-				<sl-button variant="success" pill class="col-start-3 col-span-1 w-[100px] justify-self-center align-self-center" @click="${this.handleCommit}">Save</sl-button>
+				<sl-button variant="success" pill class="col-start-3 col-span-1 w-[100px] justify-self-center self-center" @click="${this.handleCommit}">Save</sl-button>
 			</div>
 			<div class="flex gap-5 max-h-full">
 				<div class="edit-panel flex flex-col max-h-full h-full overflow-hidden">

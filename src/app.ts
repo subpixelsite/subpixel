@@ -11,7 +11,7 @@ import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.j
 import 'reflect-metadata';
 import install from '@twind/with-web-components';
 import config from './twind.config.js';
-import { Geometry, Colors, NavBarStyles } from './styles.js';
+import { Geometry, Colors, NavBarStyles, ScrollBarStyles } from './styles.js';
 import { initPostData } from './content/post_data.js';
 import { quips } from './quips.js';
 
@@ -26,7 +26,22 @@ export class App extends withTwind( LitElement )
 		Geometry,
 		Colors,
 		NavBarStyles,
+		ScrollBarStyles,
 		css`
+		* {
+			--pw: var(--page-width);
+			--h-navbar: calc(var(--navbutton-margin) * 2 + var(--navbar-text-height));
+			--h-content: calc(100vh - var(--h-navbar));
+		}
+		
+		.max-w-pw {
+			max-width: var(--pw);
+		}
+
+		.w-pw {
+			width: var(--pw);
+		}
+
 		.title-link {
 			position: relative;
 		}
@@ -90,7 +105,7 @@ export class App extends withTwind( LitElement )
 		return html`
 		<div class="bg-gray-200 min-w-screen h-screen">
 			<nav class="bg-gray-500">
-				<div class="bg-primary-700 flex justify-between items-center gap-2.5 px-4 m-auto max-w-pw max-h-[var(--h-navbar)] overflow-visible">
+				<div class="bg-primary-700 flex justify-between items-center gap-2.5 px-4 m-auto max-w-[var(--pw)] max-h-[var(--h-navbar)] overflow-visible">
 					<div class="justify-start pl-4 inline-block font-mono">
 						<svg width="216px" height="40px" viewBox="0 0 216 40">
 							<title>SUBPIXEL</title>

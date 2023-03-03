@@ -2,16 +2,8 @@ import { css } from 'lit';
 
 export const Geometry = css`
 	* {
-		--pw: 60rem;
+		--page-width: 60rem;
 		--post-gap: 2rem;
-	}
-
-	.max-w-pw {
-		max-width: var(--pw);
-	}
-
-	.w-pw {
-		width: var(--pw);
 	}
 `;
 
@@ -61,9 +53,6 @@ export const NavBarStyles = css`
 		--navbutton-margin: 4px;
 		/* specified in svg */
 		--navbar-text-height: 40px;
-
-		--h-navbar: calc(var(--navbutton-margin) * 2 + var(--navbar-text-height));
-		--h-content: calc(100vh - var(--h-navbar));
 	}
 
 	.navButtons > sl-button {
@@ -133,5 +122,53 @@ export const PostStyles = css`
 		--vis-bg-color: var(--col-bg-light);
 		--vis-padded-width: calc(var(--vis-width) + (var(--vis-padding) * 2));
 		--vis-padded-height: calc(var(--vis-height) + (var(--vis-padding) * 2));
+		--vis-image-border: 2px;
+	}
+`;
+
+export const ScrollBarStyles = css`
+	* {
+		--sb-thumb: var(--sl-color-gray-500);
+		--sb-thumb-hover: var(--sl-color-gray-400);
+		--sb-thumb-active: var(--sl-color-gray-500);
+		--sb-track: var(--sl-color-gray-300);
+	}
+
+	/* Works on Firefox */
+	* {
+	scrollbar-width: auto;
+	scrollbar-color: var(--sb-thumb) var(--sb-track);
+	transition: scrollbar-color 0.3s ease-out;
+	}
+
+	*:hover {
+	scrollbar-color: var(--sb-thumb-hover);
+	}
+
+	*:active {
+	scrollbar-color: var(--sb-thumb-active);
+	}
+
+	/* Works on Chrome, Edge, and Safari */
+	*::-webkit-scrollbar {
+	width: 20px;
+	}
+
+	*::-webkit-scrollbar-track {
+	background: var(--sb-track);
+	}
+
+	*::-webkit-scrollbar-thumb {
+	background-color: var(--sb-thumb);
+	border-radius: 20px;
+	border: 3px solid var(--sb-track);
+	}
+
+	*::-webkit-scrollbar-thumb:hover {
+	background-color: var(--sb-thumb-hover);
+	}
+
+	*::-webkit-scrollbar-thumb:active {
+	background-color: var(--sb-thumb-active);
 	}
 `;
