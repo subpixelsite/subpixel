@@ -9,13 +9,14 @@ import { Database, getTagsArray } from '../content/data.js';
 import { PostData } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/tag/tag.js';
-import { ScrollBarStyles } from '../styles.js';
+import { Colors, ScrollBarStyles } from '../styles.js';
 
 @customElement( 'lit-editlist' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class EditList extends AppElement
 {
 	static styles = [
+		Colors,
 		ScrollBarStyles,
 		css`
 		/* * {
@@ -129,7 +130,7 @@ export class EditList extends AppElement
 				<tr id='${post.id}' @click='${this.goToPost}'>
 					<td class='font-mono text-sm min-w-max'>${post.id}</td>
 					<td class='font-bold min-w-max'>${post.title}</td>
-					<td class='flex flex-wrap min-w-max gap-1'>${getTagsArray( post.tags ).map( tag => html`<sl-tag class="" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
+					<td class='flex flex-wrap min-w-max gap-1'>${getTagsArray( post.tags ).map( tag => html`<sl-tag class="tag" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
 					<td class='font-mono'>${new Date( post.dateCreated ).toLocaleDateString( 'en-US', { day: '2-digit', month: '2-digit', year: 'numeric' } )}</td>
 					<td class=''>${post.description}</td>
 				</tr>

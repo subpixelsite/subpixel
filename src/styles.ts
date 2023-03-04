@@ -45,6 +45,11 @@ export const Colors = css`
 			color: red;
 		}
 	}
+
+	sl-tag.tag::part(base) {
+		border-color: var(--sl-color-primary-600);
+		background-color: var(--sl-color-primary-200);
+	}
 `;
 
 export const NavBarStyles = css`
