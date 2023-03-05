@@ -174,6 +174,7 @@ export class EditorPage extends AppElement
 	protected lastConvert: number = 0;
 	protected convertInterval: number = 500;
 	protected loadWebGL: boolean = false;
+	protected fadeWebGL: boolean = false;
 
 	constructor()
 	{
@@ -191,10 +192,6 @@ export class EditorPage extends AppElement
 		const previewArea = this.shadowRoot!.getElementById( 'previewPostBox' );
 		if ( previewArea === null )
 			throw new Error( 'Couldn\'t find preview area DOM element' );
-
-		// Reset WebGL
-		const webgl = WebGL.getInstance();
-		webgl.onNavigateAway();
 
 		previewArea.innerHTML = convertMDtoHTML( textArea.value );
 
@@ -306,6 +303,7 @@ export class EditorPage extends AppElement
 	{
 		const webgl = WebGL.getInstance();
 		webgl.setLoadEnabled( this.loadWebGL );
+		webgl.setFadeEnabled( this.fadeWebGL );
 
 		// Listen to checkbox
 		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
@@ -332,9 +330,6 @@ export class EditorPage extends AppElement
 			const now = Date.now();
 			if ( now - this.lastConvert > this.convertInterval )
 			{
-				// Reset WebGL
-				webgl.onNavigateAway();
-
 				const event = ev.target as HTMLInputElement;
 				previewArea.innerHTML = convertMDtoHTML( event.value );
 

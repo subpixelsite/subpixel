@@ -56,6 +56,12 @@ export class PostItem extends AppElement
 			--spacing: 15px;
 			--color: #cfcfcf;
 		}
+		web-gl {
+			display: block;
+			width: 100%;
+			height: 100%;
+			min-height: 200px;
+		}
 	`];
 
 	@property( { type: Object } )

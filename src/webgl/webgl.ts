@@ -1,4 +1,5 @@
 import { resizeCanvasToDisplaySize } from 'twgl.js';
+import { CachedViewport } from './webglcache.js';
 import { WebGLViewport } from './webglviewport.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -61,9 +62,10 @@ export class WebGL
 	private singleRequestId?: number;
 	private lastTimeSecs: number = 0;
 
-	private viewports: WebGLViewport[] = [];
+	private vpCache: CachedViewport[] = [];
 
 	private loadEnabled: boolean = true;
+	private fadeEnabled: boolean = true;
 
 	// Map of vs/fs pair strings to runtime objects
 	// private programInfo: Map<string, ProgramInfo> = new Map();
@@ -71,16 +73,69 @@ export class WebGL
 	public setLoadEnabled( enabled: boolean )
 	{
 		this.loadEnabled = enabled;
-		this.viewports.forEach( viewport =>
+		this.vpCache.forEach( vp =>
 		{
-			viewport.setLoadEnabled( enabled );
+			vp.viewport.setLoadEnabled( enabled );
 		} );
 	}
 
-	public addViewport( viewport: WebGLViewport )
+	public setFadeEnabled( enabled: boolean )
 	{
-		this.viewports.push( viewport );
-		viewport.setLoadEnabled( this.loadEnabled );
+		this.fadeEnabled = enabled;
+	}
+
+	public getFadeEnabled(): boolean
+	{
+		return this.fadeEnabled;
+	}
+
+	public getViewport( divID: string, html: string, shadowRoot: ShadowRoot ): WebGLViewport
+	{
+		let vp: CachedViewport | undefined;
+
+		for ( let i = 0; i < this.vpCache.length; i++ )
+		{
+			if ( this.vpCache[i].divID === divID )
+			{
+				if ( this.vpCache[i].html !== html )
+				{
+					if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
+						// eslint-disable-next-line no-console
+						console.log( `Found invalid <web-gl> viewport '${divID}' for '${html}' -- was '${this.vpCache[i].html}'` );
+
+					// remove the old, invalid one
+					this.vpCache.splice( i, 1 );
+				}
+				else
+				{
+					if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
+						// eslint-disable-next-line no-console
+						console.log( `Found matching <web-gl> viewport '${divID}' for '${html}'` );
+
+					vp = this.vpCache[i];
+				}
+
+				break;
+			}
+		}
+
+		if ( vp === undefined )
+		{
+			// eslint-disable-next-line no-console
+			console.log( `Creating new <web-gl> viewport '${divID}' for '${html}'` );
+			vp = new CachedViewport( divID, html, new WebGLViewport( shadowRoot, `#${divID}` ) );
+			this.addViewport( vp );
+		}
+
+		vp.viewport.setLoadEnabled( this.loadEnabled );
+
+		return vp.viewport;
+	}
+
+	public addViewport( viewport: CachedViewport )
+	{
+		this.vpCache.push( viewport );
+		viewport.viewport.setLoadEnabled( this.loadEnabled );
 	}
 
 	public addEventListeners()
@@ -92,9 +147,9 @@ export class WebGL
 	{
 		this.animated = false;
 
-		for ( let i = 0; i < this.viewports.length; i++ )
+		for ( let i = 0; i < this.vpCache.length; i++ )
 		{
-			if ( this.viewports.at( i )!.getAnimated() )
+			if ( this.vpCache.at( i )!.viewport.getAnimated() )
 			{
 				this.animated = true;
 				break;
@@ -106,9 +161,9 @@ export class WebGL
 
 	public isAnyFading()
 	{
-		for ( let i = 0; i < this.viewports.length; i++ )
+		for ( let i = 0; i < this.vpCache.length; i++ )
 		{
-			if ( this.viewports.at( i )!.isFading() )
+			if ( this.vpCache.at( i )!.viewport.isFading() )
 				return true;
 		}
 
@@ -150,14 +205,14 @@ export class WebGL
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
 
 		// Iterate elements to draw each as requested
-		this.viewports.forEach( viewport =>
+		this.vpCache.forEach( viewport =>
 		{
-			viewport.render( timeDeltaSecs, timeAccumSecs );
+			viewport.viewport.render( timeDeltaSecs, timeAccumSecs );
 		} );
 
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
-			console.log( `Rendering... elements ${this.viewports.length}, animated: ${this.animated}` );
+			console.log( `Rendering... elements ${this.vpCache.length}, animated: ${this.animated}` );
 
 		this.singleRequestId = 0;
 	}
@@ -190,8 +245,8 @@ export class WebGL
 
 	public resizeEvent()
 	{
-		for ( let i = 0; i < this.viewports.length; i++ )
-			this.viewports.at( i )!.onResizeEvent();
+		for ( let i = 0; i < this.vpCache.length; i++ )
+			this.vpCache.at( i )!.viewport.onResizeEvent();
 
 		this.refreshSingleRender();
 	}
@@ -201,13 +256,22 @@ export class WebGL
 		const gl = WebGL.getInstance();
 		if ( gl.scrollListenerElement !== element )
 		{
+			if ( gl.scrollListenerElement !== undefined )
+			{
+				gl.scrollListenerElement.removeEventListener( 'resize', () => gl.scrollResizeEvent() );
+				gl.scrollListenerElement.removeEventListener( 'scroll', () => gl.scrollResizeEvent() );
+			}
+
 			gl.scrollListenerElement = element;
 			if ( gl.scrollListenerElement !== undefined )
-				gl.scrollListenerElement.addEventListener( 'scroll', () => gl.scrollEvent() );
+			{
+				gl.scrollListenerElement.addEventListener( 'resize', () => gl.scrollResizeEvent() );
+				gl.scrollListenerElement.addEventListener( 'scroll', () => gl.scrollResizeEvent() );
+			}
 		}
 	}
 
-	scrollEvent()
+	scrollResizeEvent()
 	{
 		this.refreshSingleRender();
 	}
@@ -262,9 +326,14 @@ export class WebGL
 
 	public onNavigateAway()
 	{
-		// Clear all added elements
-		this.viewports.length = 0;
+		if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
+			// eslint-disable-next-line no-console
+			console.log( 'Navigate away: clearing all viewports' );
+
+		// Clear all added elements and reset load state
+		this.vpCache.length = 0;
 		this.animated = false;
+		this.loadEnabled = true;
 
 		this.stopAnimatedRender();
 		this.refreshSingleRender();

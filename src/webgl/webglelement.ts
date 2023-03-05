@@ -106,10 +106,12 @@ export class WebGLElement extends LitElement
 {
 	static styles = css`
 		.web-gl-container {
-			display:inline-block;
+			display:block;
 			overflow: hidden;
 			width: 100%;
 			height: 100%;
+			min-width: 100%;
+			min-height: 200px;
 		}
 
 		.web-gl-errortext {
@@ -186,7 +188,8 @@ export class WebGLElement extends LitElement
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	protected firstUpdated( _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown> ): void
 	{
-		this.wglViewport = new WebGLViewport( this.shadowRoot!, `#${this.divID}` );
+		const gl = WebGL.getInstance();
+		this.wglViewport = gl.getViewport( this.divID, this.outerHTML, this.shadowRoot! );
 		// in case there's a URL waiting, fetch it
 		this.fetchHref();
 	}

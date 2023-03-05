@@ -3,11 +3,14 @@
 
 == TOPICS
 
-# Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
-# After editing with webgl load off, main post page doesn't load webgl either (may be unnecessary after caching step)
++ # Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
+# In Editor, single-render webgl draws over drawer when open
++ # After editing with webgl load off, main post page doesn't load webgl either (may be unnecessary after caching step)
 = Admin page
-	* Editor: map WebGL div-id to <web-gl...> tag and WebGLElement load and cache it during content update
-		- Migration command: delete and create new viewport, then reconnect existing element
+	+ Editor: map WebGL div-id to <web-gl...> tag and WebGLElement load and cache it during content update
+		+ Migration command: delete and create new viewport, then reconnect existing element
+		+ Figure out where this is going bad -- put console outputs everywhere we create a new viewport?
+			+ Probably a huge problem in the editor, with typing and whatnot
 = Basic styling
 	* Write example post
 		- Create webgl content for example post

@@ -55,12 +55,6 @@ export class WebGLViewport
 			throw new Error( `Couldn't find element by name in specified root: ${elementName}` );
 		this.container = div as HTMLDivElement;
 		this.element = shadowRoot.host as WebGLElement;
-
-		const webgl = WebGL.getInstance();
-		const { gl } = webgl;
-		if ( gl === undefined )
-			return;
-		webgl.addViewport( this );
 	}
 
 	public setLoadEnabled( enabled: boolean )
@@ -242,8 +236,17 @@ export class WebGLViewport
 
 		if ( this.fadeEnd < 0 )
 		{
-			this.fadeStart = timeAccumSecs;
-			this.fadeEnd = timeAccumSecs + WebGLViewport.fadeInDurSecs;
+			if ( webgl.getFadeEnabled() === true )
+			{
+				this.fadeStart = timeAccumSecs;
+				this.fadeEnd = timeAccumSecs + WebGLViewport.fadeInDurSecs;
+			}
+			else
+			{
+				// skip fade as requested
+				timeAccumSecs = 1.0;
+				this.fadeEnd = 0.0;
+			}
 		}
 
 		let fadeValue = 1.0;

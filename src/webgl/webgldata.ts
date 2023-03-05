@@ -2,6 +2,7 @@
 import { v3 } from 'twgl.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Type } from 'class-transformer';
+import 'reflect-metadata';
 
 export enum AnimBlendMode
 {
