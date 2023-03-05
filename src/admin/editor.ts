@@ -275,9 +275,6 @@ export class EditorPage extends AppElement
 			textArea.scrollTop = ( textArea.scrollHeight - textArea.clientHeight ) * scrollScale;
 			this.resetScrollTimer();
 		}
-
-		const webgl = WebGL.getInstance();
-		webgl.requestNewRender();
 	}
 
 	connectedCallback(): void
@@ -301,6 +298,8 @@ export class EditorPage extends AppElement
 		const previewArea = this.shadowRoot!.getElementById( 'previewPostBox' );
 		if ( previewArea !== null )
 			previewArea.removeEventListener( 'scroll', () => this.scrollTextArea() );
+
+		WebGL.setScrollListener( undefined );
 	}
 
 	protected firstUpdated(): void
@@ -349,6 +348,7 @@ export class EditorPage extends AppElement
 		// Try to make scrolling match by document %
 		textArea.addEventListener( 'scroll', () => this.scrollPreview(), { capture: false, passive: true } );
 		previewArea.addEventListener( 'scroll', () => this.scrollTextArea(), { capture: false, passive: true } );
+		WebGL.setScrollListener( previewArea );
 	}
 
 	private handleCommit()

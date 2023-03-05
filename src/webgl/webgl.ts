@@ -53,11 +53,15 @@ export class WebGL
 	public gl?: WebGLRenderingContext;
 	public canvas?: HTMLCanvasElement;
 
+	private scrollListenerElement?: HTMLElement;
+
 	private animated: boolean = false;
-	private viewports: WebGLViewport[] = [];
+	private animatedRequestId: number = 0;
 
 	private singleRequestId?: number;
 	private lastTimeSecs: number = 0;
+
+	private viewports: WebGLViewport[] = [];
 
 	private loadEnabled: boolean = true;
 
@@ -82,10 +86,9 @@ export class WebGL
 	public addEventListeners()
 	{
 		window.addEventListener( 'resize', () => this.resizeEvent() );
-		document.body.addEventListener( 'scroll', () => this.scrollEvent() );
 	}
 
-	public updateAnimated()
+	public updateAnimatedFlag()
 	{
 		this.animated = false;
 
@@ -98,7 +101,7 @@ export class WebGL
 			}
 		}
 
-		this.requestNewRender();
+		this.restartRendering();
 	}
 
 	public isAnyFading()
@@ -139,9 +142,6 @@ export class WebGL
 
 		resizeCanvasToDisplaySize( canvas );
 
-		// eslint-disable-next-line prefer-destructuring
-		canvas.style.transform = `translateY(${window.scrollY}px)`;
-
 		// First clear color with scissor disabled, then re-enable for rendering
 		gl.enable( gl.DEPTH_TEST );
 		gl.disable( gl.SCISSOR_TEST );
@@ -159,7 +159,7 @@ export class WebGL
 			// eslint-disable-next-line no-console
 			console.log( `Rendering... elements ${this.viewports.length}, animated: ${this.animated}` );
 
-		this.singleRequestId = undefined;
+		this.singleRequestId = 0;
 	}
 
 	private singleRender( t: number )
@@ -174,11 +174,17 @@ export class WebGL
 	private queueRender()
 	{
 		if ( WebGL.DEBUG_RENDERS )
-			// eslint-disable-next-line no-console
-			console.log( `queue render event animated:${this.animated} id:${this.singleRequestId}` );
+			// eslint-disable-next-line no-console, max-len
+			console.log( `queue render event animated:${this.animated} animatedId:${this.animatedRequestId} singleId:${this.singleRequestId}` );
+
+		if ( this.isAnimating() )
+			return;
+
+		// clear out stale animated render (eg, leftover from fading)
+		this.stopAnimatedRender();
 
 		// If a render isn't already in flight (eg, animated), request a new single
-		if ( this.singleRequestId === undefined )
+		if ( this.singleRequestId === 0 )
 			this.singleRequestId = requestAnimationFrame( ( t: number ) => this.singleRender( t ) );
 	}
 
@@ -187,34 +193,71 @@ export class WebGL
 		for ( let i = 0; i < this.viewports.length; i++ )
 			this.viewports.at( i )!.onResizeEvent();
 
-		this.requestNewRender();
+		this.refreshSingleRender();
 	}
 
-	public scrollEvent()
+	public static setScrollListener( element: HTMLElement | undefined )
 	{
-		this.requestNewRender();
+		const gl = WebGL.getInstance();
+		if ( gl.scrollListenerElement !== element )
+		{
+			gl.scrollListenerElement = element;
+			if ( gl.scrollListenerElement !== undefined )
+				gl.scrollListenerElement.addEventListener( 'scroll', () => gl.scrollEvent() );
+		}
 	}
 
-	public requestNewRender()
+	scrollEvent()
+	{
+		this.refreshSingleRender();
+	}
+
+	startAnimatedRender()
+	{
+		const renderContinuously = ( t: number ) =>
+		{
+			this.render( t );
+			if ( this.isAnimating() )
+				this.animatedRequestId = requestAnimationFrame( renderContinuously );
+		};
+		this.animatedRequestId = requestAnimationFrame( renderContinuously );
+	}
+
+	stopAnimatedRender()
+	{
+		cancelAnimationFrame( this.animatedRequestId );
+		this.animatedRequestId = 0;
+	}
+
+	isAnimating(): boolean
+	{
+		return this.animated || this.isAnyFading();
+	}
+
+	public restartRendering()
 	{
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
-			console.log( 'request new render' );
+			console.log( 'restart rendering' );
 
-		if ( this.animated || this.isAnyFading() )
-		{
-			const renderContinuously = ( t: number ) =>
-			{
-				this.render( t );
-				if ( this.animated || this.isAnyFading() )
-					requestAnimationFrame( renderContinuously );
-			};
-			requestAnimationFrame( renderContinuously );
-		}
+		this.stopAnimatedRender();
+
+		if ( this.isAnimating() )
+			this.startAnimatedRender();
 		else
-		{
 			this.queueRender();
-		}
+	}
+
+	public refreshSingleRender()
+	{
+		if ( this.isAnimating() )
+			return;
+
+		if ( WebGL.DEBUG_RENDERS )
+			// eslint-disable-next-line no-console
+			console.log( 'refresh single render' );
+
+		this.queueRender();
 	}
 
 	public onNavigateAway()
@@ -223,6 +266,7 @@ export class WebGL
 		this.viewports.length = 0;
 		this.animated = false;
 
-		this.requestNewRender();
+		this.stopAnimatedRender();
+		this.refreshSingleRender();
 	}
 }

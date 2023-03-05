@@ -124,7 +124,7 @@ export class WebGLViewport
 						// eslint-disable-next-line no-console
 						console.log( `texture loaded: ${this.container.id}: '${data.diffuse!.url}'` );
 
-					webgl.requestNewRender();
+					webgl.restartRendering();
 				} );
 			}
 
@@ -151,7 +151,7 @@ export class WebGLViewport
 			this.drawObjects.push( drawObj );
 		} );
 
-		webgl.updateAnimated();
+		webgl.updateAnimatedFlag();
 
 		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console

@@ -4,14 +4,9 @@
 == TOPICS
 
 # Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
-# After editing with webgl load off, main post page doesn't load webgl either
-# Scroll to top on navigate is broken
-+ # WebGL not clipping on post list when scrolled under navbar
-+ # <web-gl> not rendering properly after Twind conversion
-	> Looks like a sizing problem -- needs display: block to use size params
-	> Nope, it was drop-shadow *facepalm*
+# After editing with webgl load off, main post page doesn't load webgl either (may be unnecessary after caching step)
 = Admin page
-	* Editor: map <web-gl...> tag to WebGLElement load and preserve it during content update
+	* Editor: map WebGL div-id to <web-gl...> tag and WebGLElement load and cache it during content update
 		- Migration command: delete and create new viewport, then reconnect existing element
 = Basic styling
 	* Write example post
@@ -19,21 +14,6 @@
 		+ Figure out embedding web-gl content from Markdown
 			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
 		- Finish example post
-= Basic styling
-	- Pick font
-	? Build GPU SVG model
-	- Post item: make title background a web-gl scene
-	* Convert to Twind for layout
-		+ FAQ page first
-			+ Prose for article writing
-		- Various layout values for responsive page sizing
-		+ Rebuild navbar
-		+ Rebuild FAQ
-		+ Rebuild post-list
-		+ Rebuild post-tile
-		- Rebuild post-item
-		+ Rebuild edit list
-		+ Rebuild editor
 = Backend first pass
 	- Integrate Showdown for Markdown conversion on the server side
 	* Research how AWS would work
@@ -44,6 +24,11 @@
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
 	* Use existing font-size attribute instead of custom fontsize
+= Basic styling
+	? Build GPU SVG model
+	- Post item: make title background a web-gl scene
+	+ Convert to Twind for layout
+		- Various layout values for responsive page sizing
 = Wrap <svg> with component that supports aspect-ratio
 	- Take "aspect-ratio" property
 	? Override "width" and "height"
@@ -57,6 +42,23 @@
 
 === DONE
 
++ # Scroll to top on navigate is broken
++ # WebGL not clipping on post list when scrolled under navbar
++ # <web-gl> not rendering properly after Twind conversion
+	> Looks like a sizing problem -- needs display: block to use size params
+	> Nope, it was drop-shadow *facepalm*
+= Basic styling
+	+ Pick font
+	+ Convert to Twind for layout
+		+ FAQ page first
+			+ Prose for article writing
+		+ Rebuild navbar
+		+ Rebuild FAQ
+		+ Rebuild post-list
+		+ Rebuild post-tile
+		+ Rebuild post-item
+		+ Rebuild edit list
+		+ Rebuild editor
 + # WebGL not clipping to owning window properly (see test post in Editor preview)
 = <web-gl> Enhancements
 	+ Massive inefficiency in WebGL with viewports, resizing/scrolling, rendering
