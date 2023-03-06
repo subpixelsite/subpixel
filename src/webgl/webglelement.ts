@@ -70,36 +70,6 @@ export function wrapTextElement(
 	return output;
 }
 
-export function getPixelWidth( attributeValue: string, parentElement: HTMLElement | null ): number
-{
-	let parentWidth = window.innerWidth;
-	if ( parentElement !== null )
-		parentWidth = parentElement.clientWidth;
-
-	if ( attributeValue.endsWith( '%' ) )
-	{
-		const pct = parseInt( attributeValue, 10 ) / 100;
-		return pct * parentWidth;
-	}
-
-	return parseInt( attributeValue, 10 );
-}
-
-export function getPixelHeight( attributeValue: string, parentElement: HTMLElement | null ): number
-{
-	let parentHeight = window.innerHeight;
-	if ( parentElement !== null )
-		parentHeight = parentElement.clientHeight;
-
-	if ( attributeValue.endsWith( '%' ) )
-	{
-		const pct = parseInt( attributeValue, 10 ) / 100;
-		return pct * parentHeight;
-	}
-
-	return parseInt( attributeValue, 10 );
-}
-
 @customElement( 'web-gl' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WebGLElement extends LitElement
@@ -128,9 +98,6 @@ export class WebGLElement extends LitElement
 	private wglViewport?: WebGLViewport;
 
 	@property( { type: String } )
-	fontsize: string = '16';
-
-	@property( { type: String } )
 	errorText?: string;
 
 	@property( { type: String } )
@@ -151,24 +118,41 @@ export class WebGLElement extends LitElement
 		this.divID = `web-gl-container-${this.idNumber}`;
 	}
 
+	setErrorText( error: string | undefined )
+	{
+		this.errorText = error;
+		this.wrappedText = undefined;
+	}
+
+	getWrappedErrorText(): string[] | undefined
+	{
+		// This could include a general WebGL error state
+		const errorText = this.getError();
+
+		if ( errorText !== undefined && this.wrappedText === undefined )
+		{
+			// Using a monospace font and character count to wrap, so this ratio is fontsize to font character width (smaller means skinnier presumed font)
+			const fontSizeFudgeRatio = 0.57;
+
+			const boxWidth = parseInt( window.getComputedStyle( this ).width, 10 );
+			const fontSize = parseInt( window.getComputedStyle( this ).fontSize, 10 );
+
+			const wrapWidthPixels = boxWidth;
+			const fontSizePixels = fontSize ?? 1;
+
+			const wrapWidth = wrapWidthPixels / fontSizePixels / fontSizeFudgeRatio;
+
+			this.wrappedText = wrapTextElement( errorText, wrapWidth, true );
+		}
+
+		return this.wrappedText;
+	}
+
 	public onResizeEvent()
 	{
-		const fontSizeFudgeRatio = 0.6;
-
 		// re-wrap lines and force a render update
-		this.wrappedText = undefined;
-
-		const errorText = this.getError();
-		if ( errorText === undefined )
-			return;
-
-		const wrapWidthPixels = getPixelWidth( this.style.width, this.parentElement );
-		const fontSizePixels = getPixelWidth( this.fontsize, this.parentElement ) ?? 1;
-
-		const wrapWidth = wrapWidthPixels / fontSizePixels / fontSizeFudgeRatio;
-
-		this.wrappedText = wrapTextElement( errorText, wrapWidth, true );
-
+		this.setErrorText( this.errorText );
+		WebGL.getInstance().refreshSingleRender();
 		this.requestUpdate();
 	}
 
@@ -228,6 +212,9 @@ export class WebGLElement extends LitElement
 			} )
 			.catch( error =>
 			{
+				this.setErrorText( error.toString() );
+				WebGL.getInstance().refreshSingleRender();
+				this.requestUpdate();
 				throw new Error( `${error}` );
 			} );
 	}
@@ -283,16 +270,19 @@ export class WebGLElement extends LitElement
 		if ( errorText === undefined )
 			return undefined;
 
-		if ( this.wrappedText === undefined )
-			return undefined;
+		const wrappedText = this.getWrappedErrorText();
+		if ( wrappedText === undefined )
+			throw new Error( 'Failed to get wrapped error text' );
 
-		const tspans = this.wrappedText.map( i => svg`<tspan x="50%" dy="1em" class="svgTspan">${i}</tspan>` );
+		const { fontSize } = window.getComputedStyle( this );
+
+		const tspans = wrappedText.map( i => svg`<tspan x="50%" dy="1em" class="svgTspan">${i}</tspan>` );
 
 		const output = html`
 			<svg width="100%" height="100%" role="img" aria-labelledby="label">
 				<title id="label">${errorText}</title>
 				<rect width="100%" height="100%" fill="#cfcfcf"/>
-				<text width="100%" x="50" y="50" class="web-gl-errortext" font-size="${this.fontsize}" alignment-baseline="central">
+				<text width="100%" x="50" y="50" class="web-gl-errortext" font-size="${fontSize}" alignment-baseline="central">
 					${tspans}
 				</text>
 			</svg>

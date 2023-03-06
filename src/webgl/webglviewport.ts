@@ -266,13 +266,13 @@ export class WebGLViewport
 		// The boundingClientRect from WebGLElement isn't trustworthy, so use the Div rect but start from the web-gl element.
 		const viewRect = this.container.getBoundingClientRect();
 		const visRect = this.getVisibleBoundingRect( viewRect, this.element );
-		const visWidth = visRect.right - visRect.left;
-		const visHeight = visRect.bottom - visRect.top;
+		const visWidthRaw = visRect.right - visRect.left;
+		const visHeightRaw = visRect.bottom - visRect.top;
 
 		this.debugLogRect( 'vis', visRect );
 		this.debugLogRect( 'view', viewRect );
 
-		if ( visWidth <= 0 || visHeight <= 0 )
+		if ( visWidthRaw <= 0 || visHeightRaw <= 0 )
 			return;
 
 		if ( WebGL.DEBUG_RENDERS || WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
@@ -284,9 +284,11 @@ export class WebGLViewport
 		const vpLeft = viewRect.left;
 		const vpBottom = canvas.clientHeight - viewRect.bottom;
 
+		const border = 2;
 		const visLeft = visRect.left;
-		const visBottom = canvas.clientHeight - visRect.bottom;
-		const scisWidth = visWidth + 1;
+		const visBottom = canvas.clientHeight - visRect.bottom + border;
+		const visWidth = visWidthRaw + ( border / 2 ); // fudge factor
+		const visHeight = visHeightRaw - border;
 
 		gl.enable( gl.SCISSOR_TEST );
 		gl.clearColor(
@@ -299,7 +301,7 @@ export class WebGLViewport
 		gl.clearStencil( this.scene.clearStencil! );
 
 		gl.viewport( vpLeft, vpBottom, vpWidth, vpHeight );
-		gl.scissor( visLeft, visBottom, scisWidth, visHeight );
+		gl.scissor( visLeft, visBottom, visWidth, visHeight );
 		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
 
 		gl.enable( gl.CULL_FACE );

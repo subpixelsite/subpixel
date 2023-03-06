@@ -374,3 +374,32 @@ serif: 'ui-serif,Georgia,Cambria,"Times New Roman",Times,serif'.split(','),
 
 mono: 'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace'.split(',')
 
+
+
+
+
+WebGL rendering goal
+	1 render loop for all WebGL elements (if any)
+	Only loop if any animated
+	If any animated, start animation loop
+	If none animated, cancel animation loop
+	If scroll or resize event, request new render only if not animated
+
+WebGL element caching
+	Values:
+		key: divID 'web-gl-container-1'
+		validator: outerHTML '<web-gl class="webglembed" fontsize="24" src="assets/test/webgl2.json"></web-gl>'
+		value: object
+	Current:
+		textarea: onInput
+			webgl.onNavigateAway to clear viewports and reset WebGL
+		doConversion: (cleanup )
+	New:
+		Don't reset WebGL
+		Don't blindly create new viewports:
+			Instead, submit a divID and outerHTML and see if the key and outerHTML matches an existing viewport.  
+				If they do, return the existing viewport.
+				If not, destroy the existing viewport and create a new one for that divID, returning it.
+			If none exists, return a new one.
+		How to clear unused divIDs?  Maybe a manual cleanup step?  Or just the final onNavigateAway cleanup?
+

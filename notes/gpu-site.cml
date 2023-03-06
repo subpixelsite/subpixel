@@ -3,16 +3,9 @@
 
 == TOPICS
 
-+ # Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
-# In Editor, single-render webgl draws over drawer when open
-+ # After editing with webgl load off, main post page doesn't load webgl either (may be unnecessary after caching step)
-= Admin page
-	+ Editor: map WebGL div-id to <web-gl...> tag and WebGLElement load and cache it during content update
-		+ Migration command: delete and create new viewport, then reconnect existing element
-		+ Figure out where this is going bad -- put console outputs everywhere we create a new viewport?
-			+ Probably a huge problem in the editor, with typing and whatnot
++ # In Editor, single-render webgl draws over drawer when open
 = Basic styling
-	* Write example post
+	- Write example post
 		- Create webgl content for example post
 		+ Figure out embedding web-gl content from Markdown
 			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
@@ -20,13 +13,25 @@
 = Backend first pass
 	- Integrate Showdown for Markdown conversion on the server side
 	* Research how AWS would work
+		- Set up domain with Route 43 or whatever
+		- Set up S3 bucket
+		- Set up CDN
+		- Set up Lambda calls to access where necessary
+		- Database
+			- Find relevant DynamoDB resources
+			- Set up posts table
+			? Set up tabs table
+			? Set up quips table
+				> This might be better as a local content file so that I can keep it doing serverless rendering with runtime JS
+			- Set up threads table
+		- Set up Cognito for security
 	- Make plan - DB, HTML/SVG/JSON/texture files
 = <web-gl> Enhancements
 	- Load and display OBJ format
 	- Support interaction, like click/drag-to-move camera (or button for different ortho)
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
-	* Use existing font-size attribute instead of custom fontsize
+	+ Use existing font-size attribute instead of custom fontsize
 = Basic styling
 	? Build GPU SVG model
 	- Post item: make title background a web-gl scene
@@ -45,6 +50,13 @@
 
 === DONE
 
++ # Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
++ # After editing with webgl load off, main post page doesn't load webgl either (may be unnecessary after caching step)
+= Admin page
+	+ Editor: map WebGL div-id to <web-gl...> tag and WebGLElement load and cache it during content update
+		+ Migration command: delete and create new viewport, then reconnect existing element
+		+ Figure out where this is going bad -- put console outputs everywhere we create a new viewport?
+			+ Probably a huge problem in the editor, with typing and whatnot
 + # Scroll to top on navigate is broken
 + # WebGL not clipping on post list when scrolled under navbar
 + # <web-gl> not rendering properly after Twind conversion

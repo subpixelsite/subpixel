@@ -54,6 +54,7 @@ export class WebGL
 	public gl?: WebGLRenderingContext;
 	public canvas?: HTMLCanvasElement;
 
+	private detailsListenerElement?: HTMLElement;
 	private scrollListenerElement?: HTMLElement;
 
 	private animated: boolean = false;
@@ -249,6 +250,30 @@ export class WebGL
 			this.vpCache.at( i )!.viewport.onResizeEvent();
 
 		this.refreshSingleRender();
+	}
+
+	public static setDetailsListener( element: HTMLElement | undefined )
+	{
+		const gl = WebGL.getInstance();
+		if ( gl.detailsListenerElement !== element )
+		{
+			if ( gl.detailsListenerElement !== undefined )
+			{
+				gl.detailsListenerElement.removeEventListener( 'sl-show', () => gl.scrollResizeEvent() );
+				gl.detailsListenerElement.removeEventListener( 'sl-after-show', () => gl.scrollResizeEvent() );
+				gl.detailsListenerElement.removeEventListener( 'sl-hide', () => gl.scrollResizeEvent() );
+				gl.detailsListenerElement.removeEventListener( 'sl-after-hide', () => gl.scrollResizeEvent() );
+			}
+
+			gl.detailsListenerElement = element;
+			if ( gl.detailsListenerElement !== undefined )
+			{
+				gl.detailsListenerElement.addEventListener( 'sl-show', () => gl.scrollResizeEvent() );
+				gl.detailsListenerElement.addEventListener( 'sl-after-show', () => gl.scrollResizeEvent() );
+				gl.detailsListenerElement.addEventListener( 'sl-hide', () => gl.scrollResizeEvent() );
+				gl.detailsListenerElement.addEventListener( 'sl-after-hide', () => gl.scrollResizeEvent() );
+			}
+		}
 	}
 
 	public static setScrollListener( element: HTMLElement | undefined )

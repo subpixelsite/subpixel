@@ -297,6 +297,7 @@ export class EditorPage extends AppElement
 			previewArea.removeEventListener( 'scroll', () => this.scrollTextArea() );
 
 		WebGL.setScrollListener( undefined );
+		WebGL.setDetailsListener( undefined );
 	}
 
 	protected firstUpdated(): void
@@ -344,6 +345,11 @@ export class EditorPage extends AppElement
 		textArea.addEventListener( 'scroll', () => this.scrollPreview(), { capture: false, passive: true } );
 		previewArea.addEventListener( 'scroll', () => this.scrollTextArea(), { capture: false, passive: true } );
 		WebGL.setScrollListener( previewArea );
+
+		const details = this.shadowRoot!.getElementById( 'post-data' );
+		if ( details === null )
+			throw new Error( 'Couldn\'t find post details DOM element' );
+		WebGL.setDetailsListener( details );
 	}
 
 	private handleCommit()
@@ -389,7 +395,7 @@ export class EditorPage extends AppElement
 	<form class="post-form">
 		<div class="flex flex-col gap-5 flex-auto">
 			<div class="info-container grid h-auto">
-				<sl-details summary="Post Data" class="info-details">
+				<sl-details id="post-data" summary="Post Data" class="info-details">
 					<div class="info-panel grid gap-x-2.5 overflow-hidden">
 						<div class="grid col-start-1 col-span-1 w-full p-0.5">
 							<sl-input class="edit-input" size=small label="ID" pill readonly name="id" .value=${this.post!.id}></sl-input>
