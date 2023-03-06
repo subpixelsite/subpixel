@@ -1,4 +1,4 @@
-### Subpixel
+# Subpixel
 
 A rendering tutorial and informative resource single-page-application website.
 
