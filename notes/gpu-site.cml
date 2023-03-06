@@ -3,15 +3,7 @@
 
 == TOPICS
 
-+ # In Editor, single-render webgl draws over drawer when open
-= Basic styling
-	- Write example post
-		- Create webgl content for example post
-		+ Figure out embedding web-gl content from Markdown
-			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
-		- Finish example post
 = Backend first pass
-	- Integrate Showdown for Markdown conversion on the server side
 	* Research how AWS would work
 		- Set up domain with Route 43 or whatever
 		- Set up S3 bucket
@@ -26,12 +18,18 @@
 			- Set up threads table
 		- Set up Cognito for security
 	- Make plan - DB, HTML/SVG/JSON/texture files
+	- Integrate Showdown for Markdown conversion on the server side
+= Basic styling
+	- Write example post
+		- Create webgl content for example post
+		+ Figure out embedding web-gl content from Markdown
+			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
+		- Finish example post
 = <web-gl> Enhancements
 	- Load and display OBJ format
 	- Support interaction, like click/drag-to-move camera (or button for different ortho)
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
-	+ Use existing font-size attribute instead of custom fontsize
 = Basic styling
 	? Build GPU SVG model
 	- Post item: make title background a web-gl scene
@@ -50,6 +48,9 @@
 
 === DONE
 
++ # In Editor, single-render webgl draws over drawer when open
+= <web-gl> Enhancements
+	+ Use existing font-size attribute instead of custom fontsize
 + # Editing body with WebGL clears the webgl in the header which never reloads (may be fixed by caching step)
 + # After editing with webgl load off, main post page doesn't load webgl either (may be unnecessary after caching step)
 = Admin page
