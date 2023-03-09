@@ -11,6 +11,7 @@ import { plainToClass } from 'class-transformer';
 import { WebGL } from './webgl.js';
 import { WebGLViewport } from './webglviewport.js';
 import { WebGLScene } from './webglscene.js';
+import { CachedViewport } from './webglcache.js';
 
 // Wrap an string into an array of strings based on a width of characters.
 // Works based on chars, so prefer a monospace font.
@@ -173,7 +174,21 @@ export class WebGLElement extends LitElement
 	protected firstUpdated( _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown> ): void
 	{
 		const gl = WebGL.getInstance();
-		this.wglViewport = gl.getViewport( this.divID, this.outerHTML, this.shadowRoot! );
+		const content = this.outerHTML;
+
+		let cachedVP = gl.getViewport( this.divID, content );
+		if ( cachedVP === undefined )
+		{
+			if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
+				// eslint-disable-next-line no-console
+				console.log( `Creating new <web-gl> viewport '${this.divID}' for '${content}'` );
+
+			cachedVP = new CachedViewport( this.divID, content, new WebGLViewport( this.shadowRoot!, `#${this.divID}` ) );
+			gl.addViewport( cachedVP );
+		}
+
+		this.wglViewport = cachedVP.viewport;
+
 		// in case there's a URL waiting, fetch it
 		this.fetchHref();
 	}

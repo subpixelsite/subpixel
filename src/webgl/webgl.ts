@@ -1,6 +1,5 @@
 import { resizeCanvasToDisplaySize } from 'twgl.js';
 import { CachedViewport } from './webglcache.js';
-import { WebGLViewport } from './webglviewport.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WebGL
@@ -90,7 +89,7 @@ export class WebGL
 		return this.fadeEnabled;
 	}
 
-	public getViewport( divID: string, html: string, shadowRoot: ShadowRoot ): WebGLViewport
+	public getViewport( divID: string, html: string ): CachedViewport | undefined
 	{
 		let vp: CachedViewport | undefined;
 
@@ -114,23 +113,14 @@ export class WebGL
 						console.log( `Found matching <web-gl> viewport '${divID}' for '${html}'` );
 
 					vp = this.vpCache[i];
+					vp.viewport.setLoadEnabled( this.loadEnabled );
 				}
 
 				break;
 			}
 		}
 
-		if ( vp === undefined )
-		{
-			// eslint-disable-next-line no-console
-			console.log( `Creating new <web-gl> viewport '${divID}' for '${html}'` );
-			vp = new CachedViewport( divID, html, new WebGLViewport( shadowRoot, `#${divID}` ) );
-			this.addViewport( vp );
-		}
-
-		vp.viewport.setLoadEnabled( this.loadEnabled );
-
-		return vp.viewport;
+		return vp;
 	}
 
 	public addViewport( viewport: CachedViewport )
