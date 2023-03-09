@@ -403,3 +403,170 @@ WebGL element caching
 			If none exists, return a new one.
 		How to clear unused divIDs?  Maybe a manual cleanup step?  Or just the final onNavigateAway cleanup?
 
+
+
+
+
+DB access plan
+POSTS
+	Get all posts, sorted by latest publish date (or the client could do the sort...)
+	Get a post of name 'blah'
+	Get all posts with tag 'category'
+	Get all threads, sorted by latest publish date (or client sorts)
+	Get a thread of name 'blah'
+EDITOR
+	Get all posts, sorted by created date (or publish is fine, so long as unpublished is first, or client sorts)
+	Get a post of name 'blah'
+	Put a post of name 'blah' with data 'blob'
+
+Post
+	pid 			- partition key
+*	name
+*	title
+	author
+*	dateCreated
+*	dateModified
+*	datePublished
+*	tags
+	hdrInline
+	hdrHref
+	hdrAlt
+*	description
+	body
+Thread
+	tid 			- secondary key?
+*	name
+*	title
+*	description
+	posts[]
+The single-table version of this has 1 Post Item per post Partition, but potentially many Thread Items per post Partition, using a tid GSI
+
+
+
+Amazon DynamoDB Deep Dive: Advanced Design Patterns for DynamoDB (AWS re:Invent 2018) talk
+	Relational databases born in the 70s because storage was expensive
+		Normalizing, reducing data footprint, was extremely important
+		But increases CPU cost to denormalize data so the CPU could consume it
+	Now, the CPU is the most expensive resource, so why optimize for storage instead?
+		NoSQL is the answer to this problem
+	NoSQL
+		Optimized for compute
+		Instantiated views instead of ad-hoc queries
+		Build for transaction processing at scale, not analytic processing
+	DynamoDB
+		Fully Managed NoSQL
+		Document or Key-Value
+			Wide-column key-value store that supports a document attribute type
+		Scales to Any Workload
+		Fast and Consistent
+			Single tables running at 4m transactions per second
+			Low single-digit ms latency
+			The busier it gets, the more consistent the low-latency responses become
+				(because of caching)
+		Access Control
+			Can restrict access to the table itself, to the items within the table (different query patterns?)
+		Event Driven Programming
+		Scales horizontally
+	Table is more like a catalog of items (instead of rows)
+	Items don't always have to have the same attributes
+		But they always have to have a "Partition Key"
+			The Partition Key uniquely identifies the item
+		Optional "Sort Key"
+			Gives the ability to execute complex range queries against the items in those partitions
+			So a partition is like a folder or bucket and the sort key orders the items within that folder
+			Rich query capabilities:
+				All items for key
+				==, <, >, >=, <=
+				"begins with"
+				"between"
+				"contains"
+				"in"
+				sorted results
+				counts
+				top/botton N values
+			EG:
+				partition key is customer ID
+				sort key is order date
+				primary access pattern is all customer orders in last 24 hours
+				Query: partition key = "CustomerID-X" and the sort key is > 24 hours ago
+	Partition Keys
+		Uniquely ID the item
+		Distribute items across the key space
+		Used to hash the items across the key space
+			Routes to correct storage node for that item
+	Sort Keys
+		Uses two attributes together (Partition:Sort Key) to uniquely ID an Item
+		Within unordered hash index, data is arranged by the sort key
+		No limit on the number of items (ie, infinite) per partition key
+			Except if you have local secondary indexes (??)
+	So: Partitions are buckets that contain Items, like rows, that share a Partition ID
+		The SortKey uniquely identifies an Item (row) inside that Partition.
+		You could have a Partition per customer, then a SortKey for order #, then have dozens of order Items per customer Sorted inside each customer's Partition
+	Eventually Consistent vs Strongly Consistent
+		All writes go to 3 replicas
+		At first, there's a primary write and in less than 1ms the first replica is committed (so 2 copies)
+		The third write will take longer (depending on load?)
+		EC reads randomly choose from one of the 3
+		SC reads always read from primary, and thus are always up-to-date, but cost twice as much
+	Local Secondary Index (LSI)
+		LSIs limit the # of range keys to a 10GB max per partition key
+		Alternate Sort Key attribute
+		Index is local to a Partition Key
+		Allow you to "re-sort" the data in the partitions
+		Let's you use a different access pattern (sort)
+		However, must ALWAYS USE the same Partition Key as the original access pattern
+	Global Secondary Index (GSI)
+		Alternate Partition and/or Sort Keys
+		Index is across all Partition Keys
+		Use composite Sort Keys for compound indexes
+		RCUs/WCUs are provisioned separately for GSIs
+		EG:
+			instead of grouping by customer, I could group by warehouse:
+				PK is warehouse ID and SK is order date
+	How do GSI Updates work?
+		GSI Updates are Eventually Consistent
+		LSIs are Strongly Consistent
+		Need to make sure GSIs have enough capacity to handle the update rate from the table if writing table data frequently
+	Max DynamoDB Efficiency
+		"To get the most out of DynamoDB throughput, create tables where the partition key element has a large number of distinct values, and values are requested fairly uniformly, as randomly as possible."
+	Answering complex questions
+		DynamoDB Streams and Lambda
+		Totally separated from the DB, so very fault-tolerant
+		Stream is the changelog for the DynamoDB table
+			All write ops appear on the Stream
+		Once the data is on the Stream you can invoke a Lambda function
+		That Lambda function has two IAM roles
+			Invocation Role
+				defines what it can see/read
+				which items can it see, which attributes on items can it read
+			Execution Role
+				defines what it can do
+				what other AWS services on your account does it have access to
+				what permissions does it have on those services to work with this data
+		Example uses:
+			Computed aggregations: counts, sums
+				You can keep a running count/sum, write it back into the table
+				Always available to read for basically free
+			Push data into Kinesis firehose for stream processing
+			Interact with external systems
+			Could even skip Lambda and use an EC2 instance to read the stream constantly if the rate is high enough
+	Query filters
+		DynamoDB gives you 2 key conditions you can evaluate in a query
+		The first applies to the sort key (the sort condition)
+			This limits the number of items you read, because it's on the sort key (probably?)
+		The second is the filter condition
+			You still pay to read these items, because it's on a non-special key (probably?)
+	Composite keys
+		To avoid the cost of the read and accomplish a similar thing as a filter, that is, filter using the sort:
+			Concatenante two keys into a single string
+			Instead of "sort by date, filter by PENDING" (to get 2 out of 10,000 items)
+				Create StatusDate key, concatenating status and date (eg, PENDING_2022-10-13)
+				Query starts with "PENDING_" to get a status/date range search, and sort as well, limiting read to the minimum required
+				(this shows how important it is to know your access patterns and tune your data)
+	DynamoDB Transactions API
+		Update multiple items at the same time
+		
+
+
+
+

@@ -7,17 +7,29 @@ import presetAutoprefix from '@twind/preset-autoprefix';
 import presetTailwind from '@twind/preset-tailwind';
 import presetTypography from '@twind/preset-typography';
 
+// eslint-disable-next-line prefer-const
+let DO_HASH = true;
+
+// Uncomment to see Twind CSS
+// DO_HASH = false;
+
+if ( !DO_HASH )
+	// eslint-disable-next-line no-console
+	console.warn( `DEVELOPMENT BUILD: Twind CSS hash disabled` );
+
 export default defineConfig( {
 	presets: [
 		presetAutoprefix(),
 		presetTailwind(),
 		presetTypography( { defaultColor: 'slate' } )
 	],
+	hash: DO_HASH,
 	theme: {
 		fontFamily: {
 			sans: ['Inter', 'sans-serif'],
 			mono: ['Source Code Pro', 'monospace']
 		},
+		hash: DO_HASH,
 		colors: {
 			transparent: 'transparent',
 			current: 'currentColor',

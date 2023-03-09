@@ -3,16 +3,51 @@
 
 == TOPICS
 
+# index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
+# <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
+# Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
+= Dev workflow
+	x Branch GitHub into Test and Prod
+		x Research proper setup - branch or fork?
+	x Make test version of website on AWS
+		x Separate S3 bucket that is public with ACL and IAM access limit to certain roles/users?
+			x Set up CloudFront connection for Test bucket
+		x Set up two dist build steps, one for Test and one for Prod
+			x Make sure each is setting the appropriate test/prod values for the content
+			x Lit production/development
+			x Minify everything
+			x Hash everything
+			x Combine and hash CSS?
+	+ Make task in workspace to do a sanitized test of the production build
+		+ Cleaned tree to work in (eg, dist/ becomes the root)
+		+ Properly copy all assets to build
+		+ Copy index.html to dist/
+		+ Build into dist/
+		+ Start web server out of dist/ just like Start does (except without tsc -watch)
+	* Set up CI/CD process
+		- Install Docker
+		- Install Jenkins
+			- Install and configure Jenkins
+			- Set up Docker to correctly build dist of site
+			- Set up two versions: one for Test, one for Prod
+			- Hook up Jenkins to GitHub
+			- Set up Webhook to run Test/Prod CI/CD on push to respective branch/fork
+		? Sign up for Vercel
 = Backend first pass
 	* Research how AWS would work
-		- Set up domain with Route 43 or whatever
-		- Set up S3 bucket
-		- Set up CDN
-		- Set up Lambda calls to access where necessary
+		+ Set up domain with Route 43 or whatever
+		+ Set up S3 bucket
+		+ Set up CDN
+		* Set up Lambda calls to access where necessary
+			- Install serverless
 		- Database
-			- Find relevant DynamoDB resources
+			- Find relevant Aurora Serverless v1 SPA/blog resources
+				- Aurora Serverless an option with my editor situation?
+				> Maybe not... DynamoDB can be made to work for tags, probably
+			* Design DB access patterns
+				- Write down what queries I need to make, and when
 			- Set up posts table
-			? Set up tabs table
+			- Set up tabs table
 			? Set up quips table
 				> This might be better as a local content file so that I can keep it doing serverless rendering with runtime JS
 			- Set up threads table
@@ -25,6 +60,9 @@
 		+ Figure out embedding web-gl content from Markdown
 			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
 		- Finish example post
+	! Showdown isn't creating proper MD
+		- Newlines between lines should be creating <p>
+		- Double spaces at the end of lines should be creating <br>
 = <web-gl> Enhancements
 	- Load and display OBJ format
 	- Support interaction, like click/drag-to-move camera (or button for different ortho)
@@ -44,6 +82,20 @@
 	- Show with syntax coloring
 	- Use source code font - Source Code Pro?
 	? "Copy to Clipboard" button
+= MVP
+	- Create favicon
+= Backend
+	- Consider enabling Origin Shield as extra CloudFront caching layer
+= Quips
+	- These should come from a JSON data file on the server with a shorter cache time so that I can update it as desired without needing to manually invalidate it
+	- Local runtime JS script in the final HTML page loads the JSON and picks a quip to slot in
+		? Set server to serve .JSON with MIME type of .JS
+= Editor
+	- Add "Publish" slider (above Save button?) and date
+		- This will set a publish flag and fill in the publish date/time
+		- The post-list only shows posts with the "publish" flag set
+		> This way I can work on and save unpublished posts
+	- Look at DynamoDB Transactions for Save operations
 
 
 === DONE

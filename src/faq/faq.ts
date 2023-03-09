@@ -123,7 +123,7 @@ export class FAQ extends AppElement
 
 <hr class="rounded">
 <h3 id='whoth'>Who the hell?</h3>
-<p>I'm Chris Lambert, and this site is my brain-child, work product, and ball and chain.&nbsp I'm an industry veteran since 1999 with credits such as Modern Warfare 2 (2009) and Titanfall to my name.</p>
+<p>I'm Chris Lambert, and this site is my brain-child, passion project, and an absolute albatross around my neck.&nbsp I'm an industry veteran since 1999 with credits such as Modern Warfare 2 (2009) and Titanfall to my name.</p>
 <p>Trivia:</p>
 <ul>
 <li>I have no known relation to Johann Heinrich Lambert, who in <i>Photometria</i> (1760) described the
@@ -160,7 +160,7 @@ services to provide automatically-scaling high-availability worldwide access.&nb
 
 <hr class="rounded">
 <h3 id='work'>Is the author looking for work?</h3>
-<p>I am indeed looking for a new position in game development!&nbsp If you think we might be a good match, you reach me on <a href="https://www.linkedin.com/in/clambert/">LinkedIn</a>.</p>
+<p>Funny you should ask, I am indeed looking for a new game dev position!&nbsp If you think we might be a good match, you can reach me on <a href="https://www.linkedin.com/in/clambert/">LinkedIn</a>.</p>
 
 <hr class="rounded">
 <h3 id='web'>What about doing more web development?</h3>

@@ -1,28 +1,30 @@
 // import { hmrPlugin, presets } from '@open-wc/dev-server-hmr';
 
 /** Use Hot Module replacement by adding --hmr to the start command */
-const hmr = process.argv.includes('--hmr');
+const hmr = process.argv.includes( '--hmr' );
 
-export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
-  open: '/',
-  watch: !hmr,
-  /** Resolve bare module imports */
-  nodeResolve: {
-    exportConditions: ['browser', 'development'],
-  },
-  
-  /** Compile JS for older browsers. Requires @web/dev-server-esbuild plugin */
-  // esbuildTarget: 'auto'
+export default /** @type {import('@web/dev-server').DevServerConfig} */ ( {
+	open: '/',
+	watch: !hmr,
+	/** Resolve bare module imports */
+	nodeResolve: {
+		exportConditions: ['browser']
+	},
 
-  /** Set appIndex to enable SPA routing */
-  appIndex: 'index.html',
+	/** Compile JS for older browsers. Requires @web/dev-server-esbuild plugin */
+	// esbuildTarget: 'auto'
 
-  plugins: [
-    /** Use Hot Module Replacement by uncommenting. Requires @open-wc/dev-server-hmr plugin */
-    // hmr && hmrPlugin({ exclude: ['**/*/node_modules/**/*'], presets: [presets.litElement] }),
-  ],
+	rootDir: '.',
 
-  // See documentation for all available options
+	/** Set appIndex to enable SPA routing */
+	appIndex: 'index.html',
 
-  port: 8010,
-});
+	plugins: [
+		/** Use Hot Module Replacement by uncommenting. Requires @open-wc/dev-server-hmr plugin */
+		// hmr && hmrPlugin({ exclude: ['**/*/node_modules/**/*'], presets: [presets.litElement] }),
+	],
+
+	// See documentation for all available options
+
+	port: 8010
+} );

@@ -73,7 +73,7 @@ export class App extends withTwind( LitElement )
 	{
 		super();
 
-		setBasePath( '/dist/shoelace' );
+		setBasePath( '/' );	// Shoelace looks in '<BasePath>/assets/icons/'
 		initPostData();
 	}
 

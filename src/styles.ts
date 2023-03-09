@@ -40,12 +40,6 @@ export const Colors = css`
 		--sl-color-gray-950: #0d131e;
 	}
 
-	:root {
-		a {
-			color: red;
-		}
-	}
-
 	sl-tag.tag::part(base) {
 		border-color: var(--sl-color-primary-600);
 		background-color: var(--sl-color-primary-200);
