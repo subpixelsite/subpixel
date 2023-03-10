@@ -25,16 +25,18 @@
 		+ Build into dist/
 		+ Start web server out of dist/ just like Start does (except without tsc -watch)
 	* Set up CI/CD process for pushing to AWS
-		- Install Docker
-		- Install Jenkins
-			- Install and configure Jenkins
-			- Set up Docker to correctly build dist of site
-			- Set up two versions: one for Test, one for Prod
-			- Hook up Jenkins to GitHub
-			- Set up Webhook to run Test/Prod CI/CD on push to respective branch/fork
-	* Set up Test environment
-		- Sign up for Vercel
+		* Hook up Vercel Production to S3 Bucket push
+		x Install Docker
+		x Install Jenkins
+			x Install and configure Jenkins
+			x Set up Docker to correctly build dist of site
+			x Set up two versions: one for Test, one for Prod
+			x Hook up Jenkins to GitHub
+			x Set up Webhook to run Test/Prod CI/CD on push to respective branch/fork
+	+ Set up Test environment
+		+ Sign up for Vercel
 		+ Set up 'dev' fork
+		+ Make e-mail address on GitHub private
 = Backend first pass
 	* Research how AWS would work
 		+ Set up domain with Route 43 or whatever

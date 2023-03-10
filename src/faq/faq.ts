@@ -119,7 +119,7 @@ export class FAQ extends AppElement
 
 <hr class="rounded">
 <h3 id='whath'>What the hell?</h3>
-<p>SubPixel is a site full of answers to your questions about GPUs and real-time rendering, especially as they pertain to video games.</p>
+<p>Subpixel is a site full of answers to your questions about GPUs and real-time rendering, especially as they pertain to video games.</p>
 
 <hr class="rounded">
 <h3 id='whoth'>Who the hell?</h3>

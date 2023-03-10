@@ -62,6 +62,22 @@ export default {
 				{
 					src: 'assets',
 					dest: 'dist'
+				},
+				{
+					src: '*.ico',
+					dest: 'dist'
+				},
+				{
+					src: '*.svg',
+					dest: 'dist'
+				},
+				{
+					src: '*.png',
+					dest: 'dist'
+				},
+				{
+					src: 'manifest.json',
+					dest: 'dist'
 				}
 			]
 		} ),
