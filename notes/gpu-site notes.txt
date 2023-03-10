@@ -568,5 +568,18 @@ Amazon DynamoDB Deep Dive: Advanced Design Patterns for DynamoDB (AWS re:Invent 
 		
 
 
+This resulted in an MD HR:
+"
+How does one draw a goddamn HR around here 
 
+---
 
+---
+*__SERIOUSLY FUCKED__* 
+"
+It was a dashed line though.
+{
+	height: 0px;
+	color: inherit;
+	border-top-width: 1px;
+}
