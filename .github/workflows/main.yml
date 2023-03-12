@@ -1,4 +1,4 @@
-name: Upload To S3
+name: s3upload
 
 on:
   workflow_dispatch
@@ -16,6 +16,12 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
+
+    - name: Install
+      run: npm install
+
+    - name: Build
+      run: npm run build
 
     - name: Deploy static site to S3 bucket
       run: aws s3 sync ./dist/ s3://subpixel.dev --delete
