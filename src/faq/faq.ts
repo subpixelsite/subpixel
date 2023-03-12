@@ -1,7 +1,7 @@
 /* eslint-disable lit/no-invalid-html */
 /* eslint-disable max-len */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { LitElement, html, css } from 'lit';
+import { html, css } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { customElement } from 'lit/decorators.js';
 import '@shoelace-style/shoelace/dist/components/details/details.js';
@@ -123,7 +123,8 @@ export class FAQ extends AppElement
 
 <hr class="rounded">
 <h3 id='whoth'>Who the hell?</h3>
-<p>I'm Chris Lambert, and this site is my brain-child, passion project, and an absolute albatross around my neck.&nbsp I'm an industry veteran since 1999 with credits such as Modern Warfare 2 (2009) and Titanfall to my name.</p>
+<p>I'm Chris Lambert, and I have no one to blame but myself.  This site sounded like a good idea at the time, back when I used to sleep and didn't know what "Flash of Unstyled Content" meant.
+&nbsp I'm an industry veteran since 1999 with credits such as Modern Warfare 2 (2009) and Titanfall to my name.</p>
 <p>Trivia:</p>
 <ul>
 <li>I have no known relation to Johann Heinrich Lambert, who in <i>Photometria</i> (1760) described the
