@@ -1,5 +1,5 @@
 {
-  "name": "gpu-site",
+  "name": "subpixel",
   "description": "GPU and Rendering tutorial web site",
   "license": "MIT",
   "author": "Chris Lambert",
@@ -20,12 +20,14 @@
     "buildshaders": "node ./build/buildshaders.js src/webgl/shaders src/webgl/shaders.ts"
   },
   "dependencies": {
+    "@rollup/plugin-terser": "^0.4.0",
     "@shoelace-style/shoelace": "^2.0.0-beta.86",
     "@twind/core": "^1.1.3",
     "@twind/preset-autoprefix": "^1.0.7",
     "@twind/preset-tailwind": "^1.1.4",
     "@twind/preset-typography": "^1.0.7",
     "@twind/with-web-components": "^1.1.3",
+    "@types/koa": "^2.13.5",
     "@vaadin/router": "^1.7.4",
     "class-transformer": "^0.5.1",
     "lit": "^2.0.2",
@@ -61,7 +63,6 @@
     "lint-staged": "^10.5.4",
     "rimraf": "^3.0.2",
     "rollup": "^2.60.0",
-    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-workbox": "^6.2.0",
     "tslib": "^2.3.1",
     "typescript": "^4.5.2"

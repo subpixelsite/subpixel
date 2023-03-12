@@ -3,7 +3,7 @@ import babel from '@rollup/plugin-babel';
 import html from '@web/rollup-plugin-html';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
-import { terser } from 'rollup-plugin-terser';
+import { terser } from '@rollup/plugin-terser';
 // import { generateSW } from 'rollup-plugin-workbox';
 // import css from 'rollup-plugin-css-only';
 import copy from 'rollup-plugin-copy';
