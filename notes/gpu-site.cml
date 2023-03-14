@@ -6,37 +6,11 @@
 # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
 # <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
 # Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
-= Dev workflow
-	x Branch GitHub into Test and Prod
-		x Research proper setup - branch or fork?
-	x Make test version of website on AWS
-		x Separate S3 bucket that is public with ACL and IAM access limit to certain roles/users?
-			x Set up CloudFront connection for Test bucket
-		x Set up two dist build steps, one for Test and one for Prod
-			x Make sure each is setting the appropriate test/prod values for the content
-			x Lit production/development
-			x Minify everything
-			x Hash everything
-			x Combine and hash CSS?
-	+ Make task in workspace to do a sanitized test of the production build
-		+ Cleaned tree to work in (eg, dist/ becomes the root)
-		+ Properly copy all assets to build
-		+ Copy index.html to dist/
-		+ Build into dist/
-		+ Start web server out of dist/ just like Start does (except without tsc -watch)
-	* Set up CI/CD process for pushing to AWS
-		* Hook up Vercel Production to S3 Bucket push
-		x Install Docker
-		x Install Jenkins
-			x Install and configure Jenkins
-			x Set up Docker to correctly build dist of site
-			x Set up two versions: one for Test, one for Prod
-			x Hook up Jenkins to GitHub
-			x Set up Webhook to run Test/Prod CI/CD on push to respective branch/fork
-	+ Set up Test environment
-		+ Sign up for Vercel
-		+ Set up 'dev' fork
-		+ Make e-mail address on GitHub private
+= MVP
+	- One fully-complete post
+		- Including WebGL content
+		> I've written an example one already, start with that?
+	- Responsive format for public-facing site
 = Backend first pass
 	* Research how AWS would work
 		+ Set up domain with Route 43 or whatever
@@ -86,8 +60,6 @@
 	- Show with syntax coloring
 	- Use source code font - Source Code Pro?
 	? "Copy to Clipboard" button
-= MVP
-	- Create favicon
 = Backend
 	- Consider enabling Origin Shield as extra CloudFront caching layer
 = Quips
@@ -104,6 +76,43 @@
 
 === DONE
 
+= MVP
+	+ Create favicon
+= Dev workflow
+	x Branch GitHub into Test and Prod
+		x Research proper setup - branch or fork?
+	x Make test version of website on AWS
+		x Separate S3 bucket that is public with ACL and IAM access limit to certain roles/users?
+			x Set up CloudFront connection for Test bucket
+		x Set up two dist build steps, one for Test and one for Prod
+			x Make sure each is setting the appropriate test/prod values for the content
+			x Lit production/development
+			x Minify everything
+			x Hash everything
+			x Combine and hash CSS?
+	+ Make task in workspace to do a sanitized test of the production build
+		+ Cleaned tree to work in (eg, dist/ becomes the root)
+		+ Properly copy all assets to build
+		+ Copy index.html to dist/
+		+ Build into dist/
+		+ Start web server out of dist/ just like Start does (except without tsc -watch)
+	+ Set up CI/CD process for testing/preview
+		+ Hook up Vercel to dev and main with automatic building and live URLs
+	+ Move github repo and Vercel to @subpixelsite@gmail.com user
+	+ Set up on-demand process for pushing main to AWS
+		+ Set up Github Action/Workflow to run on-demand from CLI that builds and uploads to S3
+		x Hook up Vercel Production to S3 Bucket push
+		x Install Docker
+		x Install Jenkins
+			x Install and configure Jenkins
+			x Set up Docker to correctly build dist of site
+			x Set up two versions: one for Test, one for Prod
+			x Hook up Jenkins to GitHub
+			x Set up Webhook to run Test/Prod CI/CD on push to respective branch/fork
+	+ Set up Test environment
+		+ Sign up for Vercel
+		+ Set up 'dev' fork
+		+ Make e-mail address on GitHub private
 + # In Editor, single-render webgl draws over drawer when open
 = <web-gl> Enhancements
 	+ Use existing font-size attribute instead of custom fontsize

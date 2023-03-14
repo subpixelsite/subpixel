@@ -420,13 +420,12 @@ EDITOR
 	Put a post of name 'blah' with data 'blob'
 
 Post
-	pid 			- partition key
-*	name
+*	name 			- partition key
 *	title
 	author
 *	dateCreated
-*	dateModified
-*	datePublished
+*	dateModified?
+*	datePublished	- sort key? -- update alongside "dateModified" until first published
 *	tags
 	hdrInline
 	hdrHref
@@ -434,8 +433,7 @@ Post
 *	description
 	body
 Thread
-	tid 			- secondary key?
-*	name
+*	name			- secondary key?
 *	title
 *	description
 	posts[]
