@@ -119,7 +119,7 @@ export class PostTile extends AppElement
 			if ( href.endsWith( 'json' ) )
 			{
 				// esli=nt-disable-next-line max-len
-				return html`<web-gl alwaysload=true alt="${post.hdrAlt}" src='${post.hdrHref}'></web-gl>`;
+				return html`<web-gl class="webglembed" alwaysload=true width="100%" height="100%" alt="${post.hdrAlt}" src='${post.hdrHref}'></web-gl>`;
 			}
 
 			return html`

@@ -6,9 +6,10 @@ import { property, customElement, state } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 import { AppElement } from '../appelement.js';
 import { Database, getTagsArray } from '../content/data.js';
-import { PostData } from '../content/post_data.js';
+import { PostData, PostStatus } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/tag/tag.js';
+import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import { Colors, ScrollBarStyles } from '../styles.js';
 
 @customElement( 'lit-editlist' )
@@ -73,7 +74,7 @@ export class EditList extends AppElement
 	pageNavEvent( event: Event )
 	{
 		const post = ( event as CustomEvent ).detail as PostData;
-		Router.go( `/admin/editor/${post.id}` );
+		Router.go( `/admin/editor/${post.name}` );
 	}
 
 	constructor()
@@ -119,7 +120,8 @@ export class EditList extends AppElement
 	<div class="overflow-y-auto flex flex-wrap justify-start border-solid border-2 border-black">
 		<table class="posts-table border-collapse m-0 text-sm w-full">
 			<thead><tr>
-				<th>ID</th>
+				<th>Name</th>
+				<th>Vis</th>
 				<th>Title</th>
 				<th>Tags</th>
 				<th>Created</th>
@@ -127,8 +129,11 @@ export class EditList extends AppElement
 			</tr></thead>
 			<tbody class="text-xs">
 				${this.posts?.map( post => html`
-				<tr id='${post.id}' @click='${this.goToPost}'>
-					<td class='font-mono text-sm min-w-max'>${post.id}</td>
+				<tr id='${post.name}' @click='${this.goToPost}'>
+					<td class='font-mono text-xs min-w-max'>${post.name}</td>
+					<td style='font-size:20px; color:${post.status === PostStatus.Visible ? '#00cf00' : '#afafaf'};'>
+						<sl-icon slot="icon" name="${post.status === PostStatus.Visible ? 'check-lg' : 'dot'}"></sl-icon>
+					</td>
 					<td class='font-bold min-w-max'>${post.title}</td>
 					<td class='flex flex-wrap min-w-max gap-1'>${getTagsArray( post.tags ).map( tag => html`<sl-tag class="tag" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
 					<td class='font-mono'>${new Date( post.dateCreated ).toLocaleDateString( 'en-US', { day: '2-digit', month: '2-digit', year: 'numeric' } )}</td>
@@ -159,7 +164,7 @@ export class EditList extends AppElement
 
 	private goToPostIndex( postIndex: number )
 	{
-		this.goToPostID( this.posts[postIndex].id );
+		this.goToPostID( this.posts[postIndex].name );
 	}
 
 	private goToPostID( postID: string )

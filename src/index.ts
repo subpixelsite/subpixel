@@ -30,7 +30,7 @@ const routes = [
 						}
 					},
 					{
-						path: 'posts/:id',
+						path: 'posts/:name',
 						component: 'lit-post',
 						action: async () =>
 						{
@@ -76,7 +76,7 @@ const routes = [
 								}
 							},
 							{
-								path: 'editor/:id',
+								path: 'editor/:name',
 								component: 'lit-editor',
 								action: async () =>
 								{

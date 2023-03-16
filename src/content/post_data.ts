@@ -1,17 +1,27 @@
+/* eslint-disable no-shadow */
+export enum PostStatus
+{
+	Invalid = 0,
+	Hidden = 1,
+	Visible = 2
+}
+
 /* eslint-disable dot-notation */
 export class PostData
 {
-	id: string = '';
+	name: string = '';
+	status: number = PostStatus.Hidden;
 	title: string = '';
 	author: string = 'Chris Lambert';
-	dateCreated: number = Date.now();
-	dateModified: number = Date.now();
-	tags: string = '';			// comma-delimited list of tags
-	hdrInline: string = '';		// inline header HTML data
-	hdrHref: string = ''; 		// URL to header visual
-	hdrAlt: string = ''; 		// Alt-text for header image
+	dateCreated: number = Date.now();	// set on creation only
+	dateModified: number = Date.now();	// set on save when status == VISIBLE
+	tags: string = '';					// comma-delimited list of tags
+	hdrInline: string = '';				// inline header HTML data
+	hdrHref: string = ''; 				// URL to header visual
+	hdrAlt: string = ''; 				// Alt-text for header image
 	description: string = '';
-	body: string = '';
+	markdown: string = '';
+	content: string = '';
 }
 
 declare global

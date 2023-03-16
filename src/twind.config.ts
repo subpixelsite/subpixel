@@ -11,7 +11,7 @@ import presetTypography from '@twind/preset-typography';
 let DO_HASH = true;
 
 // Uncomment to see Twind CSS
-// DO_HASH = false;
+DO_HASH = false;
 
 if ( !DO_HASH )
 	// eslint-disable-next-line no-console

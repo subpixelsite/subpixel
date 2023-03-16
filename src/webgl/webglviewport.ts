@@ -197,8 +197,6 @@ export class WebGLViewport
 		if ( element === null )
 			throw new Error( 'Starting element in getVisibleBoundingRect is null' );
 
-		this.debugLogRect( 'getVisibleBoundingRect', rect );
-
 		do
 		{
 			const parent: HTMLElement | null = element!.parentElement;
@@ -265,6 +263,8 @@ export class WebGLViewport
 
 		// The boundingClientRect from WebGLElement isn't trustworthy, so use the Div rect but start from the web-gl element.
 		const viewRect = this.container.getBoundingClientRect();
+		if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
+			this.debugLogRect( `viewRect: ${this.container.id}`, viewRect );
 		const visRect = this.getVisibleBoundingRect( viewRect, this.element );
 		const visWidthRaw = visRect.right - visRect.left;
 		const visHeightRaw = visRect.bottom - visRect.top;
@@ -284,11 +284,10 @@ export class WebGLViewport
 		const vpLeft = viewRect.left;
 		const vpBottom = canvas.clientHeight - viewRect.bottom;
 
-		const border = 2;
 		const visLeft = visRect.left;
-		const visBottom = canvas.clientHeight - visRect.bottom + border;
-		const visWidth = visWidthRaw + ( border / 2 ); // fudge factor
-		const visHeight = visHeightRaw - border;
+		const visBottom = canvas.clientHeight - visRect.bottom;
+		const visWidth = visWidthRaw + 1;
+		const visHeight = visHeightRaw;
 
 		gl.enable( gl.SCISSOR_TEST );
 		gl.clearColor(

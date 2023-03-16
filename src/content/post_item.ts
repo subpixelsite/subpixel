@@ -56,12 +56,6 @@ export class PostItem extends AppElement
 			--spacing: 15px;
 			--color: #cfcfcf;
 		}
-		web-gl {
-			display: block;
-			width: 100%;
-			height: 100%;
-			min-height: 200px;
-		}
 	`];
 
 	@property( { type: Object } )
@@ -89,7 +83,7 @@ export class PostItem extends AppElement
 
 		const visual = PostTile.getPostVisual( this.post );
 
-		const body = convertMDtoHTML( this.post.body );
+		const body = convertMDtoHTML( this.post.content );
 
 		return html`
 			<div class="lit-post">
@@ -156,8 +150,8 @@ export class PostItem extends AppElement
 	{
 		super.onBeforeEnter( location );
 
-		const postId = location.params.id as string;
+		const postName = location.params.name as string;
 		const db = Database.getDB();
-		this.post = db.getPostData( postId );
+		this.post = db.getPostData( postName );
 	}
 }

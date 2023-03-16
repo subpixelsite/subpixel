@@ -5,24 +5,57 @@
 
 # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
 # <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
+	> This seems to keep happening no matter what
 # Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
++ # WebGLViewport is drawing over padding area, not inside it
+	> Can't use padding, because of box-sizing: issues
 = MVP
-	- One fully-complete post
+	* One fully-complete post
 		- Including WebGL content
 		> I've written an example one already, start with that?
 	- Responsive format for public-facing site
+	* WebGL presentation rethink
+		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
+		* Construct new WebGLElement container
+			- Desktop version
+				- Full width
+				- Minimum height
+				- Use a split-panel with a custom divider width and handle with snap setting
+					? Add button to show/hide
+			- Mobile version
+				- Full width
+				- Minimum height
+				- Use a split-panel with a custom divider width and handle with snap setting
+					- Top/bottom or left/right depending on portrait or landscape layout
+	- GPU model map
+		- Basic SVG layout of a system with CPU, RAM, VS, PS, VRAM, Rasterizer, etc.
+		- Animated movement along path showing transfer of data
+		- Flashing to show calculations
+		- Each section of content has a correlated map state
+		- When reaching a new section, it "pings" if the map state changed, causing a timed gentle "pulse" of the map tab on the screen edge (top?)
+		- The user can tap the tab to bring out a drawer with the GPU map and see the new area, or leave it out while reading
+= Basic styling
+	* Write example post
+		- Create webgl content for example post
+		+ Figure out embedding web-gl content from Markdown
+			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
+		- Finish example post
+	! Showdown isn't creating proper MD
+		- Newlines between lines should be creating <p>
+		- Double spaces at the end of lines should be creating <br>
 = Backend first pass
-	* Research how AWS would work
+	- Research how AWS would work
 		+ Set up domain with Route 43 or whatever
 		+ Set up S3 bucket
 		+ Set up CDN
-		* Set up Lambda calls to access where necessary
+		- Set up Lambda calls to access where necessary
 			- Install serverless
 		- Database
-			- Find relevant Aurora Serverless v1 SPA/blog resources
-				- Aurora Serverless an option with my editor situation?
+			! DynamoDB setup is a nightmare -- switch to Webpack 4 first?
+			x Find relevant Aurora Serverless v1 SPA/blog resources
+				x Aurora Serverless an option with my editor situation?
 				> Maybe not... DynamoDB can be made to work for tags, probably
-			* Design DB access patterns
+			- Design DB access patterns
 				- Write down what queries I need to make, and when
 			- Set up posts table
 			- Set up tabs table
@@ -32,15 +65,6 @@
 		- Set up Cognito for security
 	- Make plan - DB, HTML/SVG/JSON/texture files
 	- Integrate Showdown for Markdown conversion on the server side
-= Basic styling
-	- Write example post
-		- Create webgl content for example post
-		+ Figure out embedding web-gl content from Markdown
-			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
-		- Finish example post
-	! Showdown isn't creating proper MD
-		- Newlines between lines should be creating <p>
-		- Double spaces at the end of lines should be creating <br>
 = <web-gl> Enhancements
 	- Load and display OBJ format
 	- Support interaction, like click/drag-to-move camera (or button for different ortho)
@@ -67,8 +91,8 @@
 	- Local runtime JS script in the final HTML page loads the JSON and picks a quip to slot in
 		? Set server to serve .JSON with MIME type of .JS
 = Editor
-	- Add "Publish" slider (above Save button?) and date
-		- This will set a publish flag and fill in the publish date/time
+	+ Add "Publish" slider (above Save button?)
+		+ This will set a publish flag and stop updating the modified date
 		- The post-list only shows posts with the "publish" flag set
 		> This way I can work on and save unpublished posts
 	- Look at DynamoDB Transactions for Save operations

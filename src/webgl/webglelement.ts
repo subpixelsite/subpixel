@@ -76,13 +76,18 @@ export function wrapTextElement(
 export class WebGLElement extends LitElement
 {
 	static styles = css`
+		:host {
+			display: inline-block;
+		}
+
 		.web-gl-container {
-			display:block;
+			display:inline-block;
+			box-sizing: border-box;
 			overflow: hidden;
 			width: 100%;
 			height: 100%;
-			min-width: 100%;
-			min-height: 200px;
+			min-width: 100px;
+			min-height: 100px;
 		}
 
 		.web-gl-errortext {

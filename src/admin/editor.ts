@@ -8,7 +8,7 @@ import { serialize } from '@shoelace-style/shoelace/dist/utilities/form.js';
 import { PostTile } from '../content/post_tile.js';
 import { WebGL } from '../webgl/webgl.js';
 import { AppElement } from '../appelement.js';
-import { PostData, convertMDtoHTML } from '../content/post_data.js';
+import { PostData, convertMDtoHTML, PostStatus } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/switch/switch.js';
 import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/textarea/textarea.js';
@@ -100,14 +100,6 @@ export class EditorPage extends AppElement
 			align-self: end;
 		}
 
-		.webglembed {
-			float: right;
-			align-self: end;
-			width: 40%;
-			aspect-ratio: 1.777;
-			margin: 10px;
-		}
-
 		.svgembed {
 			float: right;
 			align-self: end;
@@ -175,6 +167,7 @@ export class EditorPage extends AppElement
 	protected convertInterval: number = 500;
 	protected loadWebGL: boolean = false;
 	protected fadeWebGL: boolean = false;
+	protected visible: boolean = false;
 
 	constructor()
 	{
@@ -205,9 +198,9 @@ export class EditorPage extends AppElement
 		const db = Database.getDB();
 
 		this.post = new PostData();
-		this.post.id = location.params.id as string;
+		this.post.name = location.params.name as string;
 
-		const dbPost = db.getPostData( this.post.id );
+		const dbPost = db.getPostData( this.post.name );
 		if ( dbPost !== undefined )
 			this.post = { ...dbPost };
 	}
@@ -322,7 +315,7 @@ export class EditorPage extends AppElement
 		textArea.textContent = '';
 		if ( this.post !== undefined )
 		{
-			textArea.value = this.post.body;
+			textArea.value = this.post.markdown;
 			this.doConversion();
 		}
 
@@ -359,22 +352,50 @@ export class EditorPage extends AppElement
 			throw new Error( 'Couldn\'t find form' );
 		const data = serialize( form );
 
+		const previewArea = this.shadowRoot!.getElementById( 'previewPostBox' );
+		if ( previewArea === null )
+			throw new Error( 'Couldn\'t find preview area DOM element' );
+		const content = previewArea.innerHTML;
+
 		// manually copy the data into the post
-		this.post.id = data.id as string;
+		this.post.name = data.name as string;
+		this.post.status = this.visible ? PostStatus.Visible : PostStatus.Hidden;
 		this.post.title = data.title as string;
 		this.post.author = data.author as string;
 		// this.post.dateCreated doesn't change
-		this.post.dateModified = Date.now();
+		this.post.dateModified = this.post.status === PostStatus.Visible ? Date.now() : data.dateModified as number;
 		this.post.tags = data.tags as string;
 		this.post.hdrInline = data.hdrInline as string;
 		this.post.hdrHref = data.hdrHref as string;
 		this.post.hdrAlt = data.hdrAlt as string;
 		this.post.description = data.description as string;
-		this.post.body = data.body as string;
+		this.post.markdown = data.markdown as string;
+		this.post.content = content as string;
+
+		// Until we have a functioning DB, dump the new post to the console.
+		// eslint-disable-next-line no-console
+		console.log( `
+			'${this.post.name}',
+			{
+				name: '${this.post.name}',
+				status: ${this.post.status},
+				title: '${this.post.title}',
+				author: '${this.post.author}',
+				dateCreated: ${this.post.dateCreated},
+				dateModified: ${this.post.dateModified},
+				tags: '${this.post.tags}',
+				hdrInline: '${this.post.hdrInline}',
+				hdrHref: '${this.post.hdrHref}',
+				hdrAlt: '${this.post.hdrAlt}',
+				description: \`${this.post.description}\`,
+				markdown: \`${this.post.markdown}\`,
+				content: \`${this.post.content}\`
+			}
+		` );
 
 		// save the post
 		const db = Database.getDB();
-		db.setPostData( this.post.id, this.post );
+		db.setPostData( this.post.name, this.post );
 
 		this.requestUpdate();
 	}
@@ -390,6 +411,8 @@ export class EditorPage extends AppElement
 
 		const visual = PostTile.getPostVisual( this.post );
 
+		this.visible = this.post!.status === PostStatus.Visible;
+
 		return html`
 <div class="flex flex-col h-full p-5 overflow-hidden bg-white">
 	<form class="post-form">
@@ -398,7 +421,10 @@ export class EditorPage extends AppElement
 				<sl-details id="post-data" summary="Post Data" class="info-details">
 					<div class="info-panel grid gap-x-2.5 overflow-hidden">
 						<div class="grid col-start-1 col-span-1 w-full p-0.5">
-							<sl-input class="edit-input" size=small label="ID" pill readonly name="id" .value=${this.post!.id}></sl-input>
+							<div class="flex flex-row gap-2">
+								<sl-input class="edit-input grow" size=small label="Name" pill readonly name="name" .value=${this.post!.name}></sl-input>
+								<sl-switch class="self-stretch pt-1" size=small ?checked=${this.visible}>Visible</sl-switch>
+							</div>
 							<sl-input class="edit-input" size=small label="Title" pill name="title" .value=${this.post!.title}></sl-input>
 							<sl-input class="edit-input" size=small label="Tags" pill name="tags" .value=${this.post!.tags}></sl-input>
 							<sl-input class="edit-input" size=small label="Created" pill disabled readonly name="dateCreated" .value=${new Date( this.post!.dateCreated ).toString()}></sl-input>
@@ -423,7 +449,7 @@ export class EditorPage extends AppElement
 			</div>
 			<div class="flex gap-5 max-h-full">
 				<div class="edit-panel flex flex-col max-h-full h-full overflow-hidden">
-					<textArea id="editPostTextBox" class="w-full h-[var(--body-edit-height)] resize-none overflow-y-auto p-1 text-sm bg-[#ebeae5]" name="body"> </textArea>
+					<textArea id="editPostTextBox" class="w-full h-[var(--body-edit-height)] resize-none overflow-y-auto p-1 text-sm bg-[#ebeae5]" name="markdown"> </textArea>
 				</div>
 				<div class="preview-panel flex flex-col max-w-[var(--w-post)] max-h-full h-full overflow-hidden border border-black">
 					<div id="previewPostBox" class="max-w-full max-h-[100vh-160px] w-100 h-[var(--body-edit-height)] overflow-y-auto p-1 bg-[var(--col-bg-light)] text-sm"> </div>

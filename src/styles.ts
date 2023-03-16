@@ -123,6 +123,10 @@ export const PostStyles = css`
 		--vis-padded-height: calc(var(--vis-height) + (var(--vis-padding) * 2));
 		--vis-image-border: 2px;
 	}
+
+	.webglembed {
+		display: inline-block;
+	}
 `;
 
 export const ScrollBarStyles = css`
