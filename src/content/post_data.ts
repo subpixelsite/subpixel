@@ -49,7 +49,7 @@ export function initPostData()
 		.map( key => ( {
 			type: 'output',
 			regex: new RegExp( `<${key}(.*)>`, 'g' ),
-			replace: `<${key} class="${classMap[key]}" $1`
+			replace: `<${key} class="${classMap[key]}" $1>`
 		} ) );
 
 	window.showdown.setOption( 'strikethrough', true );
@@ -58,8 +58,14 @@ export function initPostData()
 export function convertMDtoHTML( md: string ): string
 {
 	const converter = new window.showdown.Converter(
-		{ extensions: [...bindings] }
+		{
+			extensions: [
+				...bindings
+			]
+		}
 	);
+	converter.setOption( 'smoothLivePreview', true );
+	converter.setOption( 'simpleLineBreaks', true );
 	const output = converter.makeHtml( md );
 	return output;
 }

@@ -4,15 +4,14 @@
 == TOPICS
 
 # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
-# <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
-	> This seems to keep happening no matter what
 # Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
-+ # WebGLViewport is drawing over padding area, not inside it
-	> Can't use padding, because of box-sizing: issues
 = MVP
 	* One fully-complete post
 		- Including WebGL content
 		> I've written an example one already, start with that?
+		+ # Markdown conversion doesn't seem to be working correctly
+			> The HTML is getting mangled, and I'm not sure it's Showdown doing it
+			+ # It's my class name bindings regex
 	- Responsive format for public-facing site
 	* WebGL presentation rethink
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
@@ -43,6 +42,8 @@
 	! Showdown isn't creating proper MD
 		- Newlines between lines should be creating <p>
 		- Double spaces at the end of lines should be creating <br>
++ # <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
+	? Fix failed... Is this still happening?
 = Backend first pass
 	- Research how AWS would work
 		+ Set up domain with Route 43 or whatever
@@ -92,14 +93,20 @@
 		? Set server to serve .JSON with MIME type of .JS
 = Editor
 	+ Add "Publish" slider (above Save button?)
-		+ This will set a publish flag and stop updating the modified date
 		- The post-list only shows posts with the "publish" flag set
-		> This way I can work on and save unpublished posts
 	- Look at DynamoDB Transactions for Save operations
 
 
 === DONE
 
++ # <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
+	> This seems to keep happening no matter what
++ # WebGLViewport is drawing over padding area, not inside it
+	> Can't use padding, because of box-sizing: issues
+= Editor
+	+ Add "Publish" slider (above Save button?)
+		+ This will set a publish flag and stop updating the modified date
+		> This way I can work on and save unpublished posts
 = MVP
 	+ Create favicon
 = Dev workflow

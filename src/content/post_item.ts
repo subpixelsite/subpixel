@@ -97,7 +97,7 @@ export class PostItem extends AppElement
 					</div>
 				</div>
 				<!-- <sl-divider style="border-top-width: 3px; border-top-color: var(--sl-color-gray-200);"></sl-divider> -->
-				<div class="">
+				<div class="post-content">
 				${unsafeHTML( body )}
 				</div>
 			</div>

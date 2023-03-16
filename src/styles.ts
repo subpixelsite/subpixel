@@ -124,6 +124,10 @@ export const PostStyles = css`
 		--vis-image-border: 2px;
 	}
 
+	.post-content p {
+		margin-bottom: 1rem;
+	}
+
 	.webglembed {
 		display: inline-block;
 	}
