@@ -42,13 +42,13 @@ export class PostList extends AppElement
 	connectedCallback(): void
 	{
 		super.connectedCallback();
-		this.addEventListener( 'readMore', this.pageNavEvent );
+		this.addEventListener( 'readMore', e => this.pageNavEvent( e ) );
 	}
 
 	disconnectedCallback(): void
 	{
 		super.disconnectedCallback();
-		this.removeEventListener( 'readMore', this.pageNavEvent );
+		this.removeEventListener( 'readMore', e => this.pageNavEvent( e ) );
 	}
 
 	render()

@@ -88,16 +88,16 @@ export class EditList extends AppElement
 	{
 		super.connectedCallback();
 
-		this.addEventListener( 'edit', this.pageNavEvent );
-		document.addEventListener( 'keydown', this.dokeydown );
+		this.addEventListener( 'edit', e => this.pageNavEvent( e ) );
+		document.addEventListener( 'keydown', e => this.dokeydown( e ) );
 	}
 
 	disconnectedCallback(): void
 	{
 		super.disconnectedCallback();
 
-		this.removeEventListener( 'edit', this.pageNavEvent );
-		document.removeEventListener( 'keydown', this.dokeydown );
+		this.removeEventListener( 'edit', e => this.pageNavEvent( e ) );
+		document.removeEventListener( 'keydown', e => this.dokeydown( e ) );
 	}
 
 	protected firstUpdated(): void
@@ -190,37 +190,33 @@ export class EditList extends AppElement
 		if ( event.ctrlKey || event.altKey || event.metaKey || event.shiftKey )
 			return;
 
-		const edit: EditList | null = document.querySelector( 'lit-editlist' );
-		if ( edit === null )
-			throw new Error( 'Couldn\'t find editlist in admin edit list' );
-
 		let handled: boolean = false;
 
 		if ( event.code === 'ArrowUp' )
 		{
-			if ( edit.activeRowIndex === -1 )
-				edit.activeRowIndex = edit.posts.length;
+			if ( this.activeRowIndex === -1 )
+				this.activeRowIndex = this.posts.length;
 
-			edit.activeRowIndex = Math.max( 0, edit.activeRowIndex - 1 );
+			this.activeRowIndex = Math.max( 0, this.activeRowIndex - 1 );
 			handled = true;
 		}
 
 		if ( event.code === 'ArrowDown' )
 		{
-			edit.activeRowIndex = Math.min( edit.posts.length - 1, edit.activeRowIndex + 1 );
+			this.activeRowIndex = Math.min( this.posts.length - 1, this.activeRowIndex + 1 );
 			handled = true;
 		}
 
 		if ( event.code === 'Enter' )
 		{
-			if ( edit.activeRowIndex >= 0 && edit.activeRowIndex < edit.posts.length )
-				edit.goToPostIndex( edit.activeRowIndex );
+			if ( this.activeRowIndex >= 0 && this.activeRowIndex < this.posts.length )
+				this.goToPostIndex( this.activeRowIndex );
 			handled = true;
 		}
 
 		if ( event.code === 'Escape' )
 		{
-			edit.activeRowIndex = -1;
+			this.activeRowIndex = -1;
 			handled = true;
 		}
 
@@ -228,15 +224,15 @@ export class EditList extends AppElement
 		{
 			event.preventDefault();
 			event.stopPropagation();
-			edit.updateRows();
+			this.updateRows();
 
-			const body = edit.shadowRoot!.querySelector( 'tbody' );
+			const body = this.shadowRoot!.querySelector( 'tbody' );
 			if ( body === null )
 				throw new Error( 'Couldn\'t find table body' );
 
 			const rows = body.getElementsByTagName( 'tr' );
-			if ( edit.activeRowIndex >= 0 && edit.activeRowIndex < rows.length )
-				rows.item( edit.activeRowIndex )!.scrollIntoView( { behavior: 'smooth', block: 'nearest', inline: 'nearest' } );
+			if ( this.activeRowIndex >= 0 && this.activeRowIndex < rows.length )
+				rows.item( this.activeRowIndex )!.scrollIntoView( { behavior: 'smooth', block: 'nearest', inline: 'nearest' } );
 		}
 	}
 }

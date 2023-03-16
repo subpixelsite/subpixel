@@ -13,7 +13,6 @@ import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import { AppElement } from '../appelement.js';
 import { Database, getTagsArray } from './data.js';
 import { convertMDtoHTML, PostData } from './post_data.js';
-import { PostTile } from './post_tile.js';
 import { Colors, PostStyles } from '../styles.js';
 
 @customElement( 'lit-post' )
@@ -81,13 +80,11 @@ export class PostItem extends AppElement
 			`;
 		}
 
-		const visual = PostTile.getPostVisual( this.post );
-
 		const body = convertMDtoHTML( this.post.content );
 
 		return html`
 			<div class="lit-post">
-				<div class="block h-[var(--vis-padded-height)]">
+				<div class="block pb-4">
 					<div class="header grid h-full">
 						<div class="col-start-1 col-span-1 flex flex-col">
 							<h1 class="text-4xl font-semibold pb-2">${this.post.title}</h1>
@@ -96,17 +93,10 @@ export class PostItem extends AppElement
 								<span class="text-base font-light text-gray-500 mt-1">on ${this.getDateString()}</span>
 							</div>
 							<div class="mt-3 mb-5 pl-5">${this.getTagsHTML()}</div>
-							<div class="grow"></div>
-							<div class="inline-block self-end pb-1">${this.post.description}</div>
-						</div>
-						<div class="post-image grid col-start-3 col-span-1 min-h-[var(--vis-padded-height)]">
-							<div class="post-visual ml-2 p-[var(--vis-padding)] justify-center self-center">
-								${visual}
-							</div>
 						</div>
 					</div>
 				</div>
-				<sl-divider style="border-top-width: 3px; border-top-color: var(--sl-color-gray-200);"></sl-divider>
+				<!-- <sl-divider style="border-top-width: 3px; border-top-color: var(--sl-color-gray-200);"></sl-divider> -->
 				<div class="">
 				${unsafeHTML( body )}
 				</div>

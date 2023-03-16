@@ -51,13 +51,13 @@ export class AdminPage extends AppElement
 	connectedCallback(): void
 	{
 		super.connectedCallback();
-		this.addEventListener( 'pageNav', this.pageNavEvent );
+		this.addEventListener( 'pageNav', e => this.pageNavEvent( e ) );
 	}
 
 	disconnectedCallback(): void
 	{
 		super.disconnectedCallback();
-		this.removeEventListener( 'pageNav', this.pageNavEvent );
+		this.removeEventListener( 'pageNav', e => this.pageNavEvent( e ) );
 	}
 
 	render()

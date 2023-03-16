@@ -181,7 +181,7 @@ export class PostTile extends AppElement
 		if ( this.post === undefined )
 			throw new Error( 'Should not have been able to call this with an undefined post' );
 
-		return new Date( this.post.dateCreated );
+		return new Date( this.post.datePosted );
 	}
 
 	private handleClick()

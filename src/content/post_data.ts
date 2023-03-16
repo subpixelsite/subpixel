@@ -14,7 +14,8 @@ export class PostData
 	title: string = '';
 	author: string = 'Chris Lambert';
 	dateCreated: number = Date.now();	// set on creation only
-	dateModified: number = Date.now();	// set on save when status == VISIBLE
+	datePosted: number = 0;				// set on save when status changes to VISIBLE
+	dateModified: number = Date.now();	// set on save
 	tags: string = '';					// comma-delimited list of tags
 	hdrInline: string = '';				// inline header HTML data
 	hdrHref: string = ''; 				// URL to header visual

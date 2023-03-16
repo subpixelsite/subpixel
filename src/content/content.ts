@@ -38,13 +38,13 @@ export class Content extends withTwind( LitElement )
 	connectedCallback(): void
 	{
 		super.connectedCallback();
-		this.addEventListener( 'pageNav', this.pageNavEvent );
+		this.addEventListener( 'pageNav', () => this.pageNavEvent() );
 	}
 
 	disconnectedCallback(): void
 	{
 		super.disconnectedCallback();
-		this.removeEventListener( 'pageNav', this.pageNavEvent );
+		this.removeEventListener( 'pageNav', () => this.pageNavEvent() );
 		WebGL.setScrollListener( undefined );
 	}
 

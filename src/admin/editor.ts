@@ -203,6 +203,8 @@ export class EditorPage extends AppElement
 		const dbPost = db.getPostData( this.post.name );
 		if ( dbPost !== undefined )
 			this.post = { ...dbPost };
+
+		this.visible = this.post?.status === PostStatus.Visible;
 	}
 
 	setLoadEnabled( event: Event )
@@ -213,6 +215,12 @@ export class EditorPage extends AppElement
 		const target = event.target as HTMLInputElement;
 		this.loadWebGL = target.checked;
 		webgl.setLoadEnabled( this.loadWebGL );
+	}
+
+	setVisible( event: Event )
+	{
+		const target = event.target as HTMLInputElement;
+		this.visible = target.checked;
 	}
 
 	private scrollPanel = -1;
@@ -279,7 +287,10 @@ export class EditorPage extends AppElement
 		super.disconnectedCallback();
 
 		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
-		webGLCheckbox?.removeEventListener( 'sl-change', this.setLoadEnabled );
+		webGLCheckbox?.removeEventListener( 'sl-change', e => this.setLoadEnabled( e ) );
+
+		const visibleCheckbox = this.shadowRoot!.getElementById( 'visible' );
+		visibleCheckbox?.removeEventListener( 'sl-change', e => this.setVisible( e ) );
 
 		const textArea = this.shadowRoot!.getElementById( 'editPostTextBox' ) as HTMLInputElement | null;
 		if ( textArea !== null )
@@ -301,7 +312,10 @@ export class EditorPage extends AppElement
 
 		// Listen to checkbox
 		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
-		webGLCheckbox?.addEventListener( 'sl-change', this.setLoadEnabled );
+		webGLCheckbox?.addEventListener( 'sl-change', e => this.setLoadEnabled( e ) );
+
+		const visibleCheckbox = this.shadowRoot!.getElementById( 'visible' );
+		visibleCheckbox?.addEventListener( 'sl-change', e => this.setVisible( e ) );
 
 		// Listen for (and debounce) HTML update on MD input
 		const textArea = this.shadowRoot!.getElementById( 'editPostTextBox' ) as HTMLInputElement | null;
@@ -357,13 +371,16 @@ export class EditorPage extends AppElement
 			throw new Error( 'Couldn\'t find preview area DOM element' );
 		const content = previewArea.innerHTML;
 
+		const justPosted = this.post.status === PostStatus.Hidden && this.visible && this.post.datePosted === 0;
+
 		// manually copy the data into the post
 		this.post.name = data.name as string;
 		this.post.status = this.visible ? PostStatus.Visible : PostStatus.Hidden;
 		this.post.title = data.title as string;
 		this.post.author = data.author as string;
 		// this.post.dateCreated doesn't change
-		this.post.dateModified = this.post.status === PostStatus.Visible ? Date.now() : data.dateModified as number;
+		this.post.datePosted = justPosted ? Date.now() : 0;
+		this.post.dateModified = Date.now();
 		this.post.tags = data.tags as string;
 		this.post.hdrInline = data.hdrInline as string;
 		this.post.hdrHref = data.hdrHref as string;
@@ -382,6 +399,7 @@ export class EditorPage extends AppElement
 				title: '${this.post.title}',
 				author: '${this.post.author}',
 				dateCreated: ${this.post.dateCreated},
+				datePosted: ${this.post.datePosted},
 				dateModified: ${this.post.dateModified},
 				tags: '${this.post.tags}',
 				hdrInline: '${this.post.hdrInline}',
@@ -411,8 +429,6 @@ export class EditorPage extends AppElement
 
 		const visual = PostTile.getPostVisual( this.post );
 
-		this.visible = this.post!.status === PostStatus.Visible;
-
 		return html`
 <div class="flex flex-col h-full p-5 overflow-hidden bg-white">
 	<form class="post-form">
@@ -423,11 +439,12 @@ export class EditorPage extends AppElement
 						<div class="grid col-start-1 col-span-1 w-full p-0.5">
 							<div class="flex flex-row gap-2">
 								<sl-input class="edit-input grow" size=small label="Name" pill readonly name="name" .value=${this.post!.name}></sl-input>
-								<sl-switch class="self-stretch pt-1" size=small ?checked=${this.visible}>Visible</sl-switch>
+								<sl-switch id="visible" class="self-stretch pt-1" size=small ?checked=${this.visible}>Visible</sl-switch>
 							</div>
 							<sl-input class="edit-input" size=small label="Title" pill name="title" .value=${this.post!.title}></sl-input>
 							<sl-input class="edit-input" size=small label="Tags" pill name="tags" .value=${this.post!.tags}></sl-input>
 							<sl-input class="edit-input" size=small label="Created" pill disabled readonly name="dateCreated" .value=${new Date( this.post!.dateCreated ).toString()}></sl-input>
+							<sl-input class="edit-input" size=small label="Posted" pill disabled readonly name="datePosted" .value=${new Date( this.post!.datePosted ).toString()}></sl-input>
 							<sl-input class="edit-input" size=small label="Modified" pill disabled readonly name="dateModified" .value=${new Date( this.post!.dateModified ).toString()}></sl-input>
 							<sl-input class="edit-input" size=small label="Author" pill name="author" .value=${this.post!.author}></sl-input>
 							<sl-textarea class="edit-input" size=small label="Description" name="description" autocomplete='off' autocorrect='on' spellcheck='true' inputmode='text' resize='none' .value=${this.post!.description}></sl-textarea>
