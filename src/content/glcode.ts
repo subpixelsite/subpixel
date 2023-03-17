@@ -5,6 +5,7 @@ import { css, html, LitElement } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { property, customElement, state } from 'lit/decorators.js';
 import install from '@twind/with-web-components';
+import { WebGLElement } from 'webgl/webglelement.js';
 import config from '../twind.config.js';
 import '@shoelace-style/shoelace/dist/components/split-panel/split-panel.js';
 import '@shoelace-style/shoelace/dist/components/tab-group/tab-group.js';
@@ -39,11 +40,11 @@ export class GLCode extends withTwind( LitElement )
 		.split-panel-divider sl-split-panel::part(divider)::focus-visible {
 			background-color: var(--sl-color-primary-600);
 		}
-		
-		.split-panel-divider sl-split-panel:focus-within sl-icon {
+
+		/* .split-panel-divider sl-split-panel:focus-within sl-icon {
 			background-color: var(--sl-color-primary-600);
 			color: var(--sl-color-neutral-0);
-		}
+		} */
 		
 		.split-panel-divider sl-icon {
 			position: absolute;
@@ -108,6 +109,26 @@ export class GLCode extends withTwind( LitElement )
 	@state()
 	tex: string = '';
 
+	webglLoadedEvent( e: Event )
+	{
+		const element = ( e as CustomEvent ).detail as WebGLElement;
+		console.log( `${element.className} load event` );
+	}
+
+	connectedCallback(): void
+	{
+		super.connectedCallback();
+
+		this.addEventListener( 'webgl-loaded', e => this.webglLoadedEvent( e ) );
+	}
+
+	disconnectedCallback(): void
+	{
+		super.disconnectedCallback();
+
+		this.removeEventListener( 'webgl-loaded', e => this.webglLoadedEvent( e ) );
+	}
+
 	render()
 	{
 		return html`
@@ -115,7 +136,7 @@ export class GLCode extends withTwind( LitElement )
 	<sl-split-panel class='overflow-clip' snap='50%'>
 		<sl-icon slot='divider' name='grip-vertical' style='font-size:8px'></sl-icon>
 		<div slot='start' class='h-[var(--panel-height)] bg-neutral-50 inline-block w-full'>		
-			<web-gl class='fullsize' alwaysload = 'true' src='${this.src ?? ''}' width='100%' height='var(--panel-height)'> </web-gl>
+			<web-gl class='fullsize' src='${this.src ?? ''}' width='100%' height='var(--panel-height)' padr='2' padt='1'> </web-gl>
 		</div>
 		<div slot='end' class='h-[var(--panel-height)] bg-neutral-50 inline-block w-full'>
 			<sl-tab-group size=small>

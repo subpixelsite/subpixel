@@ -23,10 +23,13 @@ export class WebGLScene
 	far?: number;
 
 	@Type( () => Number )
-	eye?: number[];
+	lookAt?: number[];
 
 	@Type( () => Number )
-	lookAt?: number[];
+	rotDeg?: number[];
+
+	@Type( () => Number )
+	camDist?: number;
 
 	@Type( () => WebGLObjectData )
 	objects?: WebGLObjectData[];
@@ -39,7 +42,8 @@ export const webGLSceneDefault: WebGLScene = {
 	fovYDeg: 30,
 	near: 0.5,
 	far: 100,
-	eye: [3, 3, -6],
 	lookAt: [0, 0, 0],
+	rotDeg: [300, 30],
+	camDist: 9,
 	objects: []
 };

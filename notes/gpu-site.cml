@@ -17,16 +17,18 @@
 	* WebGL presentation rethink
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
 		* Construct new WebGLElement container
-			- Desktop version
-				- Full width
-				- Minimum height
-				- Use a split-panel with a custom divider width and handle with snap setting
+			+ Desktop version
+				+ Full width
+				+ Minimum height
+				+ Use a split-panel with a custom divider width and handle with snap setting
 					? Add button to show/hide
 			- Mobile version
 				- Full width
 				- Minimum height
 				- Use a split-panel with a custom divider width and handle with snap setting
 					- Top/bottom or left/right depending on portrait or landscape layout
+			* Support selecting an object to show its shaders/texture(s)
+			? Add "fullscreen" popup button
 	- GPU model map
 		- Basic SVG layout of a system with CPU, RAM, VS, PS, VRAM, Rasterizer, etc.
 		- Animated movement along path showing transfer of data
@@ -68,7 +70,7 @@
 	- Integrate Showdown for Markdown conversion on the server side
 = <web-gl> Enhancements
 	- Load and display OBJ format
-	- Support interaction, like click/drag-to-move camera (or button for different ortho)
+	+ Support interaction, like click/drag-to-move camera (or button for different ortho)
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
 = Basic styling
@@ -81,9 +83,9 @@
 	? Override "width" and "height"
 	- Watch "aspect-ratio", "width", "height" for change and fill in the other attribute if the other is undefined based on "aspect-ratio", if defined
 = Source code view
-	- Show vs/fs in tab or drawer with <web-gl>
-	- Show with syntax coloring
-	- Use source code font - Source Code Pro?
+	* Show vs/fs in tab or drawer with <web-gl>
+	* Show with syntax coloring
+	+ Use source code font - Source Code Pro?
 	? "Copy to Clipboard" button
 = Backend
 	- Consider enabling Origin Shield as extra CloudFront caching layer

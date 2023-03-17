@@ -4,7 +4,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { LitElement, PropertyValueMap, css, html, TemplateResult } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { property, customElement } from 'lit/decorators.js';
+import { property, customElement, state } from 'lit/decorators.js';
 import { svg } from 'lit-html';
 import 'reflect-metadata';
 import { plainToClass } from 'class-transformer';
@@ -112,6 +112,21 @@ export class WebGLElement extends LitElement
 	@property( { type: Boolean } )
 	alwaysload?: boolean;
 
+	@property( { type: Number } )
+	padr?: number;
+
+	@property( { type: Number } )
+	padt?: number;
+
+	@state()
+	angleX: number = 0;
+
+	@state()
+	angleY: number = 0;
+
+	@state()
+	drag = false;
+
 	private idNumber: number = 0;
 	private divID: string = '';
 	private wrappedText?: string[];
@@ -162,9 +177,44 @@ export class WebGLElement extends LitElement
 		this.requestUpdate();
 	}
 
+	setDrag( drag: boolean, e: Event )
+	{
+		if ( drag === false )
+		{
+			if ( window.getSelection() )
+				window.getSelection()!.removeAllRanges();
+			else if ( document.getSelection() )
+				document.getSelection()!.empty();
+		}
+
+		const event = e as MouseEvent;
+
+		if ( event.buttons === 1 )
+		{
+			this.drag = drag;
+			this.wglViewport?.addCameraDeltaRot( event.movementX, event.movementY );
+
+			// console.log( `x,y: ${event.x}, ${event.y} -- move x,y: ${event.movementX}, ${event.movementY}` );
+		}
+	}
+
+	handleWheel( e: Event )
+	{
+		e.preventDefault();
+
+		const event = e as WheelEvent;
+		this.wglViewport?.addCameraDeltaDist( event.deltaY );
+
+		// console.log( `delta wheel: ${event.deltaY}, mode: ${event.deltaMode}` );
+	}
+
 	connectedCallback(): void
 	{
 		super.connectedCallback();
+
+		this.addEventListener( 'mousedown', e => this.setDrag( false, e ) );
+		this.addEventListener( 'mousemove', e => this.setDrag( true, e ) );
+		this.addEventListener( 'wheel', e => this.handleWheel( e ) );
 
 		// Fire off an initial resize event to get an SVG text update if needed
 		this.onResizeEvent();
@@ -173,6 +223,10 @@ export class WebGLElement extends LitElement
 	disconnectedCallback(): void
 	{
 		super.disconnectedCallback();
+
+		this.removeEventListener( 'mousedown', e => this.setDrag( false, e ) );
+		this.removeEventListener( 'mousemove', e => this.setDrag( true, e ) );
+		this.removeEventListener( 'wheel', e => this.handleWheel( e ) );
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -188,7 +242,7 @@ export class WebGLElement extends LitElement
 				// eslint-disable-next-line no-console
 				console.log( `Creating new <web-gl> viewport '${this.divID}' for '${content}'` );
 
-			cachedVP = new CachedViewport( this.divID, content, new WebGLViewport( this.shadowRoot!, `#${this.divID}` ) );
+			cachedVP = new CachedViewport( this.divID, content, new WebGLViewport( this.shadowRoot!, `#${this.divID}`, this.padr ?? 1, this.padt ?? 0 ) );
 			gl.addViewport( cachedVP );
 		}
 
@@ -229,6 +283,14 @@ export class WebGLElement extends LitElement
 			{
 				const wgl = plainToClass( WebGLScene, data );
 				this.wglViewport!.init( wgl );
+
+				// fire 'loaded' event
+				const event = new CustomEvent( 'webgl-loaded', {
+					detail: this,
+					bubbles: true,
+					composed: true
+				} );
+				this.dispatchEvent( event );
 			} )
 			.catch( error =>
 			{

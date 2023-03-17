@@ -38,6 +38,12 @@ export class WebGLViewport
 	private element: WebGLElement;
 	private container: HTMLDivElement;
 	private camera: m4.Mat4 = m4.identity();
+	private padr: number = 0;
+	private padt: number = 0;
+
+	private camDegX: number = 0;
+	private camDegY: number = 0;
+	private camDistance: number = 10;
 
 	private programInfo: Map<string, ProgramInfo> = new Map();
 
@@ -48,13 +54,15 @@ export class WebGLViewport
 	private fadeStart: number = 0;
 	private fadeEnd: number = -1;
 
-	constructor( shadowRoot: ShadowRoot, elementName: string )
+	constructor( shadowRoot: ShadowRoot, elementName: string, padr: number, padt: number )
 	{
 		const div = shadowRoot.querySelector( elementName );
 		if ( div === null )
 			throw new Error( `Couldn't find element by name in specified root: ${elementName}` );
 		this.container = div as HTMLDivElement;
 		this.element = shadowRoot.host as WebGLElement;
+		this.padr = padr;
+		this.padt = padt;
 	}
 
 	public setLoadEnabled( enabled: boolean )
@@ -74,6 +82,10 @@ export class WebGLViewport
 			return;
 
 		this.scene = { ...webGLSceneDefault, ...scene };
+
+		this.camDegY = this.scene.rotDeg !== undefined ? this.scene.rotDeg[0] : 0;
+		this.camDegX = this.scene.rotDeg !== undefined ? this.scene.rotDeg[1] : 0;
+		this.camDistance = this.scene.camDist !== undefined ? this.scene.camDist : 0;
 
 		this.scene.objects?.forEach( data =>
 		{
@@ -165,6 +177,24 @@ export class WebGLViewport
 	public onResizeEvent()
 	{
 		this.element?.onResizeEvent();
+	}
+
+	public addCameraDeltaRot( rotdX: number, rotdY: number )
+	{
+		const mouseScale = 0.75;
+
+		this.camDegY += ( rotdX * mouseScale );
+
+		// Euler angles have to clamp the gimbal lock axis
+		const degY = this.camDegX + ( rotdY * mouseScale );
+		this.camDegX = Math.min( Math.max( degY, -89 ), 89 );
+	}
+
+	public addCameraDeltaDist( delta: number )
+	{
+		const mouseScale = 0.005;
+
+		this.camDistance += delta * mouseScale;
 	}
 
 	debugLogRect( name: string, rect: Rect, debugLevel: number = 2 )
@@ -279,15 +309,15 @@ export class WebGLViewport
 			// eslint-disable-next-line no-console
 			console.log( `Rendering element ${this.container.id}: ${this.drawObjects.length} objects` );
 
-		const vpWidth = viewRect.right - viewRect.left + 1;
-		const vpHeight = viewRect.bottom - viewRect.top;
+		const vpWidth = viewRect.right - viewRect.left + this.padr;
+		const vpHeight = viewRect.bottom - viewRect.top + this.padt;
 		const vpLeft = viewRect.left;
 		const vpBottom = canvas.clientHeight - viewRect.bottom;
 
 		const visLeft = visRect.left;
 		const visBottom = canvas.clientHeight - visRect.bottom;
-		const visWidth = visWidthRaw + 1;
-		const visHeight = visHeightRaw;
+		const visWidth = visWidthRaw + this.padr;
+		const visHeight = visHeightRaw + this.padt;
 
 		gl.enable( gl.SCISSOR_TEST );
 		gl.clearColor(
@@ -316,7 +346,15 @@ export class WebGLViewport
 
 		const view = m4.identity();
 		const viewProjection = m4.identity();
-		m4.lookAt( this.scene.eye!, this.scene.lookAt!, up, this.camera );
+		const xRad = ( this.camDegX * Math.PI ) / 180;
+		const yRad = ( this.camDegY * Math.PI ) / 180;
+		const scale = Math.cos( xRad );
+		const eye = [
+			Math.cos( yRad ) * scale * this.camDistance,
+			Math.sin( xRad ) * this.camDistance,
+			Math.sin( yRad ) * scale * this.camDistance
+		];
+		m4.lookAt( eye, this.scene.lookAt!, up, this.camera );
 		m4.inverse( this.camera, view );
 		m4.multiply( projection, view, viewProjection );
 
