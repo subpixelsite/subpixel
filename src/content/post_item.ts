@@ -12,7 +12,7 @@ import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js'
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import { AppElement } from '../appelement.js';
 import { Database, getTagsArray } from './data.js';
-import { convertMDtoHTML, PostData } from './post_data.js';
+import { PostData } from './post_data.js';
 import { Colors, PostStyles } from '../styles.js';
 
 @customElement( 'lit-post' )
@@ -80,25 +80,23 @@ export class PostItem extends AppElement
 			`;
 		}
 
-		const body = convertMDtoHTML( this.post.content );
-
 		return html`
 			<div class="lit-post">
 				<div class="block pb-4">
 					<div class="header grid h-full">
 						<div class="col-start-1 col-span-1 flex flex-col">
-							<h1 class="text-4xl font-semibold pb-2">${this.post.title}</h1>
-							<div class="">
+							<h1 class="text-4xl font-semibold mt-8 pb-2 self-center">${this.post.title}</h1>
+							<div class="self-center mt-2">
 								<span class="text-base font-semibold text-gray-600 mt-1 pl-6">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
 								<span class="text-base font-light text-gray-500 mt-1">on ${this.getDateString()}</span>
 							</div>
-							<div class="mt-3 mb-5 pl-5">${this.getTagsHTML()}</div>
+							<div class="mt-4 mb-12 pl-5 self-center">${this.getTagsHTML()}</div>
 						</div>
 					</div>
 				</div>
 				<!-- <sl-divider style="border-top-width: 3px; border-top-color: var(--sl-color-gray-200);"></sl-divider> -->
 				<div class="post-content">
-				${unsafeHTML( body )}
+				${unsafeHTML( this.post.content )}
 				</div>
 			</div>
 			`;

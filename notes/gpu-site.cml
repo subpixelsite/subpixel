@@ -5,6 +5,7 @@
 
 # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
 # Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
+# Validate datePosted logic -- seems to be doing weird things
 = MVP
 	* One fully-complete post
 		- Including WebGL content
@@ -39,9 +40,8 @@
 		+ Figure out embedding web-gl content from Markdown
 			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
 		- Finish example post
-	! Showdown isn't creating proper MD
-		- Newlines between lines should be creating <p>
-		- Double spaces at the end of lines should be creating <br>
+	- Showdown-highlight module doesn't work in TS for whatever reason :(
+		> Only necessary for pre/code blocks inline, so not MVP
 + # <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
 	? Fix failed... Is this still happening?
 = Backend first pass
@@ -99,6 +99,10 @@
 
 === DONE
 
+= Basic styling
+	+ ! Showdown isn't creating proper MD
+		+ Newlines between lines should be creating <p>
+		+ Double spaces at the end of lines should be creating <br>
 + # <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
 	> This seems to keep happening no matter what
 + # WebGLViewport is drawing over padding area, not inside it

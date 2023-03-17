@@ -3,6 +3,7 @@ import { setDefaults } from 'twgl.js';
 import { WebGL } from './webgl/webgl.js';
 import './app.js'; // Preload 'app' for better performance
 import './webgl/webglelement.js'; // Preload 'web-gl' for better performance
+import './content/glcode.js';
 
 const routes = [
 	{

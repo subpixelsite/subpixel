@@ -25,7 +25,6 @@ export class EditorPage extends AppElement
 		PostStyles,
 		css`
 		* {
-			box-sizing: border-box;
 			--body-edit-height: calc( 100vh - 200px );
 			--w-post: 960px;
 			--input-spacing: 8px;

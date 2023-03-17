@@ -129,6 +129,7 @@ export const PostStyles = css`
 	}
 
 	.webglembed {
+		box-sizing: border-box;
 		display: inline-block;
 	}
 `;
