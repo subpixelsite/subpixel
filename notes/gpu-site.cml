@@ -16,20 +16,21 @@
 	- Responsive format for public-facing site
 	* WebGL presentation rethink
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
-		* Construct new WebGLElement container
+		+ Construct new WebGLElement container
 			+ Desktop version
 				+ Full width
 				+ Minimum height
 				+ Use a split-panel with a custom divider width and handle with snap setting
-					? Add button to show/hide
+					x ? Add button to show/hide
 			- Mobile version
 				- Full width
 				- Minimum height
 				- Use a split-panel with a custom divider width and handle with snap setting
 					- Top/bottom or left/right depending on portrait or landscape layout
-			* Support selecting an object to show its shaders/texture(s)
+			+ Support selecting an object to show its shaders/texture(s)
+				- Support clicking to select
 			? Add "fullscreen" popup button
-			? Get fps display working or hide it
+			+ Get fps display working or hide it
 	- GPU model map
 		- Basic SVG layout of a system with CPU, RAM, VS, PS, VRAM, Rasterizer, etc.
 		- Animated movement along path showing transfer of data
@@ -37,6 +38,7 @@
 		- Each section of content has a correlated map state
 		- When reaching a new section, it "pings" if the map state changed, causing a timed gentle "pulse" of the map tab on the screen edge (top?)
 		- The user can tap the tab to bring out a drawer with the GPU map and see the new area, or leave it out while reading
+	* Setup Rollup dev environment
 = Basic styling
 	* Write example post
 		- Create webgl content for example post
@@ -71,7 +73,6 @@
 	- Integrate Showdown for Markdown conversion on the server side
 = <web-gl> Enhancements
 	- Load and display OBJ format
-	+ Support interaction, like click/drag-to-move camera (or button for different ortho)
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
 = Basic styling
@@ -84,9 +85,6 @@
 	? Override "width" and "height"
 	- Watch "aspect-ratio", "width", "height" for change and fill in the other attribute if the other is undefined based on "aspect-ratio", if defined
 = Source code view
-	* Show vs/fs in tab or drawer with <web-gl>
-	* Show with syntax coloring
-	+ Use source code font - Source Code Pro?
 	? "Copy to Clipboard" button
 = Backend
 	- Consider enabling Origin Shield as extra CloudFront caching layer
@@ -102,6 +100,12 @@
 
 === DONE
 
+= <web-gl> Enhancements
+	+ Support interaction, like click/drag-to-move camera (or button for different ortho)
+= Source code view
+	+ Show vs/fs in tab or drawer with <web-gl>
+	+ Show with syntax coloring
+	+ Use source code font - Source Code Pro?
 = Basic styling
 	+ ! Showdown isn't creating proper MD
 		+ Newlines between lines should be creating <p>

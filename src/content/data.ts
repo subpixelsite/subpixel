@@ -275,6 +275,7 @@ Note the fps and frame duration differences between the Vertex Shader and Fragme
 				content: `<p class="clearfix">Displaying triangles on screen in any orientation we choose is all well and good, but they just looks like flat triangles unless you can convey the shape of the surface. </p>
 <p class="clearfix"><gl-code src='assets/test/webgl1.json'></gl-code> </p>
 <p class="clearfix">There are two obvious ways to do this on a 2D screen: motion and shading.</p>
+<p class="clearfix"><gl-code src='assets/test/webgl2.json'></gl-code> </p>
 <p class="clearfix">If you choose motion, you can move either the camera (ie, the viewer's 'eye') or you can move the surface being viewed.  Motion is definitely cheaper than shading: you have to do the same amount of math to make objects show up on the screen whether their position or rotation changes each frame or not!  Here's what that looks like. </p>
 <p class="clearfix"><web-gl class="webglembed" src="assets/test/unshaded-box-spin.json"></web-gl> </p>
 <p class="clearfix">Let's say you want to keep the camera where it is, or you have a lot of objects, or you want to convey shape without any motion.  The other option is one your eye has evolved to use reliably: shading.  Here's what that looks like. </p>

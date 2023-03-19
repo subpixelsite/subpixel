@@ -9,7 +9,8 @@ import { WebGLElement } from 'webgl/webglelement.js';
 import * as Prism from 'prismjs';
 import 'prismjs/components/prism-glsl.min';
 // import 'prismjs/plugins/previewers/prism-previewers.min';
-// import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.min.css';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
 // import 'prismjs/plugins/line-highlight/prism-line-highlight.min';
 // import 'prismjs/plugins/highlight-keywords/prism-highlight-keywords.min';
 // import 'prismjs/plugins/toolbar/prism-toolbar.min';
@@ -210,6 +211,12 @@ export class GLCode extends withTwind( LitElement )
 	@state()
 	tex: string = '';
 
+	@state()
+	fps: number = 0;
+
+	@state()
+	ms: number = 0;
+
 	private wglElement?: WebGLElement;
 
 	webglLoadedEvent( e: Event )
@@ -233,13 +240,19 @@ export class GLCode extends withTwind( LitElement )
 		this.tex = this.wglElement?.getSelectedTex() ?? '';
 	}
 
+	updateFPS( e: Event )
+	{
+		const event = e as CustomEvent;
+		this.ms = event.detail;
+		this.fps = 1000 / this.ms;
+	}
+
 	connectedCallback(): void
 	{
 		super.connectedCallback();
 
 		this.addEventListener( 'webgl-loaded', e => this.webglLoadedEvent( e ) );
-
-		// Prism.manual = true;
+		this.addEventListener( 'fps-update', e => this.updateFPS( e ) );
 	}
 
 	disconnectedCallback(): void
@@ -247,10 +260,14 @@ export class GLCode extends withTwind( LitElement )
 		super.disconnectedCallback();
 
 		this.removeEventListener( 'webgl-loaded', e => this.webglLoadedEvent( e ) );
+		this.removeEventListener( 'fps-update', e => this.updateFPS( e ) );
 	}
 
 	render()
 	{
+		const fps = this.fps.toFixed( 2 );
+		const ms = this.ms.toFixed( 2 );
+
 		return html`
 <div class='split-panel-divider border-2 border-gray-400 rounded shadow'>
 	<sl-split-panel class='overflow-clip' snap='50%' style='--min: var(--w-panel-min); --max: var(--w-panel-max);' primary='end' position=42>
@@ -258,8 +275,8 @@ export class GLCode extends withTwind( LitElement )
 		<div slot='start' class='w-full flex flex-col bg-neutral-50'>
 				<web-gl class='fullsize grow' src='${this.src ?? ''}' width='100%' height='var(--h-panel)' padr='2' padt='1'> </web-gl>
 				<div class='w-full h-min flex flex-row px-1 gap-3 bg-gray-500 text-white text-xs'>
-					<div class='font-mono text-[0.65rem]'>60.00 fps</div>
-					<div class='font-mono text-[0.65rem]'>16.67 ms</div>
+					<div class='font-mono text-[0.65rem]'>${fps} fps</div>
+					<div class='font-mono text-[0.65rem]'>${ms} ms</div>
 					<div class='glstatus prevent-select m-auto inline-block'>
 						<span class='font-bold mr-2'>Select Object: </span>
 						<sl-icon class='selectbutton selectobject' name="caret-left-fill" @click='${() => this.selectChange( -1 )}'></sl-icon>
@@ -274,8 +291,8 @@ export class GLCode extends withTwind( LitElement )
 				<sl-tab slot='nav' panel='fs'>Fragment Shader</sl-tab>
 				<sl-tab slot='nav' panel='tex'>Texture</sl-tab>
 
-				<sl-tab-panel name='vs'><div class='scrollbox'><pre><code>${unsafeHTML( this.vs )}</code></pre></div></sl-tab-panel>
-				<sl-tab-panel name='fs'><div class='scrollbox'><pre><code>${unsafeHTML( this.fs )}</code></pre></div></sl-tab-panel>
+				<sl-tab-panel name='vs'><div class='scrollbox'><pre class='line-numbers'><code>${unsafeHTML( this.vs )}</code></pre></div></sl-tab-panel>
+				<sl-tab-panel name='fs'><div class='scrollbox'><pre className='line-numbers'><code>${unsafeHTML( this.fs )}</code></pre></div></sl-tab-panel>
 				<sl-tab-panel name='tex'><img url='${this.tex}'></img></sl-tab-panel>
 			</sl-tab-group>
 		</div>

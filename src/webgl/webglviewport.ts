@@ -56,6 +56,11 @@ export class WebGLViewport
 	private fadeStart: number = 0;
 	private fadeEnd: number = -1;
 
+	private frameIndex: number = 0;
+	private benchFrameIndex: number = 0;
+	private benchFrameTime: number = 0;
+	private benchMSperFrames: number = 0;
+
 	constructor( shadowRoot: ShadowRoot, elementName: string, padr: number, padt: number )
 	{
 		const div = shadowRoot.querySelector( elementName );
@@ -338,6 +343,26 @@ export class WebGLViewport
 		if ( visWidthRaw <= 0 || visHeightRaw <= 0 )
 			return;
 
+		// Update time benchmark
+		this.frameIndex += 1;
+		const now = Date.now();
+		const deltaMs = now - this.benchFrameTime;
+		if ( deltaMs > 1000 )
+		{
+			const deltaFrames = this.frameIndex - this.benchFrameIndex;
+			this.benchFrameIndex = this.frameIndex;
+			this.benchFrameTime = now;
+			this.benchMSperFrames = deltaMs / deltaFrames;
+
+			// fire 'fpsupdate' event
+			const event = new CustomEvent( 'fps-update', {
+				detail: this.benchMSperFrames,
+				bubbles: true,
+				composed: true
+			} );
+			this.element.dispatchEvent( event );
+		}
+
 		if ( WebGL.DEBUG_RENDERS || WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
 			// eslint-disable-next-line no-console
 			console.log( `Rendering element ${this.container.id}: ${this.drawObjects.length} objects` );
@@ -448,5 +473,10 @@ export class WebGLViewport
 		} );
 
 		return maxTime > 0.0;
+	}
+
+	public getAverageFrameDuration(): number
+	{
+		return ( Date.now() - this.benchFrameTime ) > 1000 ? 0 : this.benchMSperFrames;
 	}
 }
