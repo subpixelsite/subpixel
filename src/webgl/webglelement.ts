@@ -177,24 +177,28 @@ export class WebGLElement extends LitElement
 		this.requestUpdate();
 	}
 
-	setDrag( drag: boolean, e: Event )
+	onClick()
 	{
-		if ( drag === false )
+		this.drag = true;
+	}
+
+	onMove( e: Event )
+	{
+		if ( window.getSelection() )
+			window.getSelection()!.removeAllRanges();
+		else if ( document.getSelection() )
+			document.getSelection()!.empty();
+
+		if ( this.drag )
 		{
-			if ( window.getSelection() )
-				window.getSelection()!.removeAllRanges();
-			else if ( document.getSelection() )
-				document.getSelection()!.empty();
-		}
-
-		const event = e as MouseEvent;
-
-		if ( event.buttons === 1 )
-		{
-			this.drag = drag;
-			this.wglViewport?.addCameraDeltaRot( event.movementX, event.movementY );
-
+			const event = e as MouseEvent;
+			const mouseZoomScale = 5;
 			// console.log( `x,y: ${event.x}, ${event.y} -- move x,y: ${event.movementX}, ${event.movementY}` );
+
+			if ( event.buttons === 1 )
+				this.wglViewport?.addCameraDeltaRot( event.movementX, event.movementY );
+			else if ( event.buttons === 2 )
+				this.wglViewport?.addCameraDeltaDist( event.movementY * mouseZoomScale );
 		}
 	}
 
@@ -208,12 +212,32 @@ export class WebGLElement extends LitElement
 		// console.log( `delta wheel: ${event.deltaY}, mode: ${event.deltaMode}` );
 	}
 
+	changeObjectSelection( delta: number )
+	{
+		this.wglViewport?.changeObjectSelection( delta );
+	}
+
+	getSelectedVS(): string
+	{
+		return this.wglViewport?.getSelectedVS() ?? '';
+	}
+
+	getSelectedFS(): string
+	{
+		return this.wglViewport?.getSelectedFS() ?? '';
+	}
+
+	getSelectedTex(): string
+	{
+		return this.wglViewport?.getSelectedTex() ?? '';
+	}
+
 	connectedCallback(): void
 	{
 		super.connectedCallback();
 
-		this.addEventListener( 'mousedown', e => this.setDrag( false, e ) );
-		this.addEventListener( 'mousemove', e => this.setDrag( true, e ) );
+		this.addEventListener( 'mousedown', () => this.onClick() );
+		this.addEventListener( 'mousemove', e => this.onMove( e ) );
 		this.addEventListener( 'wheel', e => this.handleWheel( e ) );
 
 		// Fire off an initial resize event to get an SVG text update if needed
@@ -224,8 +248,8 @@ export class WebGLElement extends LitElement
 	{
 		super.disconnectedCallback();
 
-		this.removeEventListener( 'mousedown', e => this.setDrag( false, e ) );
-		this.removeEventListener( 'mousemove', e => this.setDrag( true, e ) );
+		this.removeEventListener( 'mousedown', () => this.onClick() );
+		this.removeEventListener( 'mousemove', e => this.onMove( e ) );
 		this.removeEventListener( 'wheel', e => this.handleWheel( e ) );
 	}
 

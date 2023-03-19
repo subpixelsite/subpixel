@@ -1,11 +1,13 @@
+import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
 import html from '@web/rollup-plugin-html';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
-import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
+// import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
 import terser from '@rollup/plugin-terser';
+import styles from 'rollup-plugin-styles';
 // import { generateSW } from 'rollup-plugin-workbox';
-// import css from 'rollup-plugin-css-only';
+import css from 'rollup-plugin-css-only';
 import copy from 'rollup-plugin-copy';
 // import path from 'path';
 
@@ -28,37 +30,21 @@ export default {
 			// injectServiceWorker: true,
 			// serviceWorkerPath: 'dist/sw.js'
 		} ),
-		/** Resolve bare module imports */
-		nodeResolve( {
-			browser: true
-		} ),
-		minifyHTML(),
-		/** Minify JS */
-		terser( {
-			module: true,
-			ecma: 2020,
-			compress: {
-				unused: false,
-				collapse_vars: false
-			},
-			output: {
-				comments: false
-			}
-		} ),
-		// css( {
-		// 	output: 'bundle.css'
-		// } ),
 		copy( {
 			copyOnce: true,
 			targets: [
+				// {
+				// 	src: 'src/content/*.css',
+				// 	dest: 'out-tsc/src/content'
+				// },
+				{
+					src: '*.css',
+					dest: 'dist'
+				},
 				{
 					src: '.htaccess',
 					dest: 'dist'
 				},
-				// {
-				// 	src: '*.css',
-				// 	dest: 'dist'
-				// },
 				{
 					src: 'assets',
 					dest: 'dist'
@@ -81,8 +67,32 @@ export default {
 				}
 			]
 		} ),
+		commonjs( {
+		} ),
+		/** Resolve bare module imports */
+		nodeResolve( {
+			browser: true,
+			extensions: ['.mjs', '.js', '.json', '.node']
+		} ),
+		minifyHTML(),
+		/** Minify JS */
+		terser( {
+			module: true,
+			ecma: 2020,
+			compress: {
+				unused: false,
+				collapse_vars: false
+			},
+			output: {
+				comments: false
+			}
+		} ),
+		styles(),
+		css( {
+			output: 'bundle.css'
+		} ),
 		/** Bundle assets references via import.meta.url */
-		importMetaAssets(),
+		// importMetaAssets(),
 		/** Compile JS to a lower language target */
 		babel( {
 			babelHelpers: 'bundled',
@@ -116,6 +126,16 @@ export default {
 							caseSensitive: true,
 							minifyCSS: true
 						}
+					}
+				],
+				[
+					require.resolve( 'babel-plugin-prismjs' ),
+					{
+						languages: ['c', 'clike', 'css', 'css-extras', 'glsl'],
+						// eslint-disable-next-line max-len
+						plugins: ['line-highlight', 'line-numbers', 'highlight-keywords', 'previewers', 'toolbar', 'copy-to-clipboard'],
+						theme: 'okaidia',
+						css: true
 					}
 				]
 			]

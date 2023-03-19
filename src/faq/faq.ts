@@ -136,13 +136,14 @@ shouted out "ohhhh SHADER".&nbsp Ever since, "Shader" has been my industry nickn
 
 <hr class="rounded">
 <h3 id='howth'>How the hell?</h3>
-<p>Late nights, web searches, Stack Overflow, the usual.</p>
-<p>This site is a Single Page Application written from scratch using <a href="https://www.typescriptlang.org/">Typescript</a>, <a href="https://rollupjs.org/">Rollup</a>, <a href="https://lit.dev/">lit</a>,
+<p>Late nights, trial and error, Stack Overflow... you know, the usual.</p>
+<p>This site was developed mostly according to a production plan maintained in <a href="https://clickup.com/">ClickUp</a> and a personal To-Do file format I've been using for years.</p>
+<p>The site itself is a Single Page Application written from scratch using <a href="https://www.typescriptlang.org/">Typescript</a>, <a href="https://lit.dev/">lit</a>,
 <a href="https://github.com/vaadin/router">Vaadin Router</a>, <a href="https://shoelace.style/">Shoelace</a>, <a href="https://twind.dev/">Twind</a>,
-<a href="https://showdownjs.com/">Showdown</a>, and misc other small libraries.</p>
+<a href="https://showdownjs.com/">Showdown</a>, and misc other libraries.</p>
 <p>The backend uses AWS <a href="https://aws.amazon.com/s3/">storage</a>, <a href="https://aws.amazon.com/cloudfront/">caching</a>, and <a href="https://aws.amazon.com/products/databases/">database</a>
 services to provide automatically-scaling high-availability worldwide access.&nbsp In theory.&nbsp In theory, theory is the same as practice... just not in practice.</p>
-<p>Of the above, when I started, I knew a little Typescript.</p>
+<p>Of the above, when I started developing it in the second half of 2022, I knew a little Typescript.</p>
 
 <hr class="rounded">
 <h3 id='who'>Who is this for, really?</h3>

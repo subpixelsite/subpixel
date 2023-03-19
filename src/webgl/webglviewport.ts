@@ -9,6 +9,7 @@ import { WebGLCube } from './webglcube.js';
 import { WebGLPlane } from './webglplane.js';
 import { WebGLSphere } from './webglsphere.js';
 import { WebGLElement } from './webglelement.js';
+import { shaders } from './shaders.js';
 
 class Rect
 {
@@ -49,6 +50,7 @@ export class WebGLViewport
 
 	private sceneObjects: WebGLObject[] = [];
 	private drawObjects: DrawObject[] = [];
+	private objSelect: number = 0;
 
 	private texturesLoading: number = 0;
 	private fadeStart: number = 0;
@@ -195,6 +197,37 @@ export class WebGLViewport
 		const mouseScale = 0.005;
 
 		this.camDistance += delta * mouseScale;
+	}
+
+	changeObjectSelection( delta: number )
+	{
+		const count = this.sceneObjects.length;
+		if ( count === 0 )
+			this.objSelect = 0;
+		else
+			// Modulus operation in JS
+			this.objSelect = ( ( ( delta + this.objSelect ) % count ) + count ) % count;
+	}
+
+	getSelectedVS(): string
+	{
+		if ( this.objSelect >= 0 && this.objSelect < this.sceneObjects.length )
+			return shaders.get( this.sceneObjects[this.objSelect].data.vs );
+		return '';
+	}
+
+	getSelectedFS(): string
+	{
+		if ( this.objSelect >= 0 && this.objSelect < this.sceneObjects.length )
+			return shaders.get( this.sceneObjects[this.objSelect].data.fs );
+		return '';
+	}
+
+	getSelectedTex(): string
+	{
+		if ( this.objSelect >= 0 && this.objSelect < this.sceneObjects.length )
+			return this.sceneObjects[this.objSelect].data.diffuse?.url ?? '';
+		return '';
 	}
 
 	debugLogRect( name: string, rect: Rect, debugLevel: number = 2 )

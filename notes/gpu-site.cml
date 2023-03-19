@@ -29,6 +29,7 @@
 					- Top/bottom or left/right depending on portrait or landscape layout
 			* Support selecting an object to show its shaders/texture(s)
 			? Add "fullscreen" popup button
+			? Get fps display working or hide it
 	- GPU model map
 		- Basic SVG layout of a system with CPU, RAM, VS, PS, VRAM, Rasterizer, etc.
 		- Animated movement along path showing transfer of data

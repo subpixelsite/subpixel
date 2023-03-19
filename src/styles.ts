@@ -31,6 +31,7 @@ export const Colors = css`
 		--sl-color-gray-100: #f3f4f6;
 		--sl-color-gray-200: #e5e7eb;
 		--sl-color-gray-300: #d1d5db;
+		--sl-color-gray-350: #b8bec8;
 		--sl-color-gray-400: #9ca3af;
 		--sl-color-gray-500: #6b7280;
 		--sl-color-gray-600: #4b5563;
@@ -43,6 +44,12 @@ export const Colors = css`
 	sl-tag.tag::part(base) {
 		border-color: var(--sl-color-primary-600);
 		background-color: var(--sl-color-primary-200);
+	}
+
+	.prevent-select {
+		-webkit-user-select: none; /* Safari */
+		-ms-user-select: none; /* IE 10 and IE 11 */
+		user-select: none; /* Standard syntax */
 	}
 `;
 
@@ -136,47 +143,57 @@ export const PostStyles = css`
 
 export const ScrollBarStyles = css`
 	* {
-		--sb-thumb: var(--sl-color-gray-500);
-		--sb-thumb-hover: var(--sl-color-gray-400);
-		--sb-thumb-active: var(--sl-color-gray-500);
+		--sb-thumb: var(--sl-color-gray-400);
+		--sb-thumb-hover: var(--sl-color-gray-350);
+		--sb-thumb-active: var(--sl-color-gray-350);
 		--sb-track: var(--sl-color-gray-300);
 	}
 
 	/* Works on Firefox */
 	* {
-	scrollbar-width: auto;
-	scrollbar-color: var(--sb-thumb) var(--sb-track);
-	transition: scrollbar-color 0.3s ease-out;
+		scrollbar-width: auto;
+		scrollbar-color: var(--sb-thumb) var(--sb-track);
+		transition: scrollbar-color 0.3s ease-out;
 	}
 
 	*:hover {
-	scrollbar-color: var(--sb-thumb-hover);
+		scrollbar-color: var(--sb-thumb-hover);
 	}
 
 	*:active {
-	scrollbar-color: var(--sb-thumb-active);
+		scrollbar-color: var(--sb-thumb-active);
 	}
 
 	/* Works on Chrome, Edge, and Safari */
 	*::-webkit-scrollbar {
-	width: 20px;
+		background-color: transparent;
+		width: 16px;
 	}
 
 	*::-webkit-scrollbar-track {
-	background: var(--sb-track);
+		background: transparent;
+		/* background: var(--sb-track); */
 	}
 
 	*::-webkit-scrollbar-thumb {
-	background-color: var(--sb-thumb);
-	border-radius: 20px;
-	border: 3px solid var(--sb-track);
+		background-color: var(--sb-thumb);
+		border-radius: 16px;
+		/* border: 4px solid var(--sb-track); */
+		border-width: 4px;
+		border-style: solid;
+		border-color: transparent;
+		background-clip: content-box;
 	}
 
 	*::-webkit-scrollbar-thumb:hover {
-	background-color: var(--sb-thumb-hover);
+		background-color: var(--sb-thumb-hover);
 	}
 
 	*::-webkit-scrollbar-thumb:active {
-	background-color: var(--sb-thumb-active);
+		background-color: var(--sb-thumb-active);
+	}
+
+	*::-webkit-scrollbar-corner {
+		background: transparent;
 	}
 `;
