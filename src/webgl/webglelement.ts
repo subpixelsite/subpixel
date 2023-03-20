@@ -266,6 +266,11 @@ export class WebGLElement extends LitElement
 		return this.wglViewport?.getSelectedTex() ?? '';
 	}
 
+	getAnimated(): boolean
+	{
+		return this.wglViewport?.getAnimated() ?? false;
+	}
+
 	connectedCallback(): void
 	{
 		super.connectedCallback();

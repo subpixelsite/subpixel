@@ -199,6 +199,9 @@ export class GLCode extends withTwind( LitElement )
 	@state()
 	ms: number = 0;
 
+	@state()
+	fpsVisible: boolean = false;
+
 	private wglElement?: WebGLElement;
 
 	webglLoadedEvent( e: Event )
@@ -206,6 +209,8 @@ export class GLCode extends withTwind( LitElement )
 		const element = ( e as CustomEvent ).detail as WebGLElement;
 		this.wglElement = element;
 		this.selectChange( 0 );
+
+		this.fpsVisible = this.wglElement?.getAnimated() ?? false;
 	}
 
 	selectChange( d: number )
@@ -253,8 +258,8 @@ export class GLCode extends withTwind( LitElement )
 
 	render()
 	{
-		const fps = this.fps.toFixed( 2 );
-		const ms = this.ms.toFixed( 2 );
+		const fps = this.fpsVisible ? this.fps.toFixed( 2 ) : '--.--';
+		const ms = this.fpsVisible ? this.ms.toFixed( 2 ) : '--.--';
 
 		return html`
 <div class='split-panel-divider border-2 border-gray-400 rounded shadow'>
