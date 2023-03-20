@@ -241,6 +241,11 @@ export class GLCode extends withTwind( LitElement )
 		this.tex = this.wglElement?.getSelectedTex() ?? '';
 	}
 
+	resetView()
+	{
+		this.wglElement?.resetView();
+	}
+
 	updateFPS( e: Event )
 	{
 		const event = e as CustomEvent;
@@ -275,14 +280,21 @@ export class GLCode extends withTwind( LitElement )
 		<sl-icon slot='divider' name='grip-vertical' style='font-size:8px'></sl-icon>
 		<div slot='start' class='w-full flex flex-col bg-neutral-50'>
 				<web-gl class='fullsize grow' src='${this.src ?? ''}' width='100%' height='var(--h-panel)' padr='2' padt='1'> </web-gl>
-				<div class='w-full h-min flex flex-row px-1 gap-3 bg-gray-500 text-white text-xs'>
+				<div class='w-full h-min flex flex-row px-1 gap-3 bg-gray-500 text-white text-xs justify-between'>
 					<div class='font-mono text-[0.65rem]'>${fps} fps</div>
 					<div class='font-mono text-[0.65rem]'>${ms} ms</div>
 					<div class='glstatus prevent-select m-auto inline-block'>
-						<span class='font-bold mr-2'>Select Object: </span>
-						<sl-icon class='selectbutton selectobject' name="caret-left-fill" @click='${() => this.selectChange( -1 )}'></sl-icon>
-						<sl-icon style='color:var(--sl-color-gray-300)' class='selectobject' name="dot"></sl-icon>
-						<sl-icon class='selectbutton selectobject' name="caret-right-fill" @click='${() => this.selectChange( 1 )}'></sl-icon>
+						<div class='inline-block'>
+							<span class='font-bold mr-2'>Select Object: </span>
+							<div class='inline-block'>
+								<sl-icon class='selectbutton selectobject' name="caret-left-fill" @click='${() => this.selectChange( -1 )}'></sl-icon>
+								<sl-icon style='color:var(--sl-color-gray-300)' class='selectobject' name="dot"></sl-icon>
+								<sl-icon class='selectbutton selectobject' name="caret-right-fill" @click='${() => this.selectChange( 1 )}'></sl-icon>
+							</div>
+						</div>
+					</div>
+					<div>
+						<sl-icon class='text-white px-1 align-middle' name='arrow-counterclockwise' @click='${() => this.resetView()}'></sl-icon>
 					</div>
 				</div>
 		</div>

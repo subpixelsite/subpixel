@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-bitwise */
-import { createTexture, DrawObject, drawObjectList, m4, ProgramInfo } from 'twgl.js';
+import { createTexture, DrawObject, drawObjectList, m4, ProgramInfo, v3 } from 'twgl.js';
 import { WebGL } from './webgl.js';
 import { WebGLScene, webGLSceneDefault } from './webglscene.js';
 import { WebGLObject } from './webglobject.js';
@@ -45,6 +45,7 @@ export class WebGLViewport
 	private camDegX: number = 0;
 	private camDegY: number = 0;
 	private camDistance: number = 10;
+	private camOffset: v3.Vec3 = [0, 0, 0];
 
 	private programInfo: Map<string, ProgramInfo> = new Map();
 
@@ -90,9 +91,7 @@ export class WebGLViewport
 
 		this.scene = { ...webGLSceneDefault, ...scene };
 
-		this.camDegY = this.scene.rotDeg !== undefined ? this.scene.rotDeg[0] : 0;
-		this.camDegX = this.scene.rotDeg !== undefined ? this.scene.rotDeg[1] : 0;
-		this.camDistance = this.scene.camDist !== undefined ? this.scene.camDist : 0;
+		this.resetView();
 
 		this.scene.objects?.forEach( data =>
 		{
@@ -204,6 +203,27 @@ export class WebGLViewport
 		this.camDistance += delta * mouseScale;
 	}
 
+	public addCameraDeltaXlate( xlateX: number, xlateY: number )
+	{
+		const mouseScale = 0.0125;
+
+		const camera = m4.identity();
+		this.getLookAt( camera )!;
+		const left = m4.getAxis( camera, 0 ) as unknown as v3.Vec3;
+		const up = m4.getAxis( camera, 1 ) as unknown as v3.Vec3;
+
+		this.camOffset = v3.add( v3.mulScalar( left, -xlateX * mouseScale ), this.camOffset );
+		this.camOffset = v3.add( v3.mulScalar( up, xlateY * mouseScale ), this.camOffset );
+	}
+
+	public resetView()
+	{
+		this.camDegX = 0;
+		this.camDegY = 0;
+		this.camDistance = 0;
+		this.camOffset = [0, 0, 0];
+	}
+
 	changeObjectSelection( delta: number )
 	{
 		const count = this.sceneObjects.length;
@@ -288,6 +308,39 @@ export class WebGLViewport
 		this.debugLogRect( '<div id=\'content\'>', rect );
 
 		return rect;
+	}
+
+	getLookAt( dest?: m4.Mat4 )
+	{
+		if ( this.scene === undefined )
+		{
+			dest = m4.identity();
+			return;
+		}
+
+		const sceneDegX = this.scene.rotDeg !== undefined ? this.scene.rotDeg[1] : 0;
+		const sceneDegY = this.scene.rotDeg !== undefined ? this.scene.rotDeg[0] : 0;
+		const sceneCamDist = this.scene.camDist !== undefined ? this.scene.camDist : 0;
+		const sceneLookAt = this.scene.lookAt !== undefined ? this.scene.lookAt : [0, 0, 0];
+
+		const degX = this.camDegX + sceneDegX;
+		const degY = this.camDegY + sceneDegY;
+		const dist = this.camDistance + sceneCamDist;
+
+		const up = [0, 1, 0];
+		const xRad = ( degX * Math.PI ) / 180;
+		const yRad = ( degY * Math.PI ) / 180;
+		const scale = Math.cos( xRad );
+		const eyeLocal = [
+			Math.cos( yRad ) * scale * dist,
+			Math.sin( xRad ) * dist,
+			Math.sin( yRad ) * scale * dist
+		];
+
+		const eye = v3.add( this.camOffset, eyeLocal );
+		const lookAt = v3.add( this.camOffset, sceneLookAt );
+
+		m4.lookAt( eye, lookAt, up, dest );
 	}
 
 	render( timeDeltaSecs: number, timeAccumSecs: number )
@@ -400,19 +453,10 @@ export class WebGLViewport
 			this.scene.near!,
 			this.scene.far!
 		);
-		const up = [0, 1, 0];
 
 		const view = m4.identity();
 		const viewProjection = m4.identity();
-		const xRad = ( this.camDegX * Math.PI ) / 180;
-		const yRad = ( this.camDegY * Math.PI ) / 180;
-		const scale = Math.cos( xRad );
-		const eye = [
-			Math.cos( yRad ) * scale * this.camDistance,
-			Math.sin( xRad ) * this.camDistance,
-			Math.sin( yRad ) * scale * this.camDistance
-		];
-		m4.lookAt( eye, this.scene.lookAt!, up, this.camera );
+		this.getLookAt( this.camera )!;
 		m4.inverse( this.camera, view );
 		m4.multiply( projection, view, viewProjection );
 

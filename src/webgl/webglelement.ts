@@ -177,12 +177,19 @@ export class WebGLElement extends LitElement
 		this.requestUpdate();
 	}
 
-	onClick()
+	resetView()
 	{
-		this.drag = true;
+		this.wglViewport?.resetView();
 	}
 
-	onMove( e: Event )
+	onMouseDown()
+	{
+		this.drag = true;
+
+		// console.log( `mousedown: drag: ${this.drag}` );
+	}
+
+	onMouseMove( e: Event )
 	{
 		if ( window.getSelection() )
 			window.getSelection()!.removeAllRanges();
@@ -193,13 +200,31 @@ export class WebGLElement extends LitElement
 		{
 			const event = e as MouseEvent;
 			const mouseZoomScale = 5;
+
 			// console.log( `x,y: ${event.x}, ${event.y} -- move x,y: ${event.movementX}, ${event.movementY}` );
 
-			if ( event.buttons === 1 )
+			const PRIMARY = 1;
+			const SECONDARY = 2;
+			const BOTH = 3;
+			const MIDDLE = 4;
+
+			if ( event.buttons === PRIMARY )
 				this.wglViewport?.addCameraDeltaRot( event.movementX, event.movementY );
-			else if ( event.buttons === 2 )
+			else if ( event.buttons === SECONDARY )
 				this.wglViewport?.addCameraDeltaDist( event.movementY * mouseZoomScale );
+			else if ( event.buttons === BOTH || event.buttons === MIDDLE )
+				this.wglViewport?.addCameraDeltaXlate( event.movementX, event.movementY );
 		}
+	}
+
+	onMouseUp( e: Event )
+	{
+		// console.log( `mouseup: drag: ${this.drag}` );
+
+		if ( this.drag === true )
+			e.preventDefault();
+
+		this.drag = false;
 	}
 
 	handleWheel( e: Event )
@@ -210,6 +235,15 @@ export class WebGLElement extends LitElement
 		this.wglViewport?.addCameraDeltaDist( event.deltaY );
 
 		// console.log( `delta wheel: ${event.deltaY}, mode: ${event.deltaMode}` );
+	}
+
+	handleContextMenu( e: Event ): boolean
+	{
+		e.preventDefault();
+
+		// console.log( 'onContextMenu' );
+
+		return false;
 	}
 
 	changeObjectSelection( delta: number )
@@ -236,9 +270,11 @@ export class WebGLElement extends LitElement
 	{
 		super.connectedCallback();
 
-		this.addEventListener( 'mousedown', () => this.onClick() );
-		this.addEventListener( 'mousemove', e => this.onMove( e ) );
+		this.addEventListener( 'mousedown', () => this.onMouseDown() );
+		this.addEventListener( 'mousemove', e => this.onMouseMove( e ) );
+		this.addEventListener( 'mouseup', e => this.onMouseUp( e ) );
 		this.addEventListener( 'wheel', e => this.handleWheel( e ) );
+		this.addEventListener( 'contextmenu', e => this.handleContextMenu( e ) );
 
 		// Fire off an initial resize event to get an SVG text update if needed
 		this.onResizeEvent();
@@ -248,9 +284,11 @@ export class WebGLElement extends LitElement
 	{
 		super.disconnectedCallback();
 
-		this.removeEventListener( 'mousedown', () => this.onClick() );
-		this.removeEventListener( 'mousemove', e => this.onMove( e ) );
+		this.removeEventListener( 'mousedown', () => this.onMouseDown() );
+		this.removeEventListener( 'mousemove', e => this.onMouseMove( e ) );
+		this.removeEventListener( 'mouseup', e => this.onMouseUp( e ) );
 		this.removeEventListener( 'wheel', e => this.handleWheel( e ) );
+		this.removeEventListener( 'contextmenu', e => this.handleContextMenu( e ) );
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
