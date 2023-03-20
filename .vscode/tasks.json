@@ -13,11 +13,20 @@
 		},
 		{
 			"type": "npm",
-			"script": "build",
+			"script": "build:start",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
+			"problemMatcher": [],
+			"label": "npm: build:start",
+			"isBackground": true,
+			"detail": "npm run build && serve -c ../serve.json -p 8011 --no-port-switching -s dist"
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"group": "build",
 			"problemMatcher": [],
 			"label": "npm: build",
 			"detail": "rimraf dist && tsc && rollup -c rollup.config.js && npm run analyze -- --exclude dist"

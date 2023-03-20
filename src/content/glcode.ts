@@ -104,7 +104,7 @@ export class GLCode extends withTwind( LitElement )
 			border-radius: var(--sl-border-radius-small);
 			background: var(--col-frame);
 			color: var(--sl-color-neutral-0);
-			padding: 0.5rem 0.125rem;
+			padding: 0.4rem 0.05rem;
 		}
 
 		.split-panel-divider > sl-split-panel > sl-icon:hover {
@@ -223,6 +223,7 @@ export class GLCode extends withTwind( LitElement )
 	{
 		const element = ( e as CustomEvent ).detail as WebGLElement;
 		this.wglElement = element;
+		this.selectChange( 0 );
 	}
 
 	selectChange( d: number )

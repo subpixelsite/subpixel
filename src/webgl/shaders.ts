@@ -5,8 +5,7 @@ export const shaders = new Map();
 
 // ---------------- col.fs
 shaders.set( 'col.fs', `
-// ----------------
-// col.fs
+// --- col.fs
 
 precision mediump float;
 
@@ -19,14 +18,11 @@ void main() {
 	vec4 color = vec4(v_position.xyz, 1.0);
 	gl_FragColor = color * u_color;
 }
-
-// ----------------
 ` );
 
 // ---------------- pos.vs
 shaders.set( 'pos.vs', `
-// ----------------
-// pos.vs
+// --- pos.vs
 
 uniform mat4 u_worldViewProjection;
 // uniform mat4 u_world;
@@ -42,14 +38,11 @@ void main() {
 	v_position = a_position;
 	gl_Position = (u_worldViewProjection * a_position);
 }
-
-// ----------------
 ` );
 
 // ---------------- postex.vs
 shaders.set( 'postex.vs', `
-// ----------------
-// postex.vs
+// --- postex.vs
 
 uniform mat4 u_worldViewProjection;
 
@@ -65,14 +58,11 @@ void main() {
 	v_texcoord = a_texcoord;
 	gl_Position = (u_worldViewProjection * a_position);
 }
-
-// ----------------
 ` );
 
 // ---------------- tex.fs
 shaders.set( 'tex.fs', `
-// ----------------
-// tex.fs
+// --- tex.fs
 
 precision mediump float;
 
@@ -89,6 +79,4 @@ void main() {
 
 	gl_FragColor = color;
 }
-
-// ----------------
 ` );

@@ -38,12 +38,9 @@ filenames.forEach( file => {
 	shaderTS += `
 // ---------------- ${file}
 shaders.set( '${file}', \`
-// ----------------
-// ${file}
+// --- ${file}
 
 ${contents}
-
-// ----------------
 \` );
 `;
 

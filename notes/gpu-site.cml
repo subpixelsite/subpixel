@@ -3,9 +3,10 @@
 
 == TOPICS
 
-# index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
++ # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
 # Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
 # Validate datePosted logic -- seems to be doing weird things
+# Drag mouse event logic only works for first <gl-code>
 = MVP
 	* One fully-complete post
 		- Including WebGL content
@@ -14,7 +15,7 @@
 			> The HTML is getting mangled, and I'm not sure it's Showdown doing it
 			+ # It's my class name bindings regex
 	- Responsive format for public-facing site
-	* WebGL presentation rethink
+	* WebGL presentation container
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
 		+ Construct new WebGLElement container
 			+ Desktop version
@@ -25,11 +26,13 @@
 			- Mobile version
 				- Full width
 				- Minimum height
+				- Make right panel into its own component to support top/bottom split?
 				- Use a split-panel with a custom divider width and handle with snap setting
 					- Top/bottom or left/right depending on portrait or landscape layout
 			+ Support selecting an object to show its shaders/texture(s)
 				- Support clicking to select
 			? Add "fullscreen" popup button
+			! Is static <gl-code> animating too?
 			+ Get fps display working or hide it
 	- GPU model map
 		- Basic SVG layout of a system with CPU, RAM, VS, PS, VRAM, Rasterizer, etc.
