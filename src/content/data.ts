@@ -41,16 +41,167 @@ export class Database
 				title: 'Mipmapping',
 				author: 'Chris Lambert',
 				dateCreated: 1673735586720,
-				datePosted: 1673735586720,
-				dateModified: 1673735586720,
+				datePosted: 0,
+				dateModified: 1679359393464,
 				tags: 'Textures, Geometry',
-				hdrInline: '<div style="display:block;padding:10px">If this has no image it\'s just rendered as <i>inline</i> <a href="https://www.w3schools.com/html/">HTML</a> in the image slot with an automatic background color.</div>',
+				hdrInline: '<div style="display:block;padding:10px">If this has no image it\'s just rendered as<i>inline</i> <a href="https://www.w3schools.com/html/"> HTML </a> in the image slot with an automatic background color.</div>',
 				hdrHref: '',
 				hdrAlt: '',
-				description:
-					'What are mipmaps and why do we need them?  What is the difference between linear and anisotropic?',
-				markdown: '',
-				content: ''
+				description: `What are mipmaps and why do we need them?  What is the difference between linear and anisotropic?`,
+				markdown: `<gl-code src="assets/test/webgl1.json"></gl-code>
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test 
+Test`,
+				content: `<p class="clearfix"><gl-code src="assets/test/webgl1.json"></gl-code><br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test <br>
+Test</p>`
 			}
 		);
 

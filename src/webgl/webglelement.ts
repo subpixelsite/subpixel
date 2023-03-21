@@ -376,6 +376,9 @@ export class WebGLElement extends LitElement
 		if ( !this.loadEnabled && this.alwaysload !== true )
 			return;
 
+		if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
+			console.log( `Fetching url for id ${this.id}: ${this.src}` );
+
 		const url = new URL( this.src!, window.location.origin );
 		this.fetchWebGLData( url.href );
 	}

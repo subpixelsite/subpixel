@@ -6,7 +6,9 @@
 + # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
 # Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
 # Validate datePosted logic -- seems to be doing weird things
-# Drag mouse event logic only works for first <gl-code>
++ # Drag mouse event logic only works for first <gl-code>
+	> I think I fixed this?
+# WebGL viewport caching doesn't help in editor -- it makes new containers on every convert
 = MVP
 	* One fully-complete post
 		- Including WebGL content
@@ -32,15 +34,24 @@
 			+ Support selecting an object to show its shaders/texture(s)
 				- Support clicking to select
 			? Add "fullscreen" popup button
-			! Is static <gl-code> animating too?
+			+ ! Is static <gl-code> animating too?
+				> No, if one <web-gl> is animating then the WebGL object is running an animated render (even if not every element is participating).  So that means that every element will get the message and show the framerate...
+				+ Hide framerate on non-animating elements
 			+ Get fps display working or hide it
-			- Move camera
-				- Middle click/drag
-				- L&R click/drag
+			+ Move camera
+				+ Middle click/drag
+				+ L&R click/drag
 			- Show state
+				> Future work, not MVP I think
 				- Texture sampler state
 				- Depth/stencil state
-				- 
+				- Clear state
+				- Cull state
+				- Blend state
+				> Is it possible to interrogate WebGL about all this state and cache it every render?
+	x ! <web-gl> render improvement: canvas style="transform: translateY(1828px);" to make scrolling fluid
+		> This won't work without an overhaul where the canvas is in the scrolling container and as tall as the content
+		> Instead, this time would be better spent with the per-element canvas approach
 	- GPU model map
 		- Basic SVG layout of a system with CPU, RAM, VS, PS, VRAM, Rasterizer, etc.
 		- Animated movement along path showing transfer of data
@@ -85,8 +96,9 @@
 	- Load and display OBJ format
 	- Support external interaction, like radio button to change obj
 	- "Pop-out" support - window that fills width
-	- Revisit canvas per <web-gl>
+	? Revisit canvas per <web-gl>
 		> Now that I understand coordinates better, maybe I can make it work?
+		> Maybe unnecessary if I get style="transform: translateY" working
 = Basic styling
 	? Build GPU SVG model
 	- Post item: make title background a web-gl scene

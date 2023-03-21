@@ -17,6 +17,7 @@ export class AdminPage extends AppElement
 		Geometry,
 		css`
 		* {
+			--h-admin: calc(100vh - var( --h-navbar ));
 			--h-content: calc(100vh - var( --h-navbar ) * 2);
 			--pw: 100vw;
 		}
@@ -63,7 +64,7 @@ export class AdminPage extends AppElement
 	render()
 	{
 		return html`
-<div class="flex flex-col align-middle !w-screen h-[var(--h-content)] mt-0 font-sans bg-gray-200">
+<div class="flex flex-col align-middle !w-screen h-[var(--h-admin)] mt-0 font-sans bg-gray-200" >
 	<nav class="bg-gray-500">
 		<div class="bg-[#ba2828] pb-1 flex justify-between items-center gap-2.5 px-4 m-auto w-[var(--page-width)] max-w-[var(--page-width)] overflow-visible h-[var(--h-navbar)]">
 			<div class="justify-start pl-5 inline-block">

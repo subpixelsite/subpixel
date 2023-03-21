@@ -285,9 +285,26 @@ export class WebGLViewport
 		if ( element === null )
 			throw new Error( 'Starting element in getVisibleBoundingRect is null' );
 
+		// Don't let the check go too deep for performance reasons
+		const shadowRootLimit = 1;
+		let shadowRootCount = 0;
+
 		do
 		{
-			const parent: HTMLElement | null = element!.parentElement;
+			let parent: HTMLElement | null = element!.parentElement;
+			if ( parent === null && element.parentNode !== null )
+			{
+				if ( element.parentNode.parentElement !== null )
+				{
+					parent = element.parentNode.parentElement as HTMLElement;
+				}
+				else if ( shadowRootCount < shadowRootLimit )
+				{
+					parent = ( element.getRootNode() as ShadowRoot ).host.parentElement;
+					shadowRootCount += 1;
+				}
+			}
+
 			if ( parent !== null )
 			{
 				const parentRect = Rect.fromDOMREct( parent.getBoundingClientRect() );
@@ -416,7 +433,7 @@ export class WebGLViewport
 			this.element.dispatchEvent( event );
 		}
 
-		if ( WebGL.DEBUG_RENDERS || WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
+		if ( WebGL.DEBUG_RENDERS )
 			// eslint-disable-next-line no-console
 			console.log( `Rendering element ${this.container.id}: ${this.drawObjects.length} objects` );
 
@@ -425,10 +442,10 @@ export class WebGLViewport
 		const vpLeft = viewRect.left;
 		const vpBottom = canvas.clientHeight - viewRect.bottom;
 
-		const visLeft = visRect.left;
-		const visBottom = canvas.clientHeight - visRect.bottom;
 		const visWidth = visWidthRaw + this.padr;
 		const visHeight = visHeightRaw + this.padt;
+		const visLeft = visRect.left;
+		const visBottom = canvas.clientHeight - visRect.bottom;
 
 		gl.enable( gl.SCISSOR_TEST );
 		gl.clearColor(
@@ -439,6 +456,9 @@ export class WebGLViewport
 		);
 		gl.clearDepth( this.scene.clearDepth! );
 		gl.clearStencil( this.scene.clearStencil! );
+
+		if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 2 )
+			console.log( `Scissor:  l ${visLeft},  b ${visBottom},  w ${visWidth},  h ${visHeight}` );
 
 		gl.viewport( vpLeft, vpBottom, vpWidth, vpHeight );
 		gl.scissor( visLeft, visBottom, visWidth, visHeight );
