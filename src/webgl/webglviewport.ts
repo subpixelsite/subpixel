@@ -36,8 +36,8 @@ export class WebGLViewport
 	static fadeInDurSecs: number = 0.2;
 
 	private scene?: WebGLScene;
-	private element: WebGLElement;
-	private container: HTMLDivElement;
+	private element!: WebGLElement;
+	private container!: HTMLDivElement;
 	private camera: m4.Mat4 = m4.identity();
 	private padr: number = 0;
 	private padt: number = 0;
@@ -64,18 +64,35 @@ export class WebGLViewport
 
 	constructor( shadowRoot: ShadowRoot, elementName: string, padr: number, padt: number )
 	{
+		this.setContainer( shadowRoot, elementName );
+		this.padr = padr;
+		this.padt = padt;
+	}
+
+	public setContainer( shadowRoot: ShadowRoot, elementName: string )
+	{
 		const div = shadowRoot.querySelector( elementName );
 		if ( div === null )
 			throw new Error( `Couldn't find element by name in specified root: ${elementName}` );
 		this.container = div as HTMLDivElement;
 		this.element = shadowRoot.host as WebGLElement;
-		this.padr = padr;
-		this.padt = padt;
 	}
 
 	public setLoadEnabled( enabled: boolean )
 	{
 		this.element.setLoadEnabled( enabled );
+	}
+
+	getVectorFromDeg( yaw: number, pitch: number, scale: number )
+	{
+		const xRad = ( pitch * Math.PI ) / 180;
+		const yRad = ( yaw * Math.PI ) / 180;
+		const cosX = Math.cos( xRad );
+		return [
+			Math.cos( yRad ) * cosX * scale,
+			Math.sin( xRad ) * scale,
+			Math.sin( yRad ) * cosX * scale
+		];
 	}
 
 	init( scene: WebGLScene )
@@ -140,10 +157,22 @@ export class WebGLViewport
 				} );
 			}
 
+			const pitch = scene.lightDeg !== undefined ? scene.lightDeg[0] : 45;
+			const yaw = scene.lightDeg !== undefined ? scene.lightDeg[1] : 210;
+			let toLight: v3.Vec3 = this.getVectorFromDeg( pitch, yaw, 1.0 );
+			toLight = v3.negate( toLight );
+			toLight = v3.normalize( toLight );
+			const lightColor: number[] = scene.lightColor ?? [1.0, 1.0, 1.0];
+			const ambientColor: v3.Vec3 = scene.ambientLight ?? [1, 1, 1];
+			v3.mulScalar( ambientColor, scene.ambientStr ?? 1.0, ambientColor );
+
 			// Create shader common constants (uniforms)
 			const uniforms = {
 				u_diffuse: diffuse,
-				u_color: [1, 1, 1, 1],
+				u_toLight: toLight,
+				u_lightColor: lightColor,
+				u_ambientLight: ambientColor,
+				u_tint: [1, 1, 1, 1],
 				u_viewInverse: this.camera,
 				u_world: m4.identity(),
 				u_worldInverseTranspose: m4.identity(),
@@ -343,21 +372,22 @@ export class WebGLViewport
 		const degX = this.camDegX + sceneDegX;
 		const degY = this.camDegY + sceneDegY;
 		const dist = this.camDistance + sceneCamDist;
-
 		const up = [0, 1, 0];
-		const xRad = ( degX * Math.PI ) / 180;
-		const yRad = ( degY * Math.PI ) / 180;
-		const scale = Math.cos( xRad );
-		const eyeLocal = [
-			Math.cos( yRad ) * scale * dist,
-			Math.sin( xRad ) * dist,
-			Math.sin( yRad ) * scale * dist
-		];
+
+		const eyeLocal = this.getVectorFromDeg( degY, degX, dist );
 
 		const eye = v3.add( this.camOffset, eyeLocal );
 		const lookAt = v3.add( this.camOffset, sceneLookAt );
 
 		m4.lookAt( eye, lookAt, up, dest );
+	}
+
+	public turnOffLoading()
+	{
+		this.fadeEnd = 0.0;
+		// turn off loading SVG so it doesn't interfere with visibility DOM calculations
+		for ( let i = 0; i < this.container.children.length; i++ )
+			this.container.children.item( i )?.remove();
 	}
 
 	render( timeDeltaSecs: number, timeAccumSecs: number )
@@ -388,10 +418,7 @@ export class WebGLViewport
 		let fadeValue = 1.0;
 		if ( timeAccumSecs > this.fadeEnd )
 		{
-			this.fadeEnd = 0.0;
-			// turn off loading SVG so it doesn't interfere with visibility DOM calculations
-			for ( let i = 0; i < this.container.children.length; i++ )
-				this.container.children.item( i )?.remove();
+			this.turnOffLoading();
 		}
 		else
 		{
@@ -458,6 +485,7 @@ export class WebGLViewport
 		gl.clearStencil( this.scene.clearStencil! );
 
 		if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 2 )
+			// eslint-disable-next-line no-console
 			console.log( `Scissor:  l ${visLeft},  b ${visBottom},  w ${visWidth},  h ${visHeight}` );
 
 		gl.viewport( vpLeft, vpBottom, vpWidth, vpHeight );
@@ -466,13 +494,39 @@ export class WebGLViewport
 
 		gl.enable( gl.CULL_FACE );
 
-		// Calculate common matrices to update each object's uniforms
-		const projection = m4.perspective(
-			( this.scene.fovYDeg! * Math.PI ) / 180,
-			vpWidth / vpHeight,
-			this.scene.near!,
-			this.scene.far!
-		);
+		const aspectRatio = vpWidth / vpHeight;
+		const near = this.scene.near ?? 0.1;
+		const far = this.scene.far ?? 100.0;
+
+		let projection;
+		if ( this.scene.orthoDiag !== undefined && this.scene.orthoDiag > 0 )
+		{
+			const rad = this.scene.orthoDiag * 0.5;
+			let x;
+			let y;
+			if ( aspectRatio > 1 )
+			{
+				x = rad * aspectRatio;
+				y = rad;
+			}
+			else
+			{
+				x = rad;
+				y = rad * aspectRatio;
+			}
+
+			projection = m4.ortho( -x, x, -y, y, near, far );
+		}
+		else
+		{
+			// Calculate common matrices to update each object's uniforms
+			projection = m4.perspective(
+				( this.scene.fovYDeg! * Math.PI ) / 180,
+				aspectRatio,
+				near,
+				far
+			);
+		}
 
 		const view = m4.identity();
 		const viewProjection = m4.identity();
@@ -505,8 +559,8 @@ export class WebGLViewport
 			const xform = object.getTransform();
 			const colorObj = object.getColor();
 
-			if ( xform.rotAxis !== undefined && xform.rotRad !== undefined )
-				m4.axisRotate( world, xform.rotAxis, xform.rotRad, world );
+			if ( xform.rotAxis !== undefined && xform.rotDeg !== undefined )
+				m4.axisRotate( world, xform.rotAxis, ( xform.rotDeg * Math.PI ) / 180, world );
 
 			m4.translate( world, xform.pos ?? [0, 0, 0], world );
 
@@ -521,7 +575,7 @@ export class WebGLViewport
 				uniforms.u_worldViewProjection
 			);
 
-			uniforms.u_color = [colorObj.color[0], colorObj.color[1], colorObj.color[2], colorObj.alpha * globalAlpha];
+			uniforms.u_tint = [colorObj.color[0], colorObj.color[1], colorObj.color[2], colorObj.alpha * globalAlpha];
 		} );
 
 		drawObjectList( gl!, this.drawObjects );

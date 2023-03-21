@@ -20,7 +20,7 @@ export enum AnimLoopMode
 export class AnimKey
 {
 	@Type( () => Number )
-	modeIn?: AnimBlendMode;
+	blendIn?: AnimBlendMode;
 
 	@Type( () => Number )
 	time: number = 0;
@@ -29,7 +29,7 @@ export class AnimKey
 export class WebGLAnim
 {
 	@Type( () => Number )
-	mode?: AnimBlendMode;
+	blend?: AnimBlendMode;
 
 	@Type( () => Number )
 	loop?: AnimLoopMode;
@@ -44,7 +44,7 @@ export class WebGLObjectTransform
 	rotAxis?: v3.Vec3;
 
 	@Type( () => Number )
-	rotRad?: number;
+	rotDeg?: number;
 
 	@Type( () => Number )
 	scale?: v3.Vec3;

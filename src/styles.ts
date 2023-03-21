@@ -139,6 +139,26 @@ export const PostStyles = css`
 		box-sizing: border-box;
 		display: inline-block;
 	}
+
+	.post-visual > .webglembed {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		display: block;
+		text-align: center;
+		height: 100%;
+		box-sizing: border-box;
+	}
+
+	.fullsize {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		display: block;
+		text-align: center;
+		height: 100%;
+		box-sizing: border-box;
+	}
 `;
 
 export const ScrollBarStyles = css`

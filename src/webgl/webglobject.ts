@@ -32,7 +32,7 @@ export class WebGLObject
 				xform: [{
 					pos: [0, 0, 0],
 					rotAxis: [0, 1, 0],
-					rotRad: 0,
+					rotDeg: 0,
 					scale: [1, 1, 1]
 				}]
 			};
@@ -109,7 +109,7 @@ export class WebGLObject
 		const xformRet: WebGLObjectTransform = {
 			pos: [0, 0, 0],
 			rotAxis: [0, 1, 0],
-			rotRad: 0,
+			rotDeg: 0,
 			scale: [1, 1, 1]
 		};
 
@@ -117,12 +117,12 @@ export class WebGLObject
 		{
 			xformRet.pos = this.data.xform[0].pos ?? xformRet.pos;
 			xformRet.rotAxis = this.data.xform[0].rotAxis ?? xformRet.rotAxis;
-			xformRet.rotRad = this.data.xform[0].rotRad ?? xformRet.rotRad;
+			xformRet.rotDeg = this.data.xform[0].rotDeg ?? xformRet.rotDeg;
 			xformRet.scale = this.data.xform[0].scale ?? xformRet.scale;
 		}
 
 		const { xform } = this.data;
-		const animMode = this.data.anim?.mode ?? AnimBlendMode.Linear;
+		const animMode = this.data.anim?.blend ?? AnimBlendMode.Linear;
 		let animTime = this.time;
 		let backwards = false;
 		let pingpong = false;
@@ -149,8 +149,8 @@ export class WebGLObject
 					// We found the second endpoint -- interpolate between A and B
 
 					let mode = animMode;
-					if ( xformB.key.modeIn !== undefined )
-						mode = xformB.key.modeIn;
+					if ( xformB.key.blendIn !== undefined )
+						mode = xformB.key.blendIn;
 
 					const ts = xformA.key?.time || 0.0;
 					const te = xformB.key.time;
@@ -189,8 +189,8 @@ export class WebGLObject
 							interpolate( xformA.rotAxis[2], xformB.rotAxis[2], t )];
 					}
 
-					if ( xformA.rotRad !== undefined && xformB.rotRad !== undefined )
-						xformRet.rotRad = interpolate( xformA.rotRad, xformB.rotRad, t );
+					if ( xformA.rotDeg !== undefined && xformB.rotDeg !== undefined )
+						xformRet.rotDeg = interpolate( xformA.rotDeg, xformB.rotDeg, t );
 
 					if ( xformA.scale !== undefined && xformB.scale !== undefined )
 					{
@@ -230,7 +230,7 @@ export class WebGLObject
 		}
 
 		const { color } = this.data;
-		const animMode = this.data.anim?.mode ?? AnimBlendMode.Linear;
+		const animMode = this.data.anim?.blend ?? AnimBlendMode.Linear;
 		let animTime = this.time;
 		let backwards = false;
 		let pingpong = false;
@@ -257,8 +257,8 @@ export class WebGLObject
 					// We found the second endpoint -- interpolate between A and B
 
 					let mode = animMode;
-					if ( colorB.key.modeIn !== undefined )
-						mode = colorB.key.modeIn;
+					if ( colorB.key.blendIn !== undefined )
+						mode = colorB.key.blendIn;
 
 					const ts = colorA.key?.time || 0.0;
 					const te = colorB.key.time;

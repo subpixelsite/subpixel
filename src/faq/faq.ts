@@ -123,13 +123,13 @@ export class FAQ extends AppElement
 
 <hr class="rounded">
 <h3 id='whoth'>Who the hell?</h3>
-<p>I'm Chris Lambert, and I have no one to blame but myself.  This site sounded like a good idea at the time, back when I used to sleep and didn't know what "Flash of Unstyled Content" meant.
-&nbsp I'm an industry veteran since 1999 with credits such as Modern Warfare 2 (2009) and Titanfall to my name.</p>
+<p>I'm Chris Lambert, and I have no one to blame but myself.&nbsp This site sounded like a good idea at the time, back when I used to sleep and didn't know what "Flash of Unstyled Content" meant.
+&nbsp I'm a games industry veteran going back to 1999, with credits such as Modern Warfare 2 (2009) and Titanfall to my name.</p>
 <p>Trivia:</p>
 <ul>
 <li>I have no known relation to Johann Heinrich Lambert, who in <i>Photometria</i> (1760) described the
 <a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law">"cosine law"</a>, the formula fundamental to real-time rendering (and many other descriptions of natural phenomena, like physics).</li>
-<li>"<a href="https://en.wikipedia.org/wiki/Lambertian_reflectance">Lambert shading</a>" is common in computer graphics, and widely known to artists.  <a href="https://en.wikipedia.org/wiki/Nominative_determinism">Nominative determinism</a> strikes again.</li>
+<li>"<a href="https://en.wikipedia.org/wiki/Lambertian_reflectance">Lambert shading</a>" is common in computer graphics, and widely known to artists.&nbsp <a href="https://en.wikipedia.org/wiki/Nominative_determinism">Nominative determinism</a> strikes again.</li>
 <li>When I introduced myself at my first Infinity Ward all-hands meeting, I gave my full name and one of the artists 
 shouted out "ohhhh SHADER".&nbsp Ever since, "Shader" has been my industry nickname / callsign.</li>
 </ul>
@@ -137,13 +137,13 @@ shouted out "ohhhh SHADER".&nbsp Ever since, "Shader" has been my industry nickn
 <hr class="rounded">
 <h3 id='howth'>How the hell?</h3>
 <p>Late nights, trial and error, Stack Overflow... you know, the usual.</p>
-<p>This site was developed mostly according to a production plan maintained in <a href="https://clickup.com/">ClickUp</a> and a personal To-Do file format I've been using for years.</p>
+<p>This site was developed mostly according to a production plan maintained in <a href="https://clickup.com/">ClickUp</a> and a personal To-Do file format I've been using for decades.</p>
 <p>The site itself is a Single Page Application written from scratch using <a href="https://www.typescriptlang.org/">Typescript</a>, <a href="https://lit.dev/">lit</a>,
 <a href="https://github.com/vaadin/router">Vaadin Router</a>, <a href="https://shoelace.style/">Shoelace</a>, <a href="https://twind.dev/">Twind</a>,
-<a href="https://showdownjs.com/">Showdown</a>, and misc other libraries.</p>
+<a href="https://showdownjs.com/">Showdown</a>, <a href="https://prismjs.com/">PrismJS</a>, and miscellaneous other libraries.</p>
 <p>The backend uses AWS <a href="https://aws.amazon.com/s3/">storage</a>, <a href="https://aws.amazon.com/cloudfront/">caching</a>, and <a href="https://aws.amazon.com/products/databases/">database</a>
 services to provide automatically-scaling high-availability worldwide access.&nbsp In theory.&nbsp In theory, theory is the same as practice... just not in practice.</p>
-<p>Of the above, when I started developing it in the second half of 2022, I knew a little Typescript.</p>
+<p>Of the above, when I started developing the site in the second half of 2022, I knew a little Typescript.</p>
 
 <hr class="rounded">
 <h3 id='who'>Who is this for, really?</h3>
@@ -158,11 +158,11 @@ services to provide automatically-scaling high-availability worldwide access.&nb
 	<li>A search engine spider, crawling for keywords crypto nft metaverse gamification blockchain?</li>
 </ul>
 <p>This is (maybe) the site for you*!</p>
-<p><span class="text-sm">* Increased understanding and/or sense of gratification not guaranteed.&nbsp No warranty, express or implied, is intended.</span></p>
+<p><span class="text-sm">* Increased understanding and/or sense of gratification not guaranteed.&nbsp Any and all attempts to do so shall be without warranty, express or implied.</span></p>
 
 <hr class="rounded">
 <h3 id='work'>Is the author looking for work?</h3>
-<p>Funny you should ask, I am indeed looking for a new game dev position!&nbsp If you think we might be a good match, you can reach me on <a href="https://www.linkedin.com/in/clambert/">LinkedIn</a>.</p>
+<p>Perhaps!  You can find me on <a href="https://www.linkedin.com/in/clambert/">LinkedIn</a>.</p>
 
 <hr class="rounded">
 <h3 id='web'>What about doing more web development?</h3>

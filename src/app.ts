@@ -12,7 +12,6 @@ import 'reflect-metadata';
 import install from '@twind/with-web-components';
 import config from './twind.config.js';
 import { Geometry, Colors, NavBarStyles, ScrollBarStyles } from './styles.js';
-import { initPostData } from './content/post_data.js';
 import { quips } from './quips.js';
 
 const withTwind = install( config );
@@ -74,7 +73,6 @@ export class App extends withTwind( LitElement )
 		super();
 
 		setBasePath( '/' );	// Shoelace looks in '<BasePath>/assets/icons/'
-		initPostData();
 	}
 
 	connectedCallback(): void

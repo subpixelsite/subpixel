@@ -8,7 +8,8 @@
 # Validate datePosted logic -- seems to be doing weird things
 + # Drag mouse event logic only works for first <gl-code>
 	> I think I fixed this?
-# WebGL viewport caching doesn't help in editor -- it makes new containers on every convert
++ # WebGL viewport caching doesn't help in editor -- it makes new containers on every convert
+# FOV calculation doesn't work when squishing the panel
 = MVP
 	* One fully-complete post
 		- Including WebGL content
@@ -17,6 +18,7 @@
 			> The HTML is getting mangled, and I'm not sure it's Showdown doing it
 			+ # It's my class name bindings regex
 	- Responsive format for public-facing site
+	- Showdown plugin to do double-spaced sentence ends.
 	* WebGL presentation container
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
 		+ Construct new WebGLElement container

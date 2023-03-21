@@ -31,19 +31,39 @@ export class WebGLScene
 	@Type( () => Number )
 	camDist?: number;
 
+	@Type( () => Number )
+	orthoDiag?: number;
+
+	@Type( () => Number )
+	lightDeg?: number[];
+
+	@Type( () => Number )
+	lightColor?: number[];
+
+	@Type( () => Number )
+	ambientLight?: number[];
+
+	@Type( () => Number )
+	ambientStr?: number;
+
 	@Type( () => WebGLObjectData )
 	objects?: WebGLObjectData[];
 }
 
 export const webGLSceneDefault: WebGLScene = {
-	clearColor: [0.75, 0.75, 0.75, 1.0],
+	clearColor: [0.35, 0.35, 0.35, 1.0],
 	clearDepth: 1.0,
 	clearStencil: 0,
 	fovYDeg: 30,
-	near: 0.5,
+	near: 0.1,
 	far: 100,
 	lookAt: [0, 0, 0],
 	rotDeg: [300, 30],
 	camDist: 9,
+	// orthoDiag: 3,
+	lightDeg: [210, 45],
+	lightColor: [1.0, 1.0, 1.0],
+	ambientLight: [1.0, 1.0, 1.0],
+	ambientStr: 1.0,
 	objects: []
 };

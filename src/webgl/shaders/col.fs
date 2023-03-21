@@ -1,11 +1,13 @@
 precision mediump float;
 
-varying vec4 v_position;
-
-uniform vec4 u_color;
+// constants
+uniform vec4 u_tint;
 
 void main() {
 
-	vec4 color = vec4(v_position.xyz, 1.0);
-	gl_FragColor = color * u_color;
+	// Use tint constant as the color
+	vec4 color = u_tint;
+
+	// Output final pixel color
+	gl_FragColor = color;
 }

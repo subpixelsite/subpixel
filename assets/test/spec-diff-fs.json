@@ -15,7 +15,7 @@
 			"vs": "postex.vs",
 			"fs": "tex.fs",
 			"anim": {
-				"mode": "2",
+				"blend": "2",
 				"loop": "2"
 			},
 			"xform": [
@@ -25,15 +25,15 @@
 				},
 				{
 					"pos": ["1.0", "0.5", "-1.0"],
-					"key": { "time": "2.0", "modeIn": "3" }
+					"key": { "time": "2.0", "blendIn": "3" }
 				},
 				{
 					"pos": ["1.0", "0.5", "1.0"],
-					"key": { "time": "4.0", "modeIn": "1" }
+					"key": { "time": "4.0", "blendIn": "1" }
 				},
 				{
 					"pos": ["-1.0", "0.5", "1.0"],
-					"key": { "time": "6.0", "modeIn": "3" }
+					"key": { "time": "6.0", "blendIn": "3" }
 				},
 				{
 					"pos": ["-1.0", "0.5", "-1.0"],
@@ -55,7 +55,7 @@
 				{
 					"color": ["0", "1.0", "1.0"],
 					"alpha": "1.0",
-					"key": { "time": "4.75", "modeIn": 3 }
+					"key": { "time": "4.75", "blendIn": 3 }
 				},
 				{
 					"color": ["0", "0.0", "1.0"],
@@ -73,7 +73,7 @@
 			"vs": "pos.vs",
 			"fs": "col.fs",
 			"anim": {
-				"mode": "3",
+				"blend": "3",
 				"loop": "2"
 			},
 			"xform": [

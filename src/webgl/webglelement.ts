@@ -127,17 +127,10 @@ export class WebGLElement extends LitElement
 	@state()
 	drag = false;
 
-	private idNumber: number = 0;
+	private idNumber: number = -1;
 	private divID: string = '';
 	private wrappedText?: string[];
 	private loadEnabled: boolean = true;
-
-	constructor()
-	{
-		super();
-		this.idNumber = WebGL.getNextID();
-		this.divID = `web-gl-container-${this.idNumber}`;
-	}
 
 	setErrorText( error: string | undefined )
 	{
@@ -275,6 +268,18 @@ export class WebGLElement extends LitElement
 	{
 		super.connectedCallback();
 
+		// get an ID if we weren't provided one
+		if ( this.id.length > 0 )
+		{
+			this.divID = `wgl-${this.id}`;
+		}
+		else
+		{
+			this.idNumber = WebGL.getNextID();
+			this.id = `auto${this.idNumber}`;
+			this.divID = `wgl-auto${this.idNumber}`;
+		}
+
 		this.addEventListener( 'mousedown', () => this.onMouseDown() );
 		this.addEventListener( 'mousemove', e => this.onMouseMove( e ) );
 		this.addEventListener( 'mouseup', e => this.onMouseUp( e ) );
@@ -311,12 +316,20 @@ export class WebGLElement extends LitElement
 
 			cachedVP = new CachedViewport( this.divID, content, new WebGLViewport( this.shadowRoot!, `#${this.divID}`, this.padr ?? 1, this.padt ?? 0 ) );
 			gl.addViewport( cachedVP );
+
+			// in case there's a URL waiting, fetch it
+			this.fetchHref();
+
+			this.wglViewport = cachedVP.viewport;
 		}
-
-		this.wglViewport = cachedVP.viewport;
-
-		// in case there's a URL waiting, fetch it
-		this.fetchHref();
+		else
+		{
+			// Update the existing viewport's container to our new one
+			cachedVP.viewport.setContainer( this.shadowRoot!, `#${this.divID}` );
+			cachedVP.viewport.turnOffLoading();
+			this.wglViewport = cachedVP.viewport;
+			this.sendLoadedEvent();
+		}
 	}
 
 	setWebGLData( scene: WebGLScene )
@@ -332,6 +345,17 @@ export class WebGLElement extends LitElement
 		// Lazy load any missing data
 		if ( this.wglViewport !== undefined && !this.wglViewport.isInitialized() )
 			this.fetchHref();
+	}
+
+	sendLoadedEvent()
+	{
+		// fire 'loaded' event
+		const event = new CustomEvent( 'webgl-loaded', {
+			detail: this,
+			bubbles: true,
+			composed: true
+		} );
+		this.dispatchEvent( event );
 	}
 
 	fetchWebGLData( url: string )
@@ -350,14 +374,7 @@ export class WebGLElement extends LitElement
 			{
 				const wgl = plainToClass( WebGLScene, data );
 				this.wglViewport!.init( wgl );
-
-				// fire 'loaded' event
-				const event = new CustomEvent( 'webgl-loaded', {
-					detail: this,
-					bubbles: true,
-					composed: true
-				} );
-				this.dispatchEvent( event );
+				this.sendLoadedEvent();
 			} )
 			.catch( error =>
 			{
@@ -377,6 +394,7 @@ export class WebGLElement extends LitElement
 			return;
 
 		if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )
+			// eslint-disable-next-line no-console
 			console.log( `Fetching url for id ${this.id}: ${this.src}` );
 
 		const url = new URL( this.src!, window.location.origin );
@@ -387,9 +405,9 @@ export class WebGLElement extends LitElement
 	{
 		super.update( changedProperties );
 
-		if ( changedProperties.has( 'href' ) )
+		if ( changedProperties.has( 'src' ) )
 		{
-			const oldValue = changedProperties.get( 'href' ) as string | undefined;
+			const oldValue = changedProperties.get( 'src' ) as string | undefined;
 			const newValue = this.src;
 			if ( newValue !== oldValue && this.src !== undefined )
 				this.fetchHref();

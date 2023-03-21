@@ -33,6 +33,8 @@ declare global
 	}
 }
 
+// let twoSpaces: { type: string; regex: RegExp; replace: string; };
+let webglCache: { type: string; filter: any; };
 let bindings: { type: string; regex: RegExp; replace: string; }[] = [];
 const classMap: { [key: string]: string; } = {};
 
@@ -43,6 +45,9 @@ classMap['web-gl'] = 'webglembed';
 classMap['svg'] = 'svgembed';
 classMap['p'] = 'clearfix';
 
+let webglCacheCounter = 0;
+let converter: { setOption: ( arg0: string, arg1: boolean ) => void; makeHtml: ( arg0: string ) => any; } | undefined;
+
 export function initPostData()
 {
 	bindings = Object.keys( classMap )
@@ -52,20 +57,46 @@ export function initPostData()
 			replace: `<${key} class="${classMap[key]}" $1>`
 		} ) );
 
-	window.showdown.setOption( 'strikethrough', true );
+	// twoSpaces = {
+	// 	type: 'lang',
+	// 	// regex: /\. [^ ]*/gi,
+	// 	regex: /\. +/gi,
+	// 	replace: '.\u00a0 '
+	// };
+
+	webglCache = {
+		type: 'output',
+		filter: ( text: string ) =>
+		{
+			const pat = /<gl-code (?!id=)/g;
+			const matches = text.match( pat );
+			if ( matches === null )
+				return text;
+			// eslint-disable-next-line no-param-reassign
+			text = text.replace( pat, () => { webglCacheCounter += 1; return `<gl-code id="${webglCacheCounter}" `; } );
+
+			return text;
+		}
+	};
+
+	converter = new window.showdown.Converter(
+		{
+			extensions: [
+				...bindings,
+				// twoSpaces,
+				webglCache
+			]
+		}
+	);
+	if ( converter === undefined )
+		throw new Error( 'Converter is undefined!' );
+	converter.setOption( 'smoothLivePreview', true );
+	converter.setOption( 'simpleLineBreaks', true );
 }
 
 export function convertMDtoHTML( md: string ): string
 {
-	const converter = new window.showdown.Converter(
-		{
-			extensions: [
-				...bindings
-			]
-		}
-	);
-	converter.setOption( 'smoothLivePreview', true );
-	converter.setOption( 'simpleLineBreaks', true );
-	const output = converter.makeHtml( md );
+	webglCacheCounter = 0;
+	const output = converter!.makeHtml( md );
 	return output;
 }

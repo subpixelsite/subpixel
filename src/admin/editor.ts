@@ -8,7 +8,7 @@ import { serialize } from '@shoelace-style/shoelace/dist/utilities/form.js';
 import { PostTile } from '../content/post_tile.js';
 import { WebGL } from '../webgl/webgl.js';
 import { AppElement } from '../appelement.js';
-import { PostData, convertMDtoHTML, PostStatus } from '../content/post_data.js';
+import { PostData, convertMDtoHTML, PostStatus, initPostData } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/switch/switch.js';
 import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/textarea/textarea.js';
@@ -171,6 +171,8 @@ export class EditorPage extends AppElement
 	constructor()
 	{
 		super();
+
+		initPostData();
 
 		this.post = new PostData();
 	}
@@ -450,7 +452,7 @@ export class EditorPage extends AppElement
 						</div>
 						<div class="grid col-auto w-full p-0.5">
 							<div class="header-img block justify-self-center outline-1 outline outline-black m-2.5">
-								<div class="post-visual justify-self-center">
+								<div class="post-visual justify-self-center fullsize">
 									${visual}
 								</div>
 							</div>

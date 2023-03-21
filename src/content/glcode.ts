@@ -266,7 +266,7 @@ export class GLCode extends withTwind( LitElement )
 	<sl-split-panel class='overflow-clip' snap='50%' style='--min: var(--w-panel-min); --max: var(--w-panel-max);' primary='end' position=42>
 		<sl-icon slot='divider' name='grip-vertical' style='font-size:8px'></sl-icon>
 		<div slot='start' class='w-full flex flex-col bg-neutral-50'>
-				<web-gl class='fullsize grow' src='${this.src ?? ''}' width='100%' height='var(--h-panel)' padr='2' padt='1'> </web-gl>
+				<web-gl id="${this.id}" class='fullsize grow' src='${this.src ?? ''}' width='100%' height='var(--h-panel)' padr='2' padt='1'> </web-gl>
 				<div class='w-full h-min flex flex-row px-1 gap-3 bg-gray-500 text-white text-xs justify-between'>
 					<div class='font-mono text-[0.65rem]'>${fps} fps</div>
 					<div class='font-mono text-[0.65rem]'>${ms} ms</div>

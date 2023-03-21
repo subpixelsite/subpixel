@@ -1,13 +1,17 @@
 {
 	"fovYDeg": "90",
 	"lookAt": ["0", "0", "0"],
-	"camDist": "1.5",
+	"camDist": "30",
 	"rotDeg": ["0", "-30"],
 	"orthoDiag": "2",
+	"lightDeg": ["150", "-45"],
+	"lightColor": ["1.0", "1.0", "1.0"],
+	"ambientStr": "0.15",
+	"ambientLight": ["1", "1", "1"],
 	"objects": [
 		{
-			"vs": "pos.vs",
-			"fs": "col.fs",
+			"vs": "posnorm.vs",
+			"fs": "col_diff.fs",
 			"anim": {
 				"blend": "1",
 				"loop": "1"
