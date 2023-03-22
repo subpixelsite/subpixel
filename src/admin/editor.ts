@@ -436,7 +436,7 @@ export class EditorPage extends AppElement
 						</div>
 					</div>
 				</sl-details>
-				<sl-button variant="success" pill class="col-start-3 col-span-1 w-[100px] ml-1 justify-self-center self-center" @click="${this.handleCommit}">Save</sl-button>
+				<sl-button variant="success" pill class="col-start-3 col-span-1 w-[100px] ml-4 justify-self-center self-center" @click="${this.handleCommit}">Save</sl-button>
 			</div>
 			<div class="flex gap-5 max-h-full">
 				<div class="edit-panel flex flex-col max-h-full h-full overflow-hidden">

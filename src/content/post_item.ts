@@ -10,6 +10,7 @@ import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
+import './alert.js';
 import { AppElement } from '../appelement.js';
 import { Database, getTagsArray } from './data.js';
 import { PostData } from './post_data.js';

@@ -3,13 +3,8 @@
 
 == TOPICS
 
-+ # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
 # Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
 # Validate datePosted logic -- seems to be doing weird things
-+ # Drag mouse event logic only works for first <gl-code>
-	> I think I fixed this?
-+ # WebGL viewport caching doesn't help in editor -- it makes new containers on every convert
-+ # FOV calculation doesn't work when squishing the panel
 = MVP
 	* One fully-complete post
 		- Including WebGL content
@@ -17,9 +12,8 @@
 		+ # Markdown conversion doesn't seem to be working correctly
 			> The HTML is getting mangled, and I'm not sure it's Showdown doing it
 			+ # It's my class name bindings regex
+	- Inline info line
 	* Responsive format for public-facing site
-	x Showdown plugin to do double-spaced sentence ends
-		> Implemented and commented out
 	* WebGL presentation container
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
 		+ Construct new WebGLElement container
@@ -42,10 +36,8 @@
 			+ Move camera
 				+ Middle click/drag
 				+ L&R click/drag
-	x ! <web-gl> render improvement: canvas style="transform: translateY(1828px);" to make scrolling fluid
-		> This won't work without an overhaul where the canvas is in the scrolling container and as tall as the content
-		> Instead, this time would be better spent with the per-element canvas approach
 	- Setup Rollup dev environment
+	* Work out image caption CSS for FAQ
 = MVP 2
 	* WebGL presentation container
 		+ Construct new WebGLElement container
@@ -133,6 +125,17 @@
 
 === DONE
 
++ # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
++ # Drag mouse event logic only works for first <gl-code>
+	> I think I fixed this?
++ # WebGL viewport caching doesn't help in editor -- it makes new containers on every convert
++ # FOV calculation doesn't work when squishing the panel
+= MVP
+	x Showdown plugin to do double-spaced sentence ends
+		> Implemented and commented out
+	x ! <web-gl> render improvement: canvas style="transform: translateY(1828px);" to make scrolling fluid
+		> This won't work without an overhaul where the canvas is in the scrolling container and as tall as the content
+		> Instead, this time would be better spent with the per-element canvas approach
 = <web-gl> Enhancements
 	+ Support interaction, like click/drag-to-move camera (or button for different ortho)
 = Source code view

@@ -1,3 +1,5 @@
+import { DEFAULT_VARIANT } from './alert.js';
+
 /* eslint-disable no-shadow */
 export enum PostStatus
 {
@@ -37,6 +39,7 @@ declare global
 let webglCache: { type: string; filter: any; };
 let glCodeCache: { type: string; filter: any; };
 let drawer = [];
+let alert;
 let bindings: { type: string; regex: RegExp; replace: string; }[] = [];
 const classMap: { [key: string]: string; } = {};
 
@@ -131,6 +134,46 @@ export function initPostData()
 		}
 	];
 
+	alert = {
+		type: 'lang',
+		regex: /<alert([^>])*>(.)*<\/alert>/gim,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		replace: ( s: string, match: string ) =>
+		{
+			let variant = DEFAULT_VARIANT;
+			// let icon = DEFAULT_ICON;
+
+			const pat = /<alert([^>]*)>/i;
+			const matches = s.match( pat );
+			if ( matches !== null )
+			{
+				if ( matches.length > 1 )
+				{
+					// extract variant and icon if present
+
+					// const iconMatch = s.match( /icon=(['"][^=>]+['"])/ );
+					// if ( iconMatch !== null )
+					// {
+					// 	if ( iconMatch.length > 1 )
+					// 		// eslint-disable-next-line prefer-destructuring
+					// 		icon = iconMatch[1];
+					// }
+
+					const varMatch = s.match( /variant=(['"][^=>]+['"])/ );
+					if ( varMatch !== null )
+					{
+						if ( varMatch.length > 1 )
+							// eslint-disable-next-line prefer-destructuring
+							variant = varMatch[1];
+					}
+				}
+			}
+
+			const content = s.match( /<alert[^>]*>(.*)<\/alert>/gi ) ?? '';
+			return `<lit-alert variant=${variant}>${content}</lit-alert>`;
+		}
+	};
+
 	converter = new window.showdown.Converter(
 		{
 			extensions: [
@@ -138,7 +181,8 @@ export function initPostData()
 				// twoSpaces,
 				webglCache,
 				glCodeCache,
-				...drawer
+				...drawer,
+				alert
 			]
 		}
 	);

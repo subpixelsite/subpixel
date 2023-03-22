@@ -345,13 +345,23 @@ Man I hope this works.
 				author: 'Chris Lambert',
 				dateCreated: 1678949649635,
 				datePosted: 0,
-				dateModified: 1679461115998,
+				dateModified: 1679481262966,
 				tags: 'Shaders, Lighting',
 				hdrInline: '',
 				hdrHref: 'assets/test/webgl1.json',
 				hdrAlt: '',
 				description: `What do diffuse and specular shading mean?  What is the difference?  How do they work?`,
 				markdown: `One of the reasons early 3D looked so fake is that without any lighting calculations, it was difficult to convey the shape of a surface.  There are two obvious ways to solve this on a 2D screen: motion and shading.
+
+<alert>generic information that might help you<br>and another line</alert>
+
+<alert variant='danger'>danger will robinson<br>danger<br>danger</alert>
+
+<alert variant='warning'>hopefully this works</alert>
+
+<alert variant='neutral'>hopefully this works</alert>
+
+<alert variant='success'>hopefully this works</alert>
 
 Let's look at a simple un-textured box:
 
@@ -432,6 +442,11 @@ Moving work from the Vertex Shader to the Fragment Shader is actually pretty sim
 Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the [Performance](posts/2) post for more about this. 
 `,
 				content: `<p class="clearfix">One of the reasons early 3D looked so fake is that without any lighting calculations, it was difficult to convey the shape of a surface.  There are two obvious ways to solve this on a 2D screen: motion and shading.</p>
+<p class="clearfix"><lit-alert variant="primary"><alert>generic information that might help you</alert></lit-alert></p>
+<p class="clearfix"><lit-alert variant="danger"><alert variant="danger">danger will robinson</alert></lit-alert></p>
+<p class="clearfix"><lit-alert variant="warning"><alert variant="warning">hopefully this works</alert></lit-alert></p>
+<p class="clearfix"><lit-alert variant="neutral"><alert variant="neutral">hopefully this works</alert></lit-alert></p>
+<p class="clearfix"><lit-alert variant="success"><alert variant="success">hopefully this works</alert></lit-alert></p>
 <p class="clearfix">Let's look at a simple un-textured box:</p>
 <p class="clearfix"><web-gl id="1" class="webglembed webglpost" src="assets/test/unshaded-box.json"></web-gl></p>
 <p class="clearfix">Motion is the easier option, of the two: you can move either the camera (the viewer's 'eye'), or the surface. It's much less expensive than shading, because you have to do the same small amount of math to make objects show up on the screen whether their transformation changes each frame or not!</p>
