@@ -1,33 +1,29 @@
-=== GPU SITE
+=== SUBPIXEL
 
 
-== TOPICS
+== TODO
 
-# Posts doesn't format correctly on back button from FAQ (doesn't pick up class on post-list)
+# Post-list doesn't always format correctly on back button from FAQ (doesn't pick up class on post-list - async fetch?)
 # Validate datePosted logic -- seems to be doing weird things
 = MVP
-	* One fully-complete post
-		- Including WebGL content
-		> I've written an example one already, start with that?
-		+ # Markdown conversion doesn't seem to be working correctly
-			> The HTML is getting mangled, and I'm not sure it's Showdown doing it
-			+ # It's my class name bindings regex
-	- Inline info line
 	* Responsive format for public-facing site
 	* WebGL presentation container
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
+		! Cache shader fetches alongside webgl viewports for editor performance
 		+ Construct new WebGLElement container
+			? Add button to show/hide
 			+ Desktop version
 				+ Full width
 				+ Minimum height
 				+ Use a split-panel with a custom divider width and handle with snap setting
-					x ? Add button to show/hide
 			- Mobile version
 				- Full width
 				- Minimum height
-				- Make right panel into its own component to support top/bottom split?
-				- Use a split-panel with a custom divider width and handle with snap setting
-					- Top/bottom or left/right depending on portrait or landscape layout
+				+ Make right panel into its own component to support top/bottom split?
+				x Use a split-panel with a custom divider width and handle with snap setting
+					x Top/bottom or left/right depending on portrait or landscape layout
+					> Portrait can't use split-panel, requires block layout elements
+				- Alternate mobile-width/portrait vertical block layout for <web-gl> and <gl-data> elements
 			? Add "fullscreen" popup button
 			+ ! Is static <gl-code> animating too?
 				> No, if one <web-gl> is animating then the WebGL object is running an animated render (even if not every element is participating).  So that means that every element will get the message and show the framerate...
@@ -37,7 +33,9 @@
 				+ Middle click/drag
 				+ L&R click/drag
 	- Setup Rollup dev environment
-	* Work out image caption CSS for FAQ
+	- Inline info line
+	- Work out image caption CSS for FAQ
+		> I have the image caption example in place, but it'll require a new component to do this properly (or at a minimum, a showdown extension)
 = MVP 2
 	* WebGL presentation container
 		+ Construct new WebGLElement container
@@ -125,6 +123,13 @@
 
 === DONE
 
+= MVP
+	+ One fully-complete post
+		+ Including WebGL content
+		> I've written an example one already, start with that?
+		+ # Markdown conversion doesn't seem to be working correctly
+			> The HTML is getting mangled, and I'm not sure it's Showdown doing it
+			+ # It's my class name bindings regex
 + # index.ts needs to handle bad URLs or any other vaadin router exceptions with redirect to /
 + # Drag mouse event logic only works for first <gl-code>
 	> I think I fixed this?

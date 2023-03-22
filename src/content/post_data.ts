@@ -49,6 +49,8 @@ classMap['h2'] = 'header2';
 classMap['web-gl'] = 'webglembed webglpost';
 classMap['svg'] = 'svgembed';
 classMap['p'] = 'clearfix';
+classMap['ul'] = 'list';
+classMap['ol'] = 'list';
 
 let webglCacheCounter = 0;
 let drawerMatches: string[] = [];

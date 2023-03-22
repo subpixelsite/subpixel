@@ -180,6 +180,18 @@ export const PostStyles = css`
 		margin-top: 30px;
 		margin-right: -15px;
 		margin-bottom: 30px;
+	}
+
+	.clearfix:after {
+		content: '';
+		visibility: hidden;
+		height: 0;
+		display: block;
+		clear: both;
+	}
+
+	.list {
+	}
 `;
 
 export const ScrollBarStyles = css`

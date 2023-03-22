@@ -337,6 +337,7 @@ Man I hope this works.
 		);
 
 		this.setPostData(
+
 			'diffusespecular',
 			{
 				name: 'diffusespecular',
@@ -345,41 +346,37 @@ Man I hope this works.
 				author: 'Chris Lambert',
 				dateCreated: 1678949649635,
 				datePosted: 0,
-				dateModified: 1679481262966,
+				dateModified: 1679525277861,
 				tags: 'Shaders, Lighting',
 				hdrInline: '',
 				hdrHref: 'assets/test/webgl1.json',
 				hdrAlt: '',
 				description: `What do diffuse and specular shading mean?  What is the difference?  How do they work?`,
-				markdown: `One of the reasons early 3D looked so fake is that without any lighting calculations, it was difficult to convey the shape of a surface.  There are two obvious ways to solve this on a 2D screen: motion and shading.
+				markdown: `How do you know what shape a 3D object is on a 2D screen?  Our brains already have a technique for this, say, in case you lost an eye in a fight with a porcupine.  They use motion or shading.
 
-<alert>generic information that might help you<br>and another line</alert>
-
-<alert variant='danger'>danger will robinson<br>danger<br>danger</alert>
-
-<alert variant='warning'>hopefully this works</alert>
-
-<alert variant='neutral'>hopefully this works</alert>
-
-<alert variant='success'>hopefully this works</alert>
-
-Let's look at a simple un-textured box:
+As an example, let's look at a simple stationary cube without any visual features:
 
 <web-gl src='assets/test/unshaded-box.json'></web-gl>
 
-Motion is the easier option, of the two: you can move either the camera (the viewer's 'eye'), or the surface. It's much less expensive than shading, because you have to do the same small amount of math to make objects show up on the screen whether their transformation changes each frame or not!
+Between motion and shading, motion is the simpler option.  You have to do some math to get the object into the right place on screen, and it's very little extra work to add a change over time to the base transformation.  As an alternative, you could move the camera, which would be like limping around the carcass of your defeated porcupine foe.
 
-Here's what applying motion looks like to our untextured box:
+Here's what applying motion to our untextured box looks like:
 
 <gl-code src='assets/test/unshaded-box-spin.json'></gl-code>
 
-Pretty uninspiring, huh?  With not even a texture to go on, there's not much information about the shape or orientation of the box here.  Motion gives us some kind of a clue here, but not nearly enough.
+Pretty uninspiring, huh?  Motion gives us a clue that it's a cube, but it's still like being in a dark or foggy forest with an agitated rodent.
 
-Shading is ideal.  If we're going to see to understand a shape with shading, that means we have light.  And if we have light, we have a light source.  A light source means we have light traveling some direction to interact with the surface.  This will be some combination of reflect, absorb, or pass through, depending on the material -- imagine stainless steel, red brick, and paper, respectively.  The interaction of the light when it reaches the surface is the "shading" to which we refer.
+So we obviously want shading.  That's why you're here.  Shading tells us a lot about the surface beyond just its shape: shading will usually simulate light reflecting, absorbing, or passing through a surface, depending on the material -- imagine steel, brick, and paper, respectively.
 
-You may have heard of "shaders" in the context of rendering and GPUs.  These refer to any specialized micro-program that runs on a GPU.  A math computation running on the GPU may use a single Compute Shader.  A single triangle can be drawn with just one Vertex Shader and one Fragment Shader (also known as a Pixel Shader).  Some advanced rendering applications use even more exotic versions as well, like Geometry Shaders or Tessellation Shaders.  All of these are simple programs that run exclusively on the GPU.  They run over and over again, against each item in a list.  The key is that it's a different list of items for each kind of shader.
+You may have heard of "shaders" in the context of rendering and GPUs.  "Shaders" are a specialized micro-program that runs on a GPU.  
+ 
+- A complex math computation running on the GPU may use a single **Compute Shader**.
+- A single triangle can be drawn with just one **Vertex Shader** and one **Fragment Shader** (also known as a **Pixel Shader**).
+- Some advanced rendering applications use even more exotic versions as well, like **Geometry Shaders** or **Tessellation Shaders**. 
+ 
+All of these are simple programs that run exclusively on the GPU.  They run over and over again, against each item in a list.  The key is that it's a different list of items for each kind of shader.
 
-For more details on different kinds of shaders and how they work, see the post on [Shaders](posts/1).
+<!-- For more details on different kinds of shaders and how they work, see the post on [Shaders](posts/1). -->
 
 What if we kept everything the same, and just added the most basic form of lighting calculations (also known as shading)?
 
@@ -387,9 +384,13 @@ Here's what that same box looks like with a simple light source:
 
 <gl-code src="assets/test/shaded-box-spin.json"></gl-code> 
 
-Surprise!  Chances are, you thought you were looking at the box from above and spinning clockwise.  This is how shading really helps you to figure out shapes on a 2D screen.
+Surprise!
 
-The two types that do the kind of shading we're discussing are Vertex and Fragment Shaders.  Vertex Shaders run on a list of vertices (the preferred plural of vertex, though vertexes is acceptable), as you may have guessed, and are responsible for getting the vertices into the right place and facing the right direction.
+Chances are, you thought you were looking at the box from above and spinning clockwise.  This is how shading really helps you to figure out shapes on a 2D screen.
+
+The two types that do the kind of shading we're discussing are Vertex and Fragment Shaders.  Vertex Shaders run on a list of vertices, as you may have guessed, and are responsible for getting the vertices into the right place and facing the right direction.
+
+<alert>*Vertices* is the preferred plural of vertex, though *vertexes* is acceptable.<br>The same goes for *indices* and *indexes*.</alert>
 
 What?  How can a point face a direction?
 
@@ -441,26 +442,29 @@ Moving work from the Vertex Shader to the Fragment Shader is actually pretty sim
 
 Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the [Performance](posts/2) post for more about this. 
 `,
-				content: `<p class="clearfix">One of the reasons early 3D looked so fake is that without any lighting calculations, it was difficult to convey the shape of a surface.  There are two obvious ways to solve this on a 2D screen: motion and shading.</p>
-<p class="clearfix"><lit-alert variant="primary"><alert>generic information that might help you</alert></lit-alert></p>
-<p class="clearfix"><lit-alert variant="danger"><alert variant="danger">danger will robinson</alert></lit-alert></p>
-<p class="clearfix"><lit-alert variant="warning"><alert variant="warning">hopefully this works</alert></lit-alert></p>
-<p class="clearfix"><lit-alert variant="neutral"><alert variant="neutral">hopefully this works</alert></lit-alert></p>
-<p class="clearfix"><lit-alert variant="success"><alert variant="success">hopefully this works</alert></lit-alert></p>
-<p class="clearfix">Let's look at a simple un-textured box:</p>
+				content: `<p class="clearfix">How do you know what shape a 3D object is on a 2D screen?  Our brains already have a technique for this, say, in case you lost an eye in a fight with a porcupine.  They use motion or shading.</p>
+<p class="clearfix">As an example, let's look at a simple stationary cube without any visual features:</p>
 <p class="clearfix"><web-gl id="1" class="webglembed webglpost" src="assets/test/unshaded-box.json"></web-gl></p>
-<p class="clearfix">Motion is the easier option, of the two: you can move either the camera (the viewer's 'eye'), or the surface. It's much less expensive than shading, because you have to do the same small amount of math to make objects show up on the screen whether their transformation changes each frame or not!</p>
-<p class="clearfix">Here's what applying motion looks like to our untextured box:</p>
+<p class="clearfix">Between motion and shading, motion is the simpler option.  You have to do some math to get the object into the right place on screen, and it's very little extra work to add a change over time to the base transformation.  As an alternative, you could move the camera, which would be like limping around the carcass of your defeated porcupine foe.</p>
+<p class="clearfix">Here's what applying motion to our untextured box looks like:</p>
 <p class="clearfix"><gl-code id="2" src="assets/test/unshaded-box-spin.json"></gl-code></p>
-<p class="clearfix">Pretty uninspiring, huh?  With not even a texture to go on, there's not much information about the shape or orientation of the box here.  Motion gives us some kind of a clue here, but not nearly enough.</p>
-<p class="clearfix">Shading is ideal.  If we're going to see to understand a shape with shading, that means we have light.  And if we have light, we have a light source.  A light source means we have light traveling some direction to interact with the surface.  This will be some combination of reflect, absorb, or pass through, depending on the material -- imagine stainless steel, red brick, and paper, respectively.  The interaction of the light when it reaches the surface is the "shading" to which we refer.</p>
-<p class="clearfix">You may have heard of "shaders" in the context of rendering and GPUs.  These refer to any specialized micro-program that runs on a GPU.  A math computation running on the GPU may use a single Compute Shader.  A single triangle can be drawn with just one Vertex Shader and one Fragment Shader (also known as a Pixel Shader).  Some advanced rendering applications use even more exotic versions as well, like Geometry Shaders or Tessellation Shaders.  All of these are simple programs that run exclusively on the GPU.  They run over and over again, against each item in a list.  The key is that it's a different list of items for each kind of shader.</p>
-<p class="clearfix">For more details on different kinds of shaders and how they work, see the post on <a href="posts/1">Shaders</a>.</p>
+<p class="clearfix">Pretty uninspiring, huh?  Motion gives us a clue that it's a cube, but it's still like being in a dark or foggy forest with an agitated rodent.</p>
+<p class="clearfix">So we obviously want shading.  That's why you're here.  Shading tells us a lot about the surface beyond just its shape: shading will usually simulate light reflecting, absorbing, or passing through a surface, depending on the material -- imagine steel, brick, and paper, respectively.</p>
+<p class="clearfix">You may have heard of "shaders" in the context of rendering and GPUs.  "Shaders" are a specialized micro-program that runs on a GPU.  </p>
+<ul class="list">
+<li>A complex math computation running on the GPU may use a single <strong>Compute Shader</strong>.</li>
+<li>A single triangle can be drawn with just one <strong>Vertex Shader</strong> and one <strong>Fragment Shader</strong> (also known as a <strong>Pixel Shader</strong>).</li>
+<li>Some advanced rendering applications use even more exotic versions as well, like <strong>Geometry Shaders</strong> or <strong>Tessellation Shaders</strong>. </li>
+</ul>
+<p class="clearfix">All of these are simple programs that run exclusively on the GPU.  They run over and over again, against each item in a list.  The key is that it's a different list of items for each kind of shader.</p>
+<!-- For more details on different kinds of shaders and how they work, see the post on [Shaders](posts/1). -->
 <p class="clearfix">What if we kept everything the same, and just added the most basic form of lighting calculations (also known as shading)?</p>
 <p class="clearfix">Here's what that same box looks like with a simple light source:</p>
 <p class="clearfix"><gl-code id="3" src="assets/test/shaded-box-spin.json"></gl-code> </p>
-<p class="clearfix">Surprise!  Chances are, you thought you were looking at the box from above and spinning clockwise.  This is how shading really helps you to figure out shapes on a 2D screen.</p>
-<p class="clearfix">The two types that do the kind of shading we're discussing are Vertex and Fragment Shaders.  Vertex Shaders run on a list of vertices (the preferred plural of vertex, though vertexes is acceptable), as you may have guessed, and are responsible for getting the vertices into the right place and facing the right direction.</p>
+<p class="clearfix">Surprise!</p>
+<p class="clearfix">Chances are, you thought you were looking at the box from above and spinning clockwise.  This is how shading really helps you to figure out shapes on a 2D screen.</p>
+<p class="clearfix">The two types that do the kind of shading we're discussing are Vertex and Fragment Shaders.  Vertex Shaders run on a list of vertices, as you may have guessed, and are responsible for getting the vertices into the right place and facing the right direction.</p>
+<p class="clearfix"><lit-alert variant="primary"><alert><em>Vertices</em> is the preferred plural of vertex, though <em>vertexes</em> is acceptable.<br>The same goes for <em>indices</em> and <em>indexes</em>.</alert></lit-alert></p>
 <p class="clearfix">What?  How can a point face a direction?</p>
 <p class="clearfix">Well, each of those points comes with more data than just a position.  You may recall from the post on [Basic Geometry - Vertex, Index, Triangle] that a vertex typically has a normal, as well.  This normal is a unit vector (ie, a vector with a length of 1.0) that points "out" from the resulting triangle's face.</p>
 <p class="clearfix">If every triangle had its own set of vertices with normals facing straight out from that triangle's face, we would see what we call "flat shading". </p>

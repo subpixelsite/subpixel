@@ -138,7 +138,14 @@ shouted out "ohhhh SHADER".&nbsp Ever since, "Shader" has been my industry nickn
 <h3 id='howth'>How the hell?</h3>
 <p>Late nights, trial and error, Stack Overflow... you know, the usual.</p>
 <p>This site was developed mostly according to a production plan maintained in <a href="https://clickup.com/">ClickUp</a> and a personal To-Do file format I've been using for decades:</p>
-<img alt="CML, the Chris Markup Language" src="/assets/images/cml.png"><div class='w-full inline-block'><div class='m-auto'>CML, the Chris Markup Language.</div></div>
+<div class='w-full block'>
+	<img class='mb-1' alt="CML, the Chris Markup Language" src="/assets/images/cml.png">
+	<div class='w-full inline-block mb-3'>
+		<div class='text-center text-sm'>
+			CML, the Chris Markup Language
+		</div>
+	</div>
+</div>
 <p>The site itself is a Single Page Application written from scratch using <a href="https://www.typescriptlang.org/">Typescript</a>, <a href="https://lit.dev/">lit</a>,
 <a href="https://github.com/vaadin/router">Vaadin Router</a>, <a href="https://shoelace.style/">Shoelace</a>, <a href="https://twind.dev/">Twind</a>,
 <a href="https://showdownjs.com/">Showdown</a>, <a href="https://prismjs.com/">PrismJS</a>, and miscellaneous other libraries.</p>

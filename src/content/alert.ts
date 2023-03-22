@@ -27,6 +27,7 @@ export class Alert extends withTwind( LitElement )
 	sl-alert
 	{
 		margin: 2rem;
+		line-height: 2em;
 	}
 
 	sl-alert::part(base)
@@ -35,6 +36,13 @@ export class Alert extends withTwind( LitElement )
 		border-width: 0px;
 		border-top-width: 3px;
 	}
+
+	sl-alert::part(message)
+	{
+		padding: 0.5rem;
+		margin-left: 1rem;
+	}
+
 	`];
 
 	@property( { type: String } )
@@ -50,8 +58,6 @@ export class Alert extends withTwind( LitElement )
 
 		if ( this.icon === '' || this.icon === undefined )
 		{
-			console.log( `setting icon by variant ${variant}` );
-
 			switch ( variant ?? 'primary' )
 			{
 				case 'success':
@@ -72,8 +78,6 @@ export class Alert extends withTwind( LitElement )
 					break;
 			}
 		}
-
-		console.log( `Final HTML: variant: '${variant}' icon: '${icon}': thisicon: '${this.icon}'` );
 
 		return html`
 <sl-alert variant="${variant}" open>

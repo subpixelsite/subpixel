@@ -98,14 +98,6 @@ export class EditorPage extends AppElement
 			margin: 10px;
 		}
 
-		.clearfix:after {
-			content: '';
-			visibility: hidden;
-			height: 0;
-			display: block;
-			clear: both;
-		}
-
 		.info-panel {
 			grid-template: 1fr / 1fr 1fr;
 		}
