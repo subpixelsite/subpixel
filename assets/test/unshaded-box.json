@@ -1,94 +1,32 @@
 {
-	"fovYDeg": "45",
-	"lookAt": ["0", "1", "0"],
+	"camDist": "30",
+	"rotDeg": ["0", "-30"],
+	"orthoDiag": "2",
 	"objects": [
 		{
 			"vs": "pos.vs",
 			"fs": "col.fs",
-			"xform": [],
-			"plane": {
-				"width": "4",
-				"height": "4"
-			}
-		},
-		{
-			"vs": "postex.vs",
-			"fs": "tex.fs",
 			"anim": {
-				"blend": "2",
-				"loop": "2"
+				"blend": "1",
+				"loop": "1"
 			},
 			"xform": [
 				{
-					"pos": ["-1.0", "0.5", "-1.0"],
-					"key": { "time": "0.0" }
-				},
-				{
-					"pos": ["1.0", "0.5", "-1.0"],
-					"key": { "time": "2.0", "blendIn": "3" }
-				},
-				{
-					"pos": ["1.0", "0.5", "1.0"],
-					"key": { "time": "4.0", "blendIn": "1" }
-				},
-				{
-					"pos": ["-1.0", "0.5", "1.0"],
-					"key": { "time": "6.0", "blendIn": "3" }
-				},
-				{
-					"pos": ["-1.0", "0.5", "-1.0"],
-					"key": { "time": "8.0" }
+					"pos": ["0.0", "0.0", "0.0"],
+					"rotAxis": ["0.0", "1.0", "0.0"],
+					"rotDeg": "30",
+					"scale": "1"
 				}
 			],
 			"cube": {
 				"size": "1"
 			},
-			"diffuse": {
-				"url": "https://farm6.staticflickr.com/5795/21506301808_efb27ed699_q_d.jpg"
-			},
 			"color": [
 				{
-					"color": ["0", "0.0", "0.0"],
-					"alpha": "1.0",
-					"key": { "time": "0.0" }
-				},
-				{
-					"color": ["0", "1.0", "1.0"],
-					"alpha": "1.0",
-					"key": { "time": "4.75", "blendIn": 3 }
-				},
-				{
-					"color": ["0", "0.0", "1.0"],
-					"alpha": "1.0",
-					"key": { "time": "5.0" }
-				},
-				{
-					"color": ["0", "0.0", "0.0"],
-					"alpha": "1.0",
-					"key": { "time": "8.0" }
+					"color": ["0.65", "0.65", "0.65"],
+					"alpha": "1.0"
 				}
 			]
-		},
-		{
-			"vs": "pos.vs",
-			"fs": "col.fs",
-			"anim": {
-				"blend": "3",
-				"loop": "2"
-			},
-			"xform": [
-				{
-					"pos": ["0", "1", "0"],
-					"key": { "time": "0" }
-				},
-				{
-					"pos": ["0", "3", "0"],
-					"key": { "time": "1" }
-				}
-			],
-			"sphere": {
-				"radius": "1"
-			}
 		}
 	]
 }

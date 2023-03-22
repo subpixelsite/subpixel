@@ -78,11 +78,6 @@ export class WebGLViewport
 		this.element = shadowRoot.host as WebGLElement;
 	}
 
-	public setLoadEnabled( enabled: boolean )
-	{
-		this.element.setLoadEnabled( enabled );
-	}
-
 	getVectorFromDeg( yaw: number, pitch: number, scale: number )
 	{
 		const xRad = ( pitch * Math.PI ) / 180;
@@ -512,7 +507,7 @@ export class WebGLViewport
 			else
 			{
 				x = rad;
-				y = rad * aspectRatio;
+				y = rad / aspectRatio;
 			}
 
 			projection = m4.ortho( -x, x, -y, y, near, far );

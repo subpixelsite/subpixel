@@ -131,13 +131,29 @@ export const PostStyles = css`
 		--vis-image-border: 2px;
 	}
 
+	.post-content {
+		font-size: 18px;
+		line-height: 1.625;
+	}
+
 	.post-content p {
 		margin-bottom: 1rem;
+		margin-left: 4rem;
+		margin-right: 4rem;
 	}
 
 	.webglembed {
 		box-sizing: border-box;
 		display: inline-block;
+	}
+
+	.webglpost {
+		width: 100%;
+		margin-top: 15px;
+		margin-bottom: 10px;
+		padding-left: 33%;
+		padding-right: 33%;
+		aspect-ratio: 5.333;
 	}
 
 	.post-visual > .webglembed {
@@ -159,6 +175,11 @@ export const PostStyles = css`
 		height: 100%;
 		box-sizing: border-box;
 	}
+
+	.split-panel-divider {
+		margin-top: 30px;
+		margin-right: -15px;
+		margin-bottom: 30px;
 `;
 
 export const ScrollBarStyles = css`

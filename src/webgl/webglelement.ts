@@ -109,9 +109,6 @@ export class WebGLElement extends LitElement
 	@property( { type: String } )
 	src?: string;
 
-	@property( { type: Boolean } )
-	alwaysload?: boolean;
-
 	@property( { type: Number } )
 	padr?: number;
 
@@ -130,7 +127,6 @@ export class WebGLElement extends LitElement
 	private idNumber: number = -1;
 	private divID: string = '';
 	private wrappedText?: string[];
-	private loadEnabled: boolean = true;
 
 	setErrorText( error: string | undefined )
 	{
@@ -317,10 +313,10 @@ export class WebGLElement extends LitElement
 			cachedVP = new CachedViewport( this.divID, content, new WebGLViewport( this.shadowRoot!, `#${this.divID}`, this.padr ?? 1, this.padt ?? 0 ) );
 			gl.addViewport( cachedVP );
 
+			this.wglViewport = cachedVP.viewport;
+
 			// in case there's a URL waiting, fetch it
 			this.fetchHref();
-
-			this.wglViewport = cachedVP.viewport;
 		}
 		else
 		{
@@ -336,15 +332,6 @@ export class WebGLElement extends LitElement
 	{
 		if ( this.wglViewport !== undefined )
 			this.wglViewport.init( scene );
-	}
-
-	public setLoadEnabled( enabled: boolean )
-	{
-		this.loadEnabled = enabled;
-
-		// Lazy load any missing data
-		if ( this.wglViewport !== undefined && !this.wglViewport.isInitialized() )
-			this.fetchHref();
 	}
 
 	sendLoadedEvent()
@@ -388,9 +375,6 @@ export class WebGLElement extends LitElement
 	fetchHref()
 	{
 		if ( this.src === undefined )
-			return;
-
-		if ( !this.loadEnabled && this.alwaysload !== true )
 			return;
 
 		if ( WebGL.DEBUG_VIEWPORT_LEVEL >= 1 )

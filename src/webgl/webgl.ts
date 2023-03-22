@@ -64,20 +64,10 @@ export class WebGL
 
 	private vpCache: CachedViewport[] = [];
 
-	private loadEnabled: boolean = true;
 	private fadeEnabled: boolean = true;
 
 	// Map of vs/fs pair strings to runtime objects
 	// private programInfo: Map<string, ProgramInfo> = new Map();
-
-	public setLoadEnabled( enabled: boolean )
-	{
-		this.loadEnabled = enabled;
-		this.vpCache.forEach( vp =>
-		{
-			vp.viewport.setLoadEnabled( enabled );
-		} );
-	}
 
 	public setFadeEnabled( enabled: boolean )
 	{
@@ -113,7 +103,6 @@ export class WebGL
 						console.log( `Found matching <web-gl> viewport '${divID}' for '${html}'` );
 
 					vp = this.vpCache[i];
-					vp.viewport.setLoadEnabled( this.loadEnabled );
 				}
 
 				break;
@@ -126,7 +115,6 @@ export class WebGL
 	public addViewport( viewport: CachedViewport )
 	{
 		this.vpCache.push( viewport );
-		viewport.viewport.setLoadEnabled( this.loadEnabled );
 	}
 
 	public addEventListeners()
@@ -345,10 +333,9 @@ export class WebGL
 			// eslint-disable-next-line no-console
 			console.log( 'Navigate away: clearing all viewports' );
 
-		// Clear all added elements and reset load state
+		// Clear all added elements
 		this.vpCache.length = 0;
 		this.animated = false;
-		this.loadEnabled = true;
 
 		this.stopAnimatedRender();
 		this.refreshSingleRender();

@@ -1,7 +1,5 @@
 {
-	"fovYDeg": "90",
-	"lookAt": ["0", "0", "0"],
-	"camDist": "1.5",
+	"camDist": "30",
 	"rotDeg": ["0", "-30"],
 	"orthoDiag": "2",
 	"objects": [

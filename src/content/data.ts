@@ -345,7 +345,7 @@ Man I hope this works.
 				author: 'Chris Lambert',
 				dateCreated: 1678949649635,
 				datePosted: 0,
-				dateModified: 1679396719890,
+				dateModified: 1679461115998,
 				tags: 'Shaders, Lighting',
 				hdrInline: '',
 				hdrHref: 'assets/test/webgl1.json',
@@ -353,23 +353,31 @@ Man I hope this works.
 				description: `What do diffuse and specular shading mean?  What is the difference?  How do they work?`,
 				markdown: `One of the reasons early 3D looked so fake is that without any lighting calculations, it was difficult to convey the shape of a surface.  There are two obvious ways to solve this on a 2D screen: motion and shading.
 
-Motion is easier: you can move either the camera (the viewer's 'eye') or the surface. It's much less expensive than shading, because you have to do the same small amount of math to make objects show up on the screen whether their transformation changes each frame or not!
+Let's look at a simple un-textured box:
 
-Here's what that looks like:
+<web-gl src='assets/test/unshaded-box.json'></web-gl>
 
-<gl-code src='assets/test/unshaded-box-spin.json'></gl-code> 
+Motion is the easier option, of the two: you can move either the camera (the viewer's 'eye'), or the surface. It's much less expensive than shading, because you have to do the same small amount of math to make objects show up on the screen whether their transformation changes each frame or not!
 
-Pretty uninspiring, huh?  With not even a texture to go on, there's not much information about the shape or orientation of the box here.  What if we kept everything the same, and just added the most basic form of lighting calculations (also known as shading)?
+Here's what applying motion looks like to our untextured box:
 
-Here's what that looks like:
+<gl-code src='assets/test/unshaded-box-spin.json'></gl-code>
+
+Pretty uninspiring, huh?  With not even a texture to go on, there's not much information about the shape or orientation of the box here.  Motion gives us some kind of a clue here, but not nearly enough.
+
+Shading is ideal.  If we're going to see to understand a shape with shading, that means we have light.  And if we have light, we have a light source.  A light source means we have light traveling some direction to interact with the surface.  This will be some combination of reflect, absorb, or pass through, depending on the material -- imagine stainless steel, red brick, and paper, respectively.  The interaction of the light when it reaches the surface is the "shading" to which we refer.
+
+You may have heard of "shaders" in the context of rendering and GPUs.  These refer to any specialized micro-program that runs on a GPU.  A math computation running on the GPU may use a single Compute Shader.  A single triangle can be drawn with just one Vertex Shader and one Fragment Shader (also known as a Pixel Shader).  Some advanced rendering applications use even more exotic versions as well, like Geometry Shaders or Tessellation Shaders.  All of these are simple programs that run exclusively on the GPU.  They run over and over again, against each item in a list.  The key is that it's a different list of items for each kind of shader.
+
+For more details on different kinds of shaders and how they work, see the post on [Shaders](posts/1).
+
+What if we kept everything the same, and just added the most basic form of lighting calculations (also known as shading)?
+
+Here's what that same box looks like with a simple light source:
 
 <gl-code src="assets/test/shaded-box-spin.json"></gl-code> 
 
-If we're going to see to understand a shape, that means we have light.  And if we have light, we have a light source.  A light source means we have light traveling some direction to interact with the surface.  This will be some combination of reflect, absorb, or pass through, depending on the material -- imagine stainless steel, red brick, and paper, respectively.  The interaction of the light when it reaches the surface is the "shading" to which we refer.
-
-You may have heard of "shaders" in the context of rendering and GPUs.  These refer to any specialized micro-program that runs on a GPU.  A math computation running on the GPU may use a single Compute Shader.  A single triangle can be drawn with just one Vertex Shader and one Fragment Shader (also known as a Pixel Shader).  Some advanced rendering applications use even more exotic versions as well, like Geometry Shaders or Tessellation Shaders.  All of these are simple programs that run exclusively on the GPU over and over again, once on each entry in a list: the only difference is on which list they run.
-
-For more details on different kinds of shaders and how they work, see the post on [Shaders](posts/1).
+Surprise!  Chances are, you thought you were looking at the box from above and spinning clockwise.  This is how shading really helps you to figure out shapes on a 2D screen.
 
 The two types that do the kind of shading we're discussing are Vertex and Fragment Shaders.  Vertex Shaders run on a list of vertices (the preferred plural of vertex, though vertexes is acceptable), as you may have guessed, and are responsible for getting the vertices into the right place and facing the right direction.
 
@@ -424,22 +432,26 @@ Moving work from the Vertex Shader to the Fragment Shader is actually pretty sim
 Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the [Performance](posts/2) post for more about this. 
 `,
 				content: `<p class="clearfix">One of the reasons early 3D looked so fake is that without any lighting calculations, it was difficult to convey the shape of a surface.  There are two obvious ways to solve this on a 2D screen: motion and shading.</p>
-<p class="clearfix">Motion is easier: you can move either the camera (the viewer's 'eye') or the surface. It's much less expensive than shading, because you have to do the same small amount of math to make objects show up on the screen whether their transformation changes each frame or not!</p>
-<p class="clearfix">Here's what that looks like:</p>
-<p class="clearfix"><gl-code id="1" src="assets/test/unshaded-box-spin.json"></gl-code> </p>
-<p class="clearfix">Pretty uninspiring, huh?  With not even a texture to go on, there's not much information about the shape or orientation of the box here.  What if we kept everything the same, and just added the most basic form of lighting calculations (also known as shading)?</p>
-<p class="clearfix">Here's what that looks like:</p>
-<p class="clearfix"><gl-code id="2" src="assets/test/shaded-box-spin.json"></gl-code> </p>
-<p class="clearfix">If we're going to see to understand a shape, that means we have light.  And if we have light, we have a light source.  A light source means we have light traveling some direction to interact with the surface.  This will be some combination of reflect, absorb, or pass through, depending on the material -- imagine stainless steel, red brick, and paper, respectively.  The interaction of the light when it reaches the surface is the "shading" to which we refer.</p>
-<p class="clearfix">You may have heard of "shaders" in the context of rendering and GPUs.  These refer to any specialized micro-program that runs on a GPU.  A math computation running on the GPU may use a single Compute Shader.  A single triangle can be drawn with just one Vertex Shader and one Fragment Shader (also known as a Pixel Shader).  Some advanced rendering applications use even more exotic versions as well, like Geometry Shaders or Tessellation Shaders.  All of these are simple programs that run exclusively on the GPU over and over again, once on each entry in a list: the only difference is on which list they run.</p>
+<p class="clearfix">Let's look at a simple un-textured box:</p>
+<p class="clearfix"><web-gl id="1" class="webglembed webglpost" src="assets/test/unshaded-box.json"></web-gl></p>
+<p class="clearfix">Motion is the easier option, of the two: you can move either the camera (the viewer's 'eye'), or the surface. It's much less expensive than shading, because you have to do the same small amount of math to make objects show up on the screen whether their transformation changes each frame or not!</p>
+<p class="clearfix">Here's what applying motion looks like to our untextured box:</p>
+<p class="clearfix"><gl-code id="2" src="assets/test/unshaded-box-spin.json"></gl-code></p>
+<p class="clearfix">Pretty uninspiring, huh?  With not even a texture to go on, there's not much information about the shape or orientation of the box here.  Motion gives us some kind of a clue here, but not nearly enough.</p>
+<p class="clearfix">Shading is ideal.  If we're going to see to understand a shape with shading, that means we have light.  And if we have light, we have a light source.  A light source means we have light traveling some direction to interact with the surface.  This will be some combination of reflect, absorb, or pass through, depending on the material -- imagine stainless steel, red brick, and paper, respectively.  The interaction of the light when it reaches the surface is the "shading" to which we refer.</p>
+<p class="clearfix">You may have heard of "shaders" in the context of rendering and GPUs.  These refer to any specialized micro-program that runs on a GPU.  A math computation running on the GPU may use a single Compute Shader.  A single triangle can be drawn with just one Vertex Shader and one Fragment Shader (also known as a Pixel Shader).  Some advanced rendering applications use even more exotic versions as well, like Geometry Shaders or Tessellation Shaders.  All of these are simple programs that run exclusively on the GPU.  They run over and over again, against each item in a list.  The key is that it's a different list of items for each kind of shader.</p>
 <p class="clearfix">For more details on different kinds of shaders and how they work, see the post on <a href="posts/1">Shaders</a>.</p>
+<p class="clearfix">What if we kept everything the same, and just added the most basic form of lighting calculations (also known as shading)?</p>
+<p class="clearfix">Here's what that same box looks like with a simple light source:</p>
+<p class="clearfix"><gl-code id="3" src="assets/test/shaded-box-spin.json"></gl-code> </p>
+<p class="clearfix">Surprise!  Chances are, you thought you were looking at the box from above and spinning clockwise.  This is how shading really helps you to figure out shapes on a 2D screen.</p>
 <p class="clearfix">The two types that do the kind of shading we're discussing are Vertex and Fragment Shaders.  Vertex Shaders run on a list of vertices (the preferred plural of vertex, though vertexes is acceptable), as you may have guessed, and are responsible for getting the vertices into the right place and facing the right direction.</p>
 <p class="clearfix">What?  How can a point face a direction?</p>
 <p class="clearfix">Well, each of those points comes with more data than just a position.  You may recall from the post on [Basic Geometry - Vertex, Index, Triangle] that a vertex typically has a normal, as well.  This normal is a unit vector (ie, a vector with a length of 1.0) that points "out" from the resulting triangle's face.</p>
 <p class="clearfix">If every triangle had its own set of vertices with normals facing straight out from that triangle's face, we would see what we call "flat shading". </p>
-<p class="clearfix"><gl-code id="3" src="assets/test/flat.json"></gl-code> </p>
+<p class="clearfix"><gl-code id="4" src="assets/test/flat.json"></gl-code> </p>
 <p class="clearfix">If those triangles instead share a vertex (and hence the normal points in a direction that's an average of the triangles' facing), then a sort of smoothing takes place thanks to interpolation.</p>
-<p class="clearfix"><gl-code id="4" src="assets/test/poscol-cube.json"></gl-code> </p>
+<p class="clearfix"><gl-code id="5" src="assets/test/poscol-cube.json"></gl-code> </p>
 <p class="clearfix">Now we need to discuss interpolation.  When the data from 3 vertices is combined to become input for 1 fragment, the process to do that is interpolation.  The specific method is known as Gouraud interpolation <a href="https://casual-effects.blogspot.com/2016/03/computational-graphics-pronunciation.html">pronounced "GOO-row"</a>, described by Henri Gouraud in 1971.  It's actually very simple: to get a smooth value somewhere in the middle of a triangle, the GPU computes the weighted average of the values from the 3 vertices and passes it as an input to the Fragment Shader.  We can see this at work by showing the positions of a cube with one corner at (0,0,0) and the opposite at (1,1,1) as colors.</p>
 <p class="clearfix">This is incredibly useful behavior by the GPU.  It's basically free math, per-fragment.  We don't have to pay Vertex Shader or Fragment Shader cycles for it -- it's just part of the pipeline that occurs no matter what.  In this way, offloading work from the Fragment Shader (which runs at least once for every pixel on screen) to the Vertex Shader (which typically runs hundreds or thousands of times less frequently) is usually a massive win for performance.  See the post on <a href="posts/2">Performance Basics</a>.</p>
 <p class="clearfix">We have everything we need to display some basic lighting.  To keep things simple, we'll start with a directional light.  That's a light with only a direction -- no position.  It's considered to be infinitely far away with no falloff or cutoff distance, akin to sunlight but less physically accurate.  The good news is it's very easy to simulate.</p>
@@ -449,15 +461,15 @@ Note the fps and frame duration differences between the Vertex Shader and Fragme
 <p class="clearfix">Footnote: this is also where I got my industry nickname.  See the <a href="about">About</a> page.</p>
 <p class="clearfix">Sorry for the math.  Thankfully, it ends up being pretty easy and the GPU does it all for us.  The cosine sounds expensive to calculate, and it is very expensive.  However, there's actually a nifty mathematical identity we can use, a sort of math shortcut.  See, the cosine of two unit-length vectors is identical to the result of the dot product between those two vectors, and that's extremely inexpensive to calculate.  You might recall from Geometry class that taking the cross product between two vectors gives you a vector, but taking a dot product between two vectors give you a single number (a scalar, we would say in graphics land).  This is the most sacred use of the dot product: it has applications throughout gaming, including in audio, collisions, physics -- anytime you want to calculate the rebound value of something off a surface.</p>
 <p class="clearfix">In fact, this one use here, in the Vertex Shader, combined with Gouraud interpolation by the GPU, gives us basic lighting.  We take the scalar from the dot product and multiply it against the light color, if there is one, and send the result as a color value to the Fragment Shader.  The Fragment Shader simply shows the interpolated result.  This is known as Diffuse vertex lighting. </p>
-<p class="clearfix"><gl-code id="5" src="assets/test/diff-vs.json"></gl-code> </p>
+<p class="clearfix"><gl-code id="6" src="assets/test/diff-vs.json"></gl-code> </p>
 <p class="clearfix">Neat, but it's also very flat.  You can click and drag the camera around the object to see what I mean.  The lighting doesn't change relative to your viewpoint -- that's a hallmark of "Diffuse" lighting.  The next part of the lighting stew adds that view-dependent component, which we call "Specular" lighting.</p>
 <p class="clearfix">Specular lighting is calculated in almost the exact same way as Diffuse lighting, except with two more steps and one more bit of info: the direction to the viewer.  </p>
 <p class="clearfix">Imagine a wet road with the sun opposite you.  You would expect to see a reflection of the sun, a hot spot, on the ground, some distance between you and the sun.  We can calculate this hotspot with the Diffuse lighting algorithm technique -- we just need to plug in different vectors for the Lambert cosine calculation.  Let's work backwards.  If you're calculating the lighting at the point of the hotspot, one of them would be the normal of the ground, obviously.  The other is going to be "dotted" against the normal to get the lighting strength coefficient for this hotspot.  If we use the vector towards the sun, then we'd just get a view-independent Diffuse lighting value -- no view-relative hotspot at all.  If we use the vector towards the eye, then we'd get a result that never involved the sun at all.  But maybe something in between?  Literally?  That's actually exactly what we use: the average of the vector to the eye and the vector to the light.  We call it the "half vector".  Note that after you average them, the result probably won't be of length 1 anymore, so we have to normalize it again, which involves a square root operation (to get the length of the vector) and thus isn't super cheap. </p>
 <p class="clearfix">But with that done, we have a normal and a half vector at the point of our hotspot.  If we now apply Lambert's Cosine Law, we get a scalar result that tells us how powerful the sun's hotspot should be at that point.  And as we move, or as the sun moves, that value will change.  Let's see our Specular vertex lighting in action, in addition to the Diffuse lighting from before. </p>
-<p class="clearfix"><gl-code id="6" src="assets/test/spec-diff-vs.json"></gl-code> </p>
+<p class="clearfix"><gl-code id="7" src="assets/test/spec-diff-vs.json"></gl-code> </p>
 <p class="clearfix">You can see the shape for sure, but you can also see the how it's interpolating between vertices.  As the light source moves around, you can really see the artifacts of Gouraud interpolation on a low-polygon object show up.  You can get around this with more triangles, or by moving the calculation to run per-fragment in a Fragment Shader instead. </p>
 <p class="clearfix">Moving work from the Vertex Shader to the Fragment Shader is actually pretty simple.  We just have to make sure the Vertex Shader outputs anything the Fragment Shader needs to do the work, and that the Fragment Shader has access to any constant data (see <a href="posts/3">GPU Memory</a>).  In this case, the Vertex Shader outputs the world-space position and world-space normal to the Fragment Shader by assigning them to specially marked variables that were registered as part of the declaration of these shaders.  The GPU will dutifully interpolate these vectors and the Fragment Shader takes the results, performing the same calculations with the same constants.  The results, however, are much nicer: they should be, since instead of running on a few dozen vertices, they're running for thousands of pixels! </p>
-<p class="clearfix"><gl-code id="7" src="assets/test/spec-diff-fs.json"></gl-code> </p>
+<p class="clearfix"><gl-code id="8" src="assets/test/spec-diff-fs.json"></gl-code> </p>
 <p class="clearfix">Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the <a href="posts/2">Performance</a> post for more about this. </p>`
 			}
 		);

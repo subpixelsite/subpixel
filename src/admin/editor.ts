@@ -74,13 +74,6 @@ export class EditorPage extends AppElement
 			outline: 1px solid black;
 		}
 
-		#load-webgl {
-			grid-column: 2 / 3;
-			margin: 10px;
-			justify-self: center;
-			align-self: center;
-		}
-
 		.edit-panel {
 			flex: 1 1 1px;
 		}
@@ -164,7 +157,6 @@ export class EditorPage extends AppElement
 
 	protected lastConvert: number = 0;
 	protected convertInterval: number = 500;
-	protected loadWebGL: boolean = false;
 	protected fadeWebGL: boolean = false;
 	protected visible: boolean = false;
 
@@ -206,16 +198,6 @@ export class EditorPage extends AppElement
 			this.post = { ...dbPost };
 
 		this.visible = this.post?.status === PostStatus.Visible;
-	}
-
-	setLoadEnabled( event: Event )
-	{
-		const webgl = WebGL.getInstance();
-		webgl.setLoadEnabled( this.loadWebGL );
-
-		const target = event.target as HTMLInputElement;
-		this.loadWebGL = target.checked;
-		webgl.setLoadEnabled( this.loadWebGL );
 	}
 
 	setVisible( event: Event )
@@ -287,9 +269,6 @@ export class EditorPage extends AppElement
 	{
 		super.disconnectedCallback();
 
-		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
-		webGLCheckbox?.removeEventListener( 'sl-change', e => this.setLoadEnabled( e ) );
-
 		const visibleCheckbox = this.shadowRoot!.getElementById( 'visible' );
 		visibleCheckbox?.removeEventListener( 'sl-change', e => this.setVisible( e ) );
 
@@ -308,12 +287,7 @@ export class EditorPage extends AppElement
 	protected firstUpdated(): void
 	{
 		const webgl = WebGL.getInstance();
-		webgl.setLoadEnabled( this.loadWebGL );
 		webgl.setFadeEnabled( this.fadeWebGL );
-
-		// Listen to checkbox
-		const webGLCheckbox = this.shadowRoot!.getElementById( 'load-webgl' );
-		webGLCheckbox?.addEventListener( 'sl-change', e => this.setLoadEnabled( e ) );
 
 		const visibleCheckbox = this.shadowRoot!.getElementById( 'visible' );
 		visibleCheckbox?.addEventListener( 'sl-change', e => this.setVisible( e ) );
@@ -462,8 +436,7 @@ export class EditorPage extends AppElement
 						</div>
 					</div>
 				</sl-details>
-				<sl-switch id="load-webgl" ?checked=${this.loadWebGL}>Load WebGL Elements</sl-switch>
-				<sl-button variant="success" pill class="col-start-3 col-span-1 w-[100px] justify-self-center self-center" @click="${this.handleCommit}">Save</sl-button>
+				<sl-button variant="success" pill class="col-start-3 col-span-1 w-[100px] ml-1 justify-self-center self-center" @click="${this.handleCommit}">Save</sl-button>
 			</div>
 			<div class="flex gap-5 max-h-full">
 				<div class="edit-panel flex flex-col max-h-full h-full overflow-hidden">

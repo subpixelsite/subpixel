@@ -1,7 +1,7 @@
 /* eslint-disable lit-a11y/alt-text */
 /* eslint-disable max-len */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, PropertyValueMap } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { property, customElement, state } from 'lit/decorators.js';
 import install from '@twind/with-web-components';
@@ -13,6 +13,7 @@ import './gldata.js';
 import config from '../twind.config.js';
 import '@shoelace-style/shoelace/dist/components/split-panel/split-panel.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
+import '@shoelace-style/shoelace/dist/components/tooltip/tooltip.js';
 import { Colors, PostStyles } from '../styles.js';
 
 const withTwind = install( config );
@@ -63,7 +64,7 @@ export class GLCode extends withTwind( LitElement )
 			--h-panel-body: 400px;
 			--h-panel: calc( var(--h-panel-body) + var(--h-panel-bar) );
 			--w-panel-min: 42%;
-			--w-panel-max: 75%;
+			--w-panel-max: 73%;
 			--col-frame: var(--sl-color-gray-400);
 			--col-bg: var(--sl-color-gray-500);
 			--col-code-bg: var(--sl-color-gray-700);
@@ -274,14 +275,20 @@ export class GLCode extends withTwind( LitElement )
 						<div class='inline-block'>
 							<span class='font-bold mr-1'>Select Object: </span>
 							<div class='inline-block ml-1'>
-								<sl-icon class='selectbutton selectobject' name="caret-left-fill" @click='${() => this.selectChange( -1 )}'></sl-icon>
+								<sl-tooltip content="Prev Object">
+									<sl-icon class='selectbutton selectobject' name="caret-left-fill" @click='${() => this.selectChange( -1 )}'></sl-icon>
+								</sl-tooltip>
 								<sl-icon style='color:var(--sl-color-gray-300)' class='selectobject' name="dot"></sl-icon>
-								<sl-icon class='selectbutton selectobject' name="caret-right-fill" @click='${() => this.selectChange( 1 )}'></sl-icon>
+								<sl-tooltip content="Next Object">
+									<sl-icon class='selectbutton selectobject' name="caret-right-fill" @click='${() => this.selectChange( 1 )}'></sl-icon>
+								</sl-tooltip>
 							</div>
 						</div>
 					</div>
 					<div>
-						<sl-icon class='text-white align-middle' name='arrow-counterclockwise' @click='${() => this.resetView()}'></sl-icon>
+						<sl-tooltip content="Reset camera">
+							<sl-icon class='text-white align-middle' name='arrow-counterclockwise' @click='${() => this.resetView()}'></sl-icon>
+						</sl-tooltip>
 					</div>
 				</div>
 		</div>

@@ -24,7 +24,10 @@ export class PostItem extends AppElement
 		PostStyles,
 		css`
 		.lit-post {
-			margin: 20px;
+			margin-top: 20px;
+			margin-bottom: 20px;
+			margin-left: 0px;
+			margin-right: 0px;
 		}
 
 		.post-footer {

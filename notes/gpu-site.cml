@@ -9,7 +9,7 @@
 + # Drag mouse event logic only works for first <gl-code>
 	> I think I fixed this?
 + # WebGL viewport caching doesn't help in editor -- it makes new containers on every convert
-# FOV calculation doesn't work when squishing the panel
++ # FOV calculation doesn't work when squishing the panel
 = MVP
 	* One fully-complete post
 		- Including WebGL content
@@ -17,8 +17,9 @@
 		+ # Markdown conversion doesn't seem to be working correctly
 			> The HTML is getting mangled, and I'm not sure it's Showdown doing it
 			+ # It's my class name bindings regex
-	- Responsive format for public-facing site
-	- Showdown plugin to do double-spaced sentence ends.
+	* Responsive format for public-facing site
+	x Showdown plugin to do double-spaced sentence ends
+		> Implemented and commented out
 	* WebGL presentation container
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
 		+ Construct new WebGLElement container
@@ -33,8 +34,6 @@
 				- Make right panel into its own component to support top/bottom split?
 				- Use a split-panel with a custom divider width and handle with snap setting
 					- Top/bottom or left/right depending on portrait or landscape layout
-			+ Support selecting an object to show its shaders/texture(s)
-				- Support clicking to select
 			? Add "fullscreen" popup button
 			+ ! Is static <gl-code> animating too?
 				> No, if one <web-gl> is animating then the WebGL object is running an animated render (even if not every element is participating).  So that means that every element will get the message and show the framerate...
@@ -43,6 +42,15 @@
 			+ Move camera
 				+ Middle click/drag
 				+ L&R click/drag
+	x ! <web-gl> render improvement: canvas style="transform: translateY(1828px);" to make scrolling fluid
+		> This won't work without an overhaul where the canvas is in the scrolling container and as tall as the content
+		> Instead, this time would be better spent with the per-element canvas approach
+	- Setup Rollup dev environment
+= MVP 2
+	* WebGL presentation container
+		+ Construct new WebGLElement container
+			+ Support selecting an object to show its shaders/texture(s)
+				- Support clicking to select
 			- Show state
 				> Future work, not MVP I think
 				- Texture sampler state
@@ -51,9 +59,8 @@
 				- Cull state
 				- Blend state
 				> Is it possible to interrogate WebGL about all this state and cache it every render?
-	x ! <web-gl> render improvement: canvas style="transform: translateY(1828px);" to make scrolling fluid
-		> This won't work without an overhaul where the canvas is in the scrolling container and as tall as the content
-		> Instead, this time would be better spent with the per-element canvas approach
+			? Show texture
+				? Show mip levels
 	- GPU model map
 		- Basic SVG layout of a system with CPU, RAM, VS, PS, VRAM, Rasterizer, etc.
 		- Animated movement along path showing transfer of data
@@ -61,7 +68,6 @@
 		- Each section of content has a correlated map state
 		- When reaching a new section, it "pings" if the map state changed, causing a timed gentle "pulse" of the map tab on the screen edge (top?)
 		- The user can tap the tab to bring out a drawer with the GPU map and see the new area, or leave it out while reading
-	* Setup Rollup dev environment
 = Basic styling
 	* Write example post
 		- Create webgl content for example post
@@ -101,6 +107,7 @@
 	? Revisit canvas per <web-gl>
 		> Now that I understand coordinates better, maybe I can make it work?
 		> Maybe unnecessary if I get style="transform: translateY" working
+	- Disable wheel-scrolling on ortho-camera web-gl components
 = Basic styling
 	? Build GPU SVG model
 	- Post item: make title background a web-gl scene
