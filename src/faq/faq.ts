@@ -87,7 +87,7 @@ export class FAQ extends AppElement
 		this.dispatchEvent( event );
 
 		return html`
-<div class="mx-auto px-8 py-8 w-[var(--pw)]">
+<div class="mx-auto px-8 py-8 w-[var(--sm-pw)] lg:w-[var(--pw)]">
 <article class="prose prose-l min-w-full prose-a:text-primary-600 hover:prose-a:text-primary-500">
 
 <h2 class="float-right header text-gray-700">Frequently Asked Questions</h2>

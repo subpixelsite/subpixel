@@ -89,7 +89,7 @@ export class PostItem extends AppElement
 				<div class="block pb-4">
 					<div class="header grid h-full">
 						<div class="col-start-1 col-span-1 flex flex-col">
-							<h1 class="text-4xl font-semibold mt-8 pb-2 self-center text-gray-700">${this.post.title}</h1>
+							<h1 class="text-4xl font-semibold px-1 lg:px-0 mt-8 pb-2 self-center text-gray-700">${this.post.title}</h1>
 							<div class="self-center mt-2">
 								<span class="text-base font-semibold text-gray-600 mt-1 pl-6">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
 								<span class="text-base font-light text-gray-500 mt-1">on ${this.getDateString()}</span>

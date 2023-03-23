@@ -107,7 +107,7 @@ export class GLData extends withTwind( LitElement )
 		sl-tab-panel code {
 			font-family: 'Fira Code';
 			font-size: 12px;
-			line-height: 12px;
+			/* line-height: 12px; */
 			color: white;
 		}
 

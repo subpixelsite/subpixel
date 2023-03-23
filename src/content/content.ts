@@ -51,7 +51,7 @@ export class Content extends withTwind( LitElement )
 	render()
 	{
 		return html`
-<div id="scroll-container" class="block w-[var(--pw)] m-auto overflow-x-clip overflow-y-auto bg-white font-sans h-[var(--h-content)] min-h-[var(--h-content)]">
+<div id="scroll-container" class="block w-[var(--sm-pw)] lg:w-[var(--pw)] m-auto overflow-x-clip overflow-y-auto bg-white font-sans h-[var(--sm-h-content)] min-h-[var(--sm-h-content)] lg:h-[var(--h-content)] lg:min-h-[var(--h-content)]">
 	<slot class="lit-content"></slot>
 </div>
 			`;

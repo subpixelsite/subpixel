@@ -4,6 +4,8 @@ export const Geometry = css`
 	* {
 		--page-width: 60rem;
 		--post-gap: 2rem;
+
+		--sm-page-width: 100vw;
 	}
 `;
 
@@ -59,6 +61,7 @@ export const NavBarStyles = css`
 		--navbutton-margin: 4px;
 		/* specified in svg */
 		--navbar-text-height: 40px;
+		--sm-navbar-text-height: 60px;
 	}
 
 	.navButtons > sl-button {
@@ -129,6 +132,13 @@ export const PostStyles = css`
 		--vis-padded-width: calc(var(--vis-width) + (var(--vis-padding) * 2));
 		--vis-padded-height: calc(var(--vis-height) + (var(--vis-padding) * 2));
 		--vis-image-border: 2px;
+
+		// mobile
+		--sm-post-width: 400px;
+		--sm-vis-width: calc(var(--post-width) - var(--vis-padding) * 2);
+		--sm-vis-height: 200px;
+		--sm-vis-padded-width: calc(var(--vis-width) + (var(--vis-padding) * 2));
+		--sm-vis-padded-height: calc(var(--vis-height) + (var(--vis-padding) * 2));
 	}
 
 	.post-content {
@@ -151,8 +161,8 @@ export const PostStyles = css`
 		width: 100%;
 		margin-top: 15px;
 		margin-bottom: 10px;
-		padding-left: 33%;
-		padding-right: 33%;
+		padding-left: 25%;
+		padding-right: 25%;
 		aspect-ratio: 5.333;
 	}
 
@@ -190,7 +200,15 @@ export const PostStyles = css`
 		clear: both;
 	}
 
-	.list {
+	ul {
+		list-style: disc !important;
+		padding: 2rem !important;
+		margin-left: 4rem !important;
+		margin-right: 4rem !important;
+	}
+
+	.line-numbers {
+		line-height: 16px;
 	}
 `;
 

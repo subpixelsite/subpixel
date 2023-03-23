@@ -27,7 +27,6 @@ export class Alert extends withTwind( LitElement )
 	sl-alert
 	{
 		margin: 2rem;
-		line-height: 2em;
 	}
 
 	sl-alert::part(base)
@@ -39,8 +38,9 @@ export class Alert extends withTwind( LitElement )
 
 	sl-alert::part(message)
 	{
-		padding: 0.5rem;
+		padding: 0.75rem;
 		margin-left: 1rem;
+		line-height: 2em;
 	}
 
 	`];
@@ -80,7 +80,7 @@ export class Alert extends withTwind( LitElement )
 		}
 
 		return html`
-<sl-alert variant="${variant}" open>
+<sl-alert class='font-sans' variant="${variant}" open>
 	<sl-icon slot="icon" name="${icon}"></sl-icon>
 	<slot></slot>
 </sl-alert>
