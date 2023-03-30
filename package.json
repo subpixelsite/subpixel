@@ -18,7 +18,7 @@
     "rebuild dev": "tsc --build --force",
     "rebuild": "rimraf dist && tsc --build --force && rollup -c rollup.config.js && npm run analyze -- --exclude dist",
     "buildshaders": "node ./build/buildshaders.js src/webgl/shaders src/webgl/shaders.ts",
-    "updateS3": "gh workflow run main.yml"
+    "main-to-S3": "gh workflow run main.yml"
   },
   "dependencies": {
     "@rollup/plugin-commonjs": "^24.0.1",
