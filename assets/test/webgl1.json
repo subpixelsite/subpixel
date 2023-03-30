@@ -4,7 +4,7 @@
 	"objects": [
 		{
 			"vs": "pos.vs",
-			"fs": "col.fs",
+			"fs": "col_pos.fs",
 			"xform": [],
 			"plane": {
 				"width": "4",
@@ -12,7 +12,7 @@
 			}
 		},
 		{
-			"vs": "postex.vs",
+			"vs": "pos_tex.vs",
 			"fs": "tex.fs",
 			"anim": {
 				"blend": "2",
@@ -70,8 +70,8 @@
 			]
 		},
 		{
-			"vs": "pos.vs",
-			"fs": "col.fs",
+			"vs": "pos_norm.vs",
+			"fs": "col_norm.fs",
 			"anim": {
 				"blend": "3",
 				"loop": "2"

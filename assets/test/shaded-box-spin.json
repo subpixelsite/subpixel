@@ -8,7 +8,7 @@
 	"ambientLight": ["1", "1", "1"],
 	"objects": [
 		{
-			"vs": "posnorm.vs",
+			"vs": "pos_norm.vs",
 			"fs": "col_diff.fs",
 			"anim": {
 				"blend": "1",

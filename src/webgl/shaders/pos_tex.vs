@@ -6,14 +6,14 @@ attribute vec4 a_position;
 attribute vec2 a_texcoord;
 
 // outputs
-varying vec4 v_position;
+varying vec3 v_position;
 varying vec2 v_texcoord;
 
 void main() {
 
 	// Copy local vertex position and texture coordinates into 
 	// outputs to be interpolated for the fragment shader
-	v_position = a_position;
+	v_position = a_position.xyz;
 	v_texcoord = a_texcoord;
 
 	// Transform local position into final vertex
