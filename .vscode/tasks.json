@@ -56,6 +56,13 @@
 			"label": "npm: start force",
 			"detail": "tsc --force && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
 			"isBackground": true
+		},
+		{
+			"type": "npm",
+			"script": "main-to-S3",
+			"problemMatcher": [],
+			"label": "npm: main-to-S3",
+			"detail": "gh workflow run main.yml"
 		}
 	]
 }
