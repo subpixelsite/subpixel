@@ -11,8 +11,8 @@ export enum PostStatus
 /* eslint-disable dot-notation */
 export class PostData
 {
-	name: string = '';
-	status: number = PostStatus.Hidden;
+	name: string = '';					// partition key
+	status: number = PostStatus.Hidden;	// sort key - PostStatus
 	title: string = '';
 	author: string = 'Chris Lambert';
 	dateCreated: number = Date.now();	// set on creation only
@@ -25,6 +25,10 @@ export class PostData
 	description: string = '';
 	markdown: string = '';
 	content: string = '';
+	// thread_name: string = '';
+	// thread_title: string = '';
+	// thread_description: string = '';
+	// thread_next: string = '';
 }
 
 declare global

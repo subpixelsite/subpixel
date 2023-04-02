@@ -9,6 +9,8 @@ import terser from '@rollup/plugin-terser';
 import styles from 'rollup-plugin-styles';
 // import { generateSW } from 'rollup-plugin-workbox';
 import css from 'rollup-plugin-css-only';
+import json from '@rollup/plugin-json';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 import copy from 'rollup-plugin-copy';
 // import path from 'path';
 
@@ -21,11 +23,60 @@ const getPluginsConfig = () =>
 	const config = [
 		/** Enable using HTML as rollup entrypoint */
 		html( {
-			minify: prod
+			minify: prod,
+			exclude: 'node_modules/**'
 			// SERVICE WORKER
 			// injectServiceWorker: true,
 			// serviceWorkerPath: 'dist/sw.js'
 		} ),
+		commonjs( {
+			// include: 'node_modules/**'
+		} ),
+		json( {
+			compact: true
+		} ),
+		/** Resolve bare module imports */
+		nodePolyfills(),
+		nodeResolve( {
+			browser: true,
+			extensions: ['.mjs', '.js', '.json', '.node']
+		} ),
+		minifyHTML( {
+			exclude: 'node_modules/**'
+		} ),
+		/** Minify JS */
+		terser(	prod
+			? { // PROD
+				module: true,
+				ecma: 2020,
+				compress: {
+					unused: false,
+					collapse_vars: false
+				},
+				output: {
+					comments: false
+				}
+			} : { // DEV
+				module: true,
+				ecma: 2020,
+				compress: {
+					keep_infinity: true,
+					pure_getters: true,
+					keep_fnames: true,
+					passes: 10
+				},
+				output: {
+					comments: false
+				},
+				toplevel: true,
+				warnings: true,
+				mangle: {
+					keep_fnames: true
+				}
+			} ),
+		// css( {
+		// 	output: 'bundle.css'
+		// } ),
 		copy( {
 			copyOnce: true,
 			targets: [
@@ -63,17 +114,17 @@ const getPluginsConfig = () =>
 				}
 			]
 		} ),
-		commonjs( {
-			// include: 'node_modules/**'
-		} ),
+		// commonjs( {
+		// 	include: 'node_modules/**'
+		// } ),
 		/** Resolve bare module imports */
-		nodeResolve( {
-			// jsnext: true,
-			browser: true,
-			extensions: ['.mjs', '.js', '.json', '.node']
-			// ,
-			// preferBuiltins: false
-		} ),
+		// nodeResolve( {
+		// 	jsnext: true,
+		// 	browser: true,
+		// 	extensions: ['.mjs', '.js', '.json', '.node']
+		// 	,
+		// 	preferBuiltins: false
+		// } ),
 		replace( {
 			preventAssignment: true,
 			'process.env.NODE_ENV': JSON.stringify( prod ? 'production' : 'development' ),
@@ -92,41 +143,14 @@ const getPluginsConfig = () =>
 		} ),
 		minifyHTML(),
 		/** Minify JS */
-		terser(	prod
-			? { // PROD
-				module: true,
-				ecma: 2020,
-				compress: {
-					unused: false,
-					collapse_vars: false
-				},
-				output: {
-					comments: false
-				}
-			} : { // DEV
-				module: true,
-				ecma: 2020,
-				compress: {
-					keep_infinity: true,
-					pure_getters: true,
-					keep_fnames: true,
-					passes: 10
-				},
-				output: {
-					comments: false
-				},
-				toplevel: true,
-				warnings: true,
-				mangle: {
-					keep_fnames: true
-				}
-			} ),
 		styles(),
 		css( {
 			output: 'bundle.css'
 		} ),
 		/** Bundle assets references via import.meta.url */
-		// importMetaAssets(),
+		// importMetaAssets( {
+		// 	exclude: 'node_modules/**'
+		// } ),
 		/** Compile JS to a lower language target */
 		babel( {
 			babelHelpers: 'bundled',

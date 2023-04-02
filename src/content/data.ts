@@ -18,11 +18,15 @@ export class Database
 
 	getPostData( key: string ): PostData | undefined
 	{
+		// ACTUALLY FETCH FROM THE DB!!!
+
 		return this.data[key];
 	}
 
 	setPostData( key: string, datum: PostData )
 	{
+		// ACTUALLY SUBMIT TO THE DB!!!
+
 		this.data[key] = { ...datum };
 	}
 

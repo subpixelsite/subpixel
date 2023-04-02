@@ -346,8 +346,9 @@ export class EditorPage extends AppElement
 		this.post.title = data.title as string;
 		this.post.author = data.author as string;
 		// this.post.dateCreated doesn't change
-		this.post.datePosted = justPosted ? Date.now() : 0;
 		this.post.dateModified = Date.now();
+		if ( justPosted )
+			this.post.datePosted = this.post.dateModified;
 		this.post.tags = data.tags as string;
 		this.post.hdrInline = data.hdrInline as string;
 		this.post.hdrHref = data.hdrHref as string;

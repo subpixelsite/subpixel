@@ -4,7 +4,7 @@
 == TODO
 
 # Post-list doesn't always format correctly on back button from FAQ (doesn't pick up class on post-list - async fetch?)
-# Validate datePosted logic -- seems to be doing weird things
++ # Validate datePosted logic -- seems to be doing weird things
 = Backend first pass
 	- Research how AWS would work
 		> Even if I go with SSR for the site, I need client-side for editor...
