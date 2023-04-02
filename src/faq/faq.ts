@@ -155,7 +155,7 @@ services to provide automatically-scaling high-availability worldwide access.&nb
 
 <hr class="rounded">
 <h3 id='who'>Who is this for, really?</h3>
-<p>Are you:</p>
+<p>Well, are you:</p>
 <ul>
 	<li>A game developer who doesn't <i>really</i> grok rendering?</li>
 	<li>A seasoned vet who wants to better understand the details?</li>
@@ -171,12 +171,6 @@ services to provide automatically-scaling high-availability worldwide access.&nb
 <hr class="rounded">
 <h3 id='work'>Is the author looking for work?</h3>
 <p>Perhaps!  You can find me on <a href="https://www.linkedin.com/in/clambert/">LinkedIn</a>.</p>
-
-<hr class="rounded">
-<h3 id='web'>What about doing more web development?</h3>
-<p>Dear God, no.</p>
-<p>I'm pretty sure this site took years off my life.&nbsp It was meant to give back to the industry that took a chance on me and gave me so much opportunity.</p>
-</sl-details>
 
 <hr class="rounded">
 </article>

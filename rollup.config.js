@@ -4,6 +4,7 @@ import babel from '@rollup/plugin-babel';
 import html from '@web/rollup-plugin-html';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 // import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
+import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import styles from 'rollup-plugin-styles';
 // import { generateSW } from 'rollup-plugin-workbox';
@@ -11,21 +12,16 @@ import css from 'rollup-plugin-css-only';
 import copy from 'rollup-plugin-copy';
 // import path from 'path';
 
-export default {
-	input: 'index.html',
-	output: {
-		entryFileNames: '[hash].js',
-		chunkFileNames: '[hash].js',
-		assetFileNames: '[hash][extname]',
-		format: 'es',
-		dir: 'dist'
-	},
-	preserveEntrySignatures: false,
+const prod = process.env.BUILD === 'production';
 
-	plugins: [
+const getPluginsConfig = () =>
+{
+	const OUTPUT = prod ? 'dist' : 'test';
+
+	const config = [
 		/** Enable using HTML as rollup entrypoint */
 		html( {
-			minify: true
+			minify: prod
 			// SERVICE WORKER
 			// injectServiceWorker: true,
 			// serviceWorkerPath: 'dist/sw.js'
@@ -39,54 +35,92 @@ export default {
 				// },
 				{
 					src: '*.css',
-					dest: 'dist'
+					dest: OUTPUT
 				},
 				{
 					src: '.htaccess',
-					dest: 'dist'
+					dest: OUTPUT
 				},
 				{
 					src: 'assets',
-					dest: 'dist'
+					dest: OUTPUT
 				},
 				{
 					src: '*.ico',
-					dest: 'dist'
+					dest: OUTPUT
 				},
 				{
 					src: '*.svg',
-					dest: 'dist'
+					dest: OUTPUT
 				},
 				{
 					src: '*.png',
-					dest: 'dist'
+					dest: OUTPUT
 				},
 				{
 					src: 'manifest.json',
-					dest: 'dist'
+					dest: OUTPUT
 				}
 			]
 		} ),
 		commonjs( {
+			// include: 'node_modules/**'
 		} ),
 		/** Resolve bare module imports */
 		nodeResolve( {
+			// jsnext: true,
 			browser: true,
 			extensions: ['.mjs', '.js', '.json', '.node']
+			// ,
+			// preferBuiltins: false
+		} ),
+		replace( {
+			preventAssignment: true,
+			'process.env.NODE_ENV': JSON.stringify( prod ? 'production' : 'development' ),
+			__buildDate__: () => JSON.stringify( new Date().toLocaleString(
+				'en-US',
+				{
+					month: 'short',
+					day: '2-digit',
+					year: 'numeric',
+					hour: '2-digit',
+					hour12: false,
+					minute: '2-digit',
+					timeZoneName: 'short'
+				}
+			) )
 		} ),
 		minifyHTML(),
 		/** Minify JS */
-		terser( {
-			module: true,
-			ecma: 2020,
-			compress: {
-				unused: false,
-				collapse_vars: false
-			},
-			output: {
-				comments: false
-			}
-		} ),
+		terser(	prod
+			? { // PROD
+				module: true,
+				ecma: 2020,
+				compress: {
+					unused: false,
+					collapse_vars: false
+				},
+				output: {
+					comments: false
+				}
+			} : { // DEV
+				module: true,
+				ecma: 2020,
+				compress: {
+					keep_infinity: true,
+					pure_getters: true,
+					keep_fnames: true,
+					passes: 10
+				},
+				output: {
+					comments: false
+				},
+				toplevel: true,
+				warnings: true,
+				mangle: {
+					keep_fnames: true
+				}
+			} ),
 		styles(),
 		css( {
 			output: 'bundle.css'
@@ -155,5 +189,56 @@ export default {
 		// 	clientsClaim: true,
 		// 	runtimeCaching: [{ urlPattern: 'polyfills/*.js', handler: 'CacheFirst' }]
 		// } )
-	]
+	];
+
+	return config;
+};
+
+export default () =>
+{
+	// CURRENTLY BUILDING TO out-tsc AND dist at the same time in DEV mode!  Copying only to dist...
+	// ... need to figure out how to do just the right thing in Dev...
+	// tsc builds to out-tsc, it seems... everything else goes to dist
+
+	// eslint-disable-next-line no-console
+	console.log( `Bundling for ${prod ? 'production' : 'development'}` );
+
+	const devBundle = {
+		input: 'index.html',
+		output: {
+			format: 'es',
+			dir: 'test',
+			sourcemap: true,
+			compact: false
+		},
+		preserveEntrySignatures: false,
+		// watch: {
+		// 	include: [
+		// 		'src/**',
+		// 		'types/**',
+		// 		'./*.ts',
+		// 		'./*.html',
+		// 		'./*.css',
+		// 		'./*.json'
+		// 	]
+		// },
+
+		plugins: getPluginsConfig( prod )
+	};
+
+	const prodBundle = {
+		input: 'index.html',
+		output: {
+			entryFileNames: '[hash].js',
+			chunkFileNames: '[hash].js',
+			assetFileNames: '[hash][extname]',
+			format: 'es',
+			dir: 'dist'
+		},
+		preserveEntrySignatures: false,
+
+		plugins: getPluginsConfig( prod )
+	};
+
+	return prod ? prodBundle : devBundle;
 };

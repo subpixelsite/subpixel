@@ -5,8 +5,38 @@
 
 # Post-list doesn't always format correctly on back button from FAQ (doesn't pick up class on post-list - async fetch?)
 # Validate datePosted logic -- seems to be doing weird things
-= MVP
-	* Responsive format for public-facing site
+= Backend first pass
+	- Research how AWS would work
+		> Even if I go with SSR for the site, I need client-side for editor...
+		+ Set up domain with Route 43 or whatever
+		+ Set up S3 bucket
+		+ Set up CDN
+		- Set up Lambda calls to access where necessary
+			- Install serverless
+		- Database
+			! DynamoDB setup is a nightmare -- switch to Webpack 4 first?
+				? Actually... commonDB should fix this, hopefully
+			x Find relevant Aurora Serverless v1 SPA/blog resources
+				x Aurora Serverless an option with my editor situation?
+				> Maybe not... DynamoDB can be made to work for tags, probably
+			- Design DB access patterns
+				- Write down what queries I need to make, and when
+			- Set up posts table
+			- Set up tabs table
+			? Set up quips table
+				> This might be better as a local content file so that I can keep it doing serverless rendering with runtime JS
+			- Set up threads table
+		- Set up Cognito for security
+	- Make plan - DB, HTML/SVG/JSON/texture files
+	- Integrate Showdown for Markdown conversion on the server side
+= MVP 2
+	+ Responsive format for public-facing site
+		- FAQ header center
+		- <gl-code> container mobile version
+		- Full-page scroll instead of content
+		- Touch controls for <web-gl>
+	* Finish post
+		- Cut up into Diffuse and Specular
 	* WebGL presentation container
 		> Instead of always being little floating boxes, making them a full-width block with shader code and textures and so on
 		! Cache shader fetches alongside webgl viewports for editor performance
@@ -32,12 +62,6 @@
 			+ Move camera
 				+ Middle click/drag
 				+ L&R click/drag
-	- Setup Rollup dev environment
-	- Inline info line
-	- Work out image caption CSS for FAQ
-		> I have the image caption example in place, but it'll require a new component to do this properly (or at a minimum, a showdown extension)
-= MVP 2
-	* WebGL presentation container
 		+ Construct new WebGLElement container
 			+ Support selecting an object to show its shaders/texture(s)
 				- Support clicking to select
@@ -51,6 +75,7 @@
 				> Is it possible to interrogate WebGL about all this state and cache it every render?
 			? Show texture
 				? Show mip levels
+	- Subtitle topics as regions that can be opened into post content
 	- GPU model map
 		- Basic SVG layout of a system with CPU, RAM, VS, PS, VRAM, Rasterizer, etc.
 		- Animated movement along path showing transfer of data
@@ -58,9 +83,20 @@
 		- Each section of content has a correlated map state
 		- When reaching a new section, it "pings" if the map state changed, causing a timed gentle "pulse" of the map tab on the screen edge (top?)
 		- The user can tap the tab to bring out a drawer with the GPU map and see the new area, or leave it out while reading
+	+ Setup Rollup dev environment
+		- Make dev environment more useful
+			- Build incrementally
+			- Watch for changes
+			- Best possible source mapping
+	- Inline info line
+		? What does this mean
+	- Work out image caption CSS for FAQ
+		> I have the image caption example in place, but it'll require a new component to do this properly (or at a minimum, a showdown extension)
+	- Prep for SSR
+		- Stop async loading js files
 = Basic styling
-	* Write example post
-		- Create webgl content for example post
+	+ Write example post
+		+ Create webgl content for example post
 		+ Figure out embedding web-gl content from Markdown
 			> MD formatting rule: after </web-gl>, must have space, then 2 newlines in order to get correct float/clear behavior
 		- Finish example post
@@ -68,28 +104,6 @@
 		> Only necessary for pre/code blocks inline, so not MVP
 + # <web-gl> svg is too tall for the container (see with error svg showing) -- fix height or use overflow-clip
 	? Fix failed... Is this still happening?
-= Backend first pass
-	- Research how AWS would work
-		+ Set up domain with Route 43 or whatever
-		+ Set up S3 bucket
-		+ Set up CDN
-		- Set up Lambda calls to access where necessary
-			- Install serverless
-		- Database
-			! DynamoDB setup is a nightmare -- switch to Webpack 4 first?
-			x Find relevant Aurora Serverless v1 SPA/blog resources
-				x Aurora Serverless an option with my editor situation?
-				> Maybe not... DynamoDB can be made to work for tags, probably
-			- Design DB access patterns
-				- Write down what queries I need to make, and when
-			- Set up posts table
-			- Set up tabs table
-			? Set up quips table
-				> This might be better as a local content file so that I can keep it doing serverless rendering with runtime JS
-			- Set up threads table
-		- Set up Cognito for security
-	- Make plan - DB, HTML/SVG/JSON/texture files
-	- Integrate Showdown for Markdown conversion on the server side
 = <web-gl> Enhancements
 	- Load and display OBJ format
 	- Support external interaction, like radio button to change obj

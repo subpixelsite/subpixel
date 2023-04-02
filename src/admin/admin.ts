@@ -4,6 +4,7 @@ import { html, css } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { customElement, property } from 'lit/decorators.js';
 import { AppElement } from '../appelement.js';
+import { Content } from '../content/content.js';
 import { Geometry, NavBarStyles } from '../styles.js';
 // import { POSTS } from './data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
@@ -59,6 +60,15 @@ export class AdminPage extends AppElement
 	{
 		super.disconnectedCallback();
 		this.removeEventListener( 'pageNav', e => this.pageNavEvent( e ) );
+	}
+
+	protected firstUpdated()
+	{
+		// Hide the footer
+		const content = document.getElementsByTagName( 'lit-content' );
+		if ( content === null || content.length === 0 )
+			throw new Error( 'Can\'t find content container element' );
+		( content[0] as Content ).setFooterVisible( false );
 	}
 
 	render()
