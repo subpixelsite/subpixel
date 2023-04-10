@@ -1,0 +1,76 @@
+{
+	"camDist": "30",
+	"rotDeg": ["45", "60"],
+	"orthoDiag": "2",
+	"lightDeg": ["150", "-45"],
+	"lightColor": ["1.0", "1.0", "1.0"],
+	"ambientStr": "0.15",
+	"ambientLight": ["1", "1", "1"],
+	"objects": [
+		{
+			"vs": "pos_norm.vs",
+			"fs": "col_diff.fs",
+			"anim": {
+				"blend": "1",
+				"loop": "1"
+			},
+			"xform": [
+				{
+					"pos": ["0.5", "0.0", "0.0"],
+					"rotAxis": ["0.0", "1.0", "0.0"],
+					"rotDeg": "0"
+				},
+				{
+					"rotDeg": "360",
+					"key": { "time": "4", "blendIn": "2" }
+				}
+			],
+			"sphere": {
+				"radius": "0.5",
+				"subDAxis": "4",
+				"subDHeight": "2"
+			},
+			"color": [
+				{
+					"color": ["0.65", "0.65", "0.65"],
+					"alpha": "1.0"
+				}
+			]
+		},
+		{
+			"vs": "pos_norm.vs",
+			"fs": "col_diff.fs",
+			"anim": {
+				"blend": "1",
+				"loop": "1"
+			},
+			"rootxform":
+			{
+					"rotAxis": ["1.0", "1.0", "0.0"],
+					"rotDeg": "90"
+			},
+			"xform": [
+				{
+					"pos": ["-0.5", "0.0", "0.0"],
+					"rotAxis": ["0.0", "1.0", "0.0"],
+					"rotDeg": "0",
+					"key": { "time": "0" }
+				},
+				{
+					"rotDeg": "360",
+					"key": { "time": "4", "blendIn": "2" }
+				}
+			],
+			"cube": {
+				"size": "0.58"
+			},
+			"color": [
+				{
+					"color": ["0.65", "0.65", "0.65"],
+					"alpha": "1.0"
+				}
+			]
+		}
+
+	]
+}

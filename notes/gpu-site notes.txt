@@ -416,45 +416,186 @@ WebGL element caching
 
 
 
-DB access plan
+Partition needs to be name
+	Needed for any getitem or putitem or query, which includes finding or setting any specific post
+	Partition is used to spread and localize work
+		Avoid "hot" keys
+		Status would be a very "hot" key -- almost always "visible", almost never anything else
+			Useless as partition
+		Nothing else is a clearly useful partition - date, author, title, tag
+	Partition key cannot change value ever after creation
+		This means that if I use it as the URL value, I cannot change it after first save
+Sort key
+	If I create one, it has to be at table creation time
+	The Sort key cannot change value ever after creation
+	Possible values:
+		Entity type (post, tag, thread)
+			This is useful
+				I could reuse name between, say, a post and a thread
+				I could apply things like a Title and/or Description to a tag
+				I could apply all the values to a thread without having to do funky stuff to the name
+		Creation time
+			This is not quite as useful -- only valuable as a sort
+			If it's valuable as a sort at all, I could use a Local Secondary Index
+			Might as well set dateCreated (dc) as an LSI at table creation time
+GSI
+	Can be defined whenever
+	Can't include partition key
+LSI
+	Includes partition key
+	Must be defined at table creation time
+Query requires partition key
+Scan does not require partition key, uses all entries, sorted by sort value
+	Can set ConsistentRead to true so editor gets up-to-date data
+	Can paginate data
+Composite sort value?
+	status#date_posted
+	Can filter sort with key condition "begins_with","2"
+	In Editor, sort naturally is
+		invalid
+		hidden, not posted first, then oldest first
+		visible, not posted first, then oldest first
+	No, this doesn't work because it can't be changed
+
+
+
+*****      REDO DATABASE YET AGAIN TO MATCH    VERSION 4     *****
+
+
+DB access plan  VERSION 4
 POSTS
-	Get all posts, sorted by latest publish date (or the client could do the sort...)
-	Get a post of name 'blah'
-	Get all posts with tag 'category'
-	Get all threads, sorted by latest publish date (or client sorts)
-	Get a thread of name 'blah'
+	Get all (visible) posts
+		- QUERY GSI_1
+			- key: #ty EQ '1'
+			- key: #st EQ '2'
+	Get a post 'name'
+		- GET
+			- key: #pk EQ 'name'
+	Get all (visible) posts with tag '<name>'
+		- QUERY GSI_1 on post_data
+			- key: #ty EQ '1'				// post type
+			- key: #st EQ '2'				// visible
+			- filter: array #tg CONTAINS ( BEGINS_WITH 'name#' )
+		- QUERY on tag_data
+			- key: #pk EQ 'name' 				// gets all post names but you still have to batch get the posts to figure out visibility
+	Get all (visible) threads
+		- QUERY GSI_1
+			- key: #ty EQ '3'				// thread type
+			- key: #st EQ '2'				// visible
+	Get a thread 'name'
+		- GET
+			- key: #pk EQ 'name'
 EDITOR
-	Get all posts, sorted by created date (or publish is fine, so long as unpublished is first, or client sorts)
-	Get a post of name 'blah'
-	Put a post of name 'blah' with data 'blob'
-
-Post
-	pk_name 		- partition key
-	sk_status 		- sort key       - enum (1 - hidden, 2 - published)
-	title
-	author
-	date_created	- set on creation? first save? only
-	date_modified	- don't update when status = 1
-	tags 			- use filter function of query or scan when searching
-	hdrInline
-	hdrHref
-	hdrAlt
-	description
-	markdown
-	content
-Thread
-	pk_name			- partition key: THREAD#name
-	title			- always present for documentation
-	description		- on post_index 0 entry
-	sk_post_index	- number, zero-based
-	name_next		- string, not present or empty on last
-Thread GSI: [pk_name],[sk_post_index]
-	Thread queries by pk BEGINS_WITH "THREAD#"
-	Thread fetch by THREAD#name, with all posts sorted
+	Get all posts (regardless of visibility)
+		- QUERY GSI_1
+			- key: #sk EQ '1'
+			- key: #st EXISTS
+	Get a post 'name'
+		- GET
+			- key: #pk EQ 'name'
+	Put a post 'name'
+		- PUT
+			- key: #pk EQ 'name'
+		// update tags_data
+	Get a thread 'name'
+		- GET
+			- key: #pk EQ 'name'
+	Put a thread 'name'
+		- GET
+			- key: #pk EQ 'name'
 
 
+DB access plan  VERSION 5   (with ty as sk) -- doesn't require tags table, uses query on type sort key
+POSTS
+	Get all (visible) posts
+		- QUERY GSI_TY
+			- key: #sk EQ '1'				// post type
+			- key: #st EQ '2'
+	Get a (visible) post 'name'
+		- GET
+			- key: #pk EQ 'name'
+			- key: #sk EQ '1'				// post type
+			- filter: #st EQ '2'  ??
+	Get all (visible) posts with tag '<name>'
+		- QUERY GSI_TY
+			- key: #sk EQ '1'				// post type
+			- key: #st EQ '2'				// visible
+			- filter: array #tg CONTAINS ( 'name' )
+		- GET 												// to get information about the tag, if desired
+			- key: #pk EQ 'name'			// tag name
+			- key: #sk EQ '2'				// tag type
+	Get all (visible) threads
+		- QUERY GSI_TY
+			- key: #sk EQ '3'				// thread type
+			- key: #st EQ '2'				// visible
+	Get a thread 'name'
+		- GET
+			- key: #pk EQ 'name'
+			- key: #sk EQ '3'				// thread type
+EDITOR
+	Get all posts (regardless of visibility)
+		- QUERY GSI_TY
+			- key: #sk EQ '1'				// partition key only -- no query sort key (no 'st' check)
+	Get a post 'name'
+		- GET
+			- key: #pk EQ 'name'
+			- key: #sk EQ '1'
+	Put a post 'name'
+		- PUT
+			- key: #pk EQ 'name'
+			- key: #sk EQ '1'
+	Get a thread 'name'
+		- GET
+			- key: #pk EQ 'name'
+			- key: #sk EQ '3'
+	Put a thread 'name'
+		- GET
+			- key: #pk EQ 'name'
+			- key: #pk EQ '3'
+
+elements
+	pk		name			- partition key  (name/url)
+	sk		type			- sort key  (type) -- enum (entity type - 1: post, 2: tag, 3:thread)
+	st		status 			- enum (1 - hidden, 2 - visible)
+	ti		title
+	au		author
+	dc		dateCreated		- set on creation
+	dp		datePosted		- set on first posted
+	dm		dateModified	- don't update when status = 1
+	tg		tags 			- string set of tag element name, if possible -- use filter function of query or scan when searching
+	hi		hdrInline
+	hr		hdrHref			- header: href (url for tags, if necessary)
+	ha		hdrAlt
+	de		description
+	md		markdown
+	co		content
+	ne		next			- (thread only) - next post name for current thread
+
+tags
+	pk		tag name 		- "TAG#<name>" to avoid collisions?
+	sk		post/thread id 	- This enables queries and trivial add/remove, as well as a cheap "exists" listing
+
+gsi_ty						- enables Query (eg: type = post, status = Visible)
+	sk 		(type)			- partition key
+	st 		(status)		- sort key
+
+** All tag and thread links have to be of the "flattened table" persuasion: "id#name", like "3f28c9#Texture Filtering", get split into link/text on use, and get searched out and updated when "3f28c9" does. **
 
 
+posts/shading
+	get #pk "shading"
+tags/shading
+	get #pk "shading"     ???
+		filter ty == 
+		show info
+	query on tags
+		pk EQ "shading"
+		show list of posts
+
+
+
+####     OR DO I REBUILD YET AGAIN WITH TYPE AS THE SORT KEY?!     ####
+		Yes, I think... sort key as type allows queries
 
 
 Amazon DynamoDB Deep Dive: Advanced Design Patterns for DynamoDB (AWS re:Invent 2018) talk

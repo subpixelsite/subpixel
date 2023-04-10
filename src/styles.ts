@@ -202,7 +202,8 @@ export const PostStyles = css`
 
 	ul {
 		list-style: disc !important;
-		padding: 2rem !important;
+		padding-left: 2rem !important;
+		padding-bottom: 1rem !important;
 		margin-left: 4rem !important;
 		margin-right: 4rem !important;
 	}

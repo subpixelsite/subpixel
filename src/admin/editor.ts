@@ -5,15 +5,16 @@ import { html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { RouterLocation } from '@vaadin/router';
 import { serialize } from '@shoelace-style/shoelace/dist/utilities/form.js';
+import '@shoelace-style/shoelace/dist/components/dialog/dialog.js';
 import { PostTile } from '../content/post_tile.js';
 import { WebGL } from '../webgl/webgl.js';
 import { AppElement } from '../appelement.js';
-import { PostData, convertMDtoHTML, PostStatus, initPostData } from '../content/post_data.js';
+import { ElementData, convertMDtoHTML, ElementStatus, initPostData } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/switch/switch.js';
 import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/textarea/textarea.js';
 import '@shoelace-style/shoelace/dist/components/details/details.js';
-import { Database } from '../content/data.js';
+import { Database, getTagsArray, getTagsString } from '../content/data.js';
 import { Colors, PostStyles } from '../styles.js';
 
 @customElement( 'lit-editor' )
@@ -145,7 +146,16 @@ export class EditorPage extends AppElement
 	`];
 
 	@property( { type: Object } )
-	post: PostData;
+	post: ElementData;
+
+	@state()
+	dialogTitle?: string;
+
+	@state()
+	dialogText?: string;
+
+	@state()
+	showDialog: boolean = false;
 
 	protected lastConvert: number = 0;
 	protected convertInterval: number = 500;
@@ -158,7 +168,7 @@ export class EditorPage extends AppElement
 
 		initPostData();
 
-		this.post = new PostData();
+		this.post = new ElementData();
 	}
 
 	protected doConversion(): void
@@ -176,20 +186,32 @@ export class EditorPage extends AppElement
 		this.lastConvert = Date.now();
 	}
 
+	private onPostFetched( post: ElementData | undefined )
+	{
+		if ( post === undefined )
+		{
+			this.setDialog( 'DB GET Failed', 'DB GET operation failed -- see console' );
+		}
+		else
+		{
+			this.post = post;
+			this.updatePostDisplay();
+
+			this.visible = this.post?.status === ElementStatus.Visible;
+		}
+	}
+
 	public onBeforeEnter( location: RouterLocation )
 	{
 		super.onBeforeEnter( location );
 
 		const db = Database.getDB();
 
-		this.post = new PostData();
-		this.post.name = location.params.name as string;
+		this.post = new ElementData();
 
-		const dbPost = db.getPostData( this.post.name );
-		if ( dbPost !== undefined )
-			this.post = { ...dbPost };
-
-		this.visible = this.post?.status === PostStatus.Visible;
+		const name = location.params.name as string;
+		if ( name.length > 0 )
+			db.getPostData( name, post => this.onPostFetched( post ) );
 	}
 
 	setVisible( event: Event )
@@ -250,6 +272,34 @@ export class EditorPage extends AppElement
 		}
 	}
 
+	setDialog( title?: string, text?: string )
+	{
+		if ( title !== undefined || text !== undefined )
+		{
+			console.log( `SetDialog: '${title}' - '${text}'` );
+			this.dialogTitle = title ?? '';
+			this.dialogText = text ?? '';
+			this.showDialog = true;
+		}
+		else
+		{
+			console.log( `SetDialog hide: '${title}' - '${text}'` );
+			this.dialogTitle = undefined;
+			this.dialogText = undefined;
+			this.showDialog = false;
+		}
+
+		this.requestUpdate();
+	}
+
+	dialogPreventClose( e: Event )
+	{
+		const event = e as CustomEvent;
+
+		if ( event.detail.source === 'overlay' )
+			event.preventDefault();
+	}
+
 	connectedCallback(): void
 	{
 		super.connectedCallback();
@@ -272,8 +322,33 @@ export class EditorPage extends AppElement
 		if ( previewArea !== null )
 			previewArea.removeEventListener( 'scroll', () => this.scrollTextArea() );
 
+		const dialog = this.shadowRoot!.querySelector( '.modal-dialog' );
+		if ( dialog === null )
+			throw new Error( 'Couldn\'t find dialog element' );
+		dialog.removeEventListener( 'sl-request-close', event => this.dialogPreventClose( event ) );
+		const closeButton = dialog.querySelector( 'sl-button[slot="footer"]' );
+		if ( closeButton === null )
+			throw new Error( 'Can\'t find dialog close button' );
+		closeButton!.removeEventListener( 'click', () => () => { this.showDialog = false; } );
+
 		WebGL.setScrollListener( undefined );
 		WebGL.setDetailsListener( undefined );
+	}
+
+	protected updatePostDisplay()
+	{
+		const textArea = this.shadowRoot!.getElementById( 'editPostTextBox' ) as HTMLInputElement | null;
+		if ( textArea === null )
+			throw new Error( 'Couldn\'t find text area DOM element' );
+
+		textArea.textContent = '';
+		if ( this.post !== undefined )
+		{
+			this.post.markdown = this.post.markdown.replace( /\\n/g, '\n' );
+			this.post.markdown = this.post.markdown.replace( /\\/g, '' );
+			textArea.value = this.post.markdown;
+			this.doConversion();
+		}
 	}
 
 	protected firstUpdated(): void
@@ -293,13 +368,6 @@ export class EditorPage extends AppElement
 		if ( previewArea === null )
 			throw new Error( 'Couldn\'t find preview area DOM element' );
 
-		textArea.textContent = '';
-		if ( this.post !== undefined )
-		{
-			textArea.value = this.post.markdown;
-			this.doConversion();
-		}
-
 		textArea.oninput = ( ev =>
 		{
 			const now = Date.now();
@@ -315,6 +383,15 @@ export class EditorPage extends AppElement
 			setTimeout( () => { this.doConversion(); }, this.convertInterval );
 		} );
 
+		const dialog = this.shadowRoot!.querySelector( '.modal-dialog' );
+		if ( dialog === null )
+			throw new Error( 'Couldn\'t find dialog element' );
+		dialog.addEventListener( 'sl-request-close', event => this.dialogPreventClose( event ) );
+		const closeButton = dialog.querySelector( 'sl-button[slot="footer"]' );
+		if ( closeButton === null )
+			throw new Error( 'Can\'t find dialog close button' );
+		closeButton!.addEventListener( 'click', () => { this.showDialog = false; } );
+
 		// Try to make scrolling match by document %
 		textArea.addEventListener( 'scroll', () => this.scrollPreview(), { capture: false, passive: true } );
 		previewArea.addEventListener( 'scroll', () => this.scrollTextArea(), { capture: false, passive: true } );
@@ -324,6 +401,15 @@ export class EditorPage extends AppElement
 		if ( details === null )
 			throw new Error( 'Couldn\'t find post details DOM element' );
 		WebGL.setDetailsListener( details );
+
+		this.updatePostDisplay();
+	}
+
+	private handleCommitResult( error: string | undefined )
+	{
+		console.log( `setPostData returned '${error}'` );
+		if ( error !== undefined )
+			this.setDialog( 'Save Post Error', error );
 	}
 
 	private handleCommit()
@@ -338,18 +424,18 @@ export class EditorPage extends AppElement
 			throw new Error( 'Couldn\'t find preview area DOM element' );
 		const content = previewArea.innerHTML;
 
-		const justPosted = this.post.status === PostStatus.Hidden && this.visible && this.post.datePosted === 0;
+		const justPosted = this.post.status === ElementStatus.Hidden && this.visible && this.post.datePosted === 0;
 
 		// manually copy the data into the post
 		this.post.name = data.name as string;
-		this.post.status = this.visible ? PostStatus.Visible : PostStatus.Hidden;
+		this.post.status = this.visible ? ElementStatus.Visible : ElementStatus.Hidden;
 		this.post.title = data.title as string;
 		this.post.author = data.author as string;
 		// this.post.dateCreated doesn't change
 		this.post.dateModified = Date.now();
 		if ( justPosted )
 			this.post.datePosted = this.post.dateModified;
-		this.post.tags = data.tags as string;
+		this.post.tags = getTagsArray( data.tags as string );
 		this.post.hdrInline = data.hdrInline as string;
 		this.post.hdrHref = data.hdrHref as string;
 		this.post.hdrAlt = data.hdrAlt as string;
@@ -357,31 +443,13 @@ export class EditorPage extends AppElement
 		this.post.markdown = data.markdown as string;
 		this.post.content = content as string;
 
-		// Until we have a functioning DB, dump the new post to the console.
+		// In case of DB failure, dump the new post to the console.
 		// eslint-disable-next-line no-console
-		console.log( `
-			'${this.post.name}',
-			{
-				name: '${this.post.name}',
-				status: ${this.post.status},
-				title: '${this.post.title}',
-				author: '${this.post.author}',
-				dateCreated: ${this.post.dateCreated},
-				datePosted: ${this.post.datePosted},
-				dateModified: ${this.post.dateModified},
-				tags: '${this.post.tags}',
-				hdrInline: '${this.post.hdrInline}',
-				hdrHref: '${this.post.hdrHref}',
-				hdrAlt: '${this.post.hdrAlt}',
-				description: \`${this.post.description}\`,
-				markdown: \`${this.post.markdown}\`,
-				content: \`${this.post.content}\`
-			}
-		` );
+		console.log( `${JSON.stringify( this.post, null, 4 )}` );
 
 		// save the post
 		const db = Database.getDB();
-		db.setPostData( this.post.name, this.post );
+		db.setPostData( this.post, error => this.handleCommitResult( error ) );
 
 		this.requestUpdate();
 	}
@@ -398,6 +466,10 @@ export class EditorPage extends AppElement
 		const visual = PostTile.getPostVisual( this.post );
 
 		return html`
+<sl-dialog label="${this.dialogTitle ?? ''}" class="modal-dialog" ?open=${this.showDialog} style='--width: 75vw'>
+	<span class="font-mono text-sm dialog-text">${this.dialogText ?? ''}</span>
+	<sl-button slot="footer" variant="primary">OK</sl-button>
+</sl-dialog>
 <div class="flex flex-col h-full p-5 overflow-hidden bg-white">
 	<form class="post-form">
 		<div class="flex flex-col gap-5 flex-auto">
@@ -410,7 +482,7 @@ export class EditorPage extends AppElement
 								<sl-switch id="visible" class="self-stretch pt-1" size=small ?checked=${this.visible}>Visible</sl-switch>
 							</div>
 							<sl-input class="edit-input" size=small label="Title" pill name="title" .value=${this.post!.title}></sl-input>
-							<sl-input class="edit-input" size=small label="Tags" pill name="tags" .value=${this.post!.tags}></sl-input>
+							<sl-input class="edit-input" size=small label="Tags" pill name="tags" .value=${getTagsString( this.post!.tags )}></sl-input>
 							<sl-input class="edit-input" size=small label="Created" pill disabled readonly name="dateCreated" .value=${new Date( this.post!.dateCreated ).toString()}></sl-input>
 							<sl-input class="edit-input" size=small label="Posted" pill disabled readonly name="datePosted" .value=${new Date( this.post!.datePosted ).toString()}></sl-input>
 							<sl-input class="edit-input" size=small label="Modified" pill disabled readonly name="dateModified" .value=${new Date( this.post!.dateModified ).toString()}></sl-input>

@@ -131,6 +131,9 @@ export class WebGLObjectData
 	anim?: WebGLAnim;
 
 	@Type( () => WebGLObjectTransform )
+	rootxform?: WebGLObjectTransform;
+
+	@Type( () => WebGLObjectTransform )
 	xform: WebGLObjectTransform[] = [];
 
 	@Type( () => WebGLObjectColor )

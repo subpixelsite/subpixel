@@ -8,7 +8,7 @@ import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js'
 import { svg, TemplateResult, html, css } from 'lit';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AppElement } from '../appelement.js';
-import { PostData } from './post_data.js';
+import { ElementData } from './post_data.js';
 import { Geometry, PostStyles } from '../styles.js';
 
 @customElement( 'post-tile' )
@@ -64,7 +64,7 @@ export class PostTile extends AppElement
 	}
 	`];
 
-	@property( { type: Object } ) post?: PostData;
+	@property( { type: Object } ) post?: ElementData;
 
 	static errorVisual( text: string ): TemplateResult<2>
 	{
@@ -108,7 +108,7 @@ export class PostTile extends AppElement
 			`;
 	}
 
-	static getPostVisual( post: PostData ): TemplateResult<1> | TemplateResult<2>
+	static getPostVisual( post: ElementData ): TemplateResult<1> | TemplateResult<2>
 	{
 		if ( post.hdrInline.length > 0 )
 			return html`${unsafeHTML( post.hdrInline )}`;

@@ -5,8 +5,8 @@ import { css, html } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 import { AppElement } from '../appelement.js';
-import { Database, getTagsArray } from '../content/data.js';
-import { PostData, PostStatus } from '../content/post_data.js';
+import { Database } from '../content/data.js';
+import { ElementData, ElementStatus } from '../content/post_data.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
@@ -69,11 +69,11 @@ export class EditList extends AppElement
 	@state()
 	activeRowIndex: number = -1;
 
-	@property( { type: Array } ) posts: PostData[];
+	@property( { type: Array } ) posts: ElementData[];
 
 	pageNavEvent( event: Event )
 	{
-		const post = ( event as CustomEvent ).detail as PostData;
+		const post = ( event as CustomEvent ).detail as ElementData;
 		Router.go( `/admin/editor/${post.name}` );
 	}
 
@@ -81,7 +81,7 @@ export class EditList extends AppElement
 	{
 		super();
 		const db = Database.getDB();
-		this.posts = db.getPostsList();
+		this.posts = db.getDevPostsList();
 	}
 
 	connectedCallback(): void
@@ -131,11 +131,11 @@ export class EditList extends AppElement
 				${this.posts?.map( post => html`
 				<tr id='${post.name}' @click='${this.goToPost}'>
 					<td class='font-mono text-xs min-w-max'>${post.name}</td>
-					<td style='font-size:20px; color:${post.status === PostStatus.Visible ? '#00cf00' : '#afafaf'};'>
-						<sl-icon slot="icon" name="${post.status === PostStatus.Visible ? 'check-lg' : 'dot'}"></sl-icon>
+					<td style='font-size:20px; color:${post.status === ElementStatus.Visible ? '#00cf00' : '#afafaf'};'>
+						<sl-icon slot="icon" name="${post.status === ElementStatus.Visible ? 'check-lg' : 'dot'}"></sl-icon>
 					</td>
 					<td class='font-bold min-w-max'>${post.title}</td>
-					<td class='flex flex-wrap min-w-max gap-1'>${getTagsArray( post.tags ).map( tag => html`<sl-tag class="tag" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
+					<td class='flex flex-wrap min-w-max gap-1'>${post.tags.map( tag => html`<sl-tag class="tag" size="small" variant="primary" pill>${tag}</sl-tag>` )}</td>
 					<td class='font-mono'>${new Date( post.dateCreated ).toLocaleDateString( 'en-US', { day: '2-digit', month: '2-digit', year: 'numeric' } )}</td>
 					<td class=''>${post.description}</td>
 				</tr>

@@ -7,7 +7,7 @@ import { Router } from '@vaadin/router';
 import { Geometry } from '../styles.js';
 import { AppElement } from '../appelement.js';
 import { Database } from './data.js';
-import { PostData, PostStatus } from './post_data.js';
+import { ElementData, ElementStatus } from './post_data.js';
 
 @customElement( 'lit-posts' )
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,11 +19,11 @@ export class PostList extends AppElement
 		`
 	];
 
-	@property( { type: Array } ) posts?: PostData[];
+	@property( { type: Array } ) posts?: ElementData[];
 
 	pageNavEvent( event: Event )
 	{
-		const post = ( event as CustomEvent ).detail as PostData;
+		const post = ( event as CustomEvent ).detail as ElementData;
 		Router.go( `/posts/${post.name}` );
 	}
 
@@ -61,14 +61,14 @@ export class PostList extends AppElement
 		this.dispatchEvent( event );
 
 		const db = Database.getDB();
-		const posts = db.getPostsList();
+		const posts = db.getDevPostsList();
 
 		return html`
 
 		<div class="flex flex-wrap justify-evenly p-[var(--post-gap)] gap-[var(--post-gap)]">
 		${posts?.map( post =>
 		{
-			if ( post.status === PostStatus.Visible )
+			if ( post.status === ElementStatus.Visible )
 				return html`<post-tile .post="${post}"></post-tile>`;
 			return '';
 		} )}

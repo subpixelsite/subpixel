@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-import { BufferInfo, createProgramInfo, ProgramInfo } from 'twgl.js';
+import { v3, BufferInfo, createProgramInfo, ProgramInfo } from 'twgl.js';
 import { shaders } from './shaders.js';
 import { AnimBlendMode, AnimLoopMode, WebGLObjectColor, WebGLObjectData, WebGLObjectTransform } from './webgldata.js';
 
@@ -22,19 +22,31 @@ export class WebGLObject
 
 		if ( data !== undefined )
 		{
-			this.data = data;
+			this.data = JSON.parse( JSON.stringify( data ) );
+
+			if ( this.data.rootxform !== undefined && this.data.rootxform.rotAxis !== undefined )
+				v3.normalize( this.data.rootxform.rotAxis, this.data.rootxform.rotAxis );
+
+			this.data.xform?.forEach( e =>
+			{
+				if ( e.rotAxis !== undefined )
+					v3.normalize( e.rotAxis, e.rotAxis );
+			} );
+
 			this.updateMaxAnimTime();
 		} else
 		{
+			const defaultXform: WebGLObjectTransform = {
+				pos: [0, 0, 0],
+				rotAxis: [0, 1, 0],
+				rotDeg: 0,
+				scale: [1, 1, 1]
+			};
+
 			this.data = {
 				vs: 'pos.vs',
 				fs: 'col.fs',
-				xform: [{
-					pos: [0, 0, 0],
-					rotAxis: [0, 1, 0],
-					rotDeg: 0,
-					scale: [1, 1, 1]
-				}]
+				xform: [defaultXform]
 			};
 		}
 	}

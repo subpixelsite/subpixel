@@ -112,10 +112,6 @@ export class FAQ extends AppElement
 	<sl-icon slot="prefix" name="caret-right" label="Is the author looking for work?"></sl-icon>
 	Is the author looking for work?
 </sl-button><br/>
-<sl-button variant="text" size="small" name="WTH" @click='${() => this.scrollToElement( 'web' )}'>
-	<sl-icon slot="prefix" name="caret-right" label="What about doing more web development?"></sl-icon>
-	What about doing more web development?
-</sl-button><br/>
 
 <hr class="rounded">
 <h3 id='whath'>What the hell?</h3>
@@ -166,7 +162,7 @@ services to provide automatically-scaling high-availability worldwide access.&nb
 	<li>A search engine spider, crawling for keywords crypto nft metaverse gamification blockchain?</li>
 </ul>
 <p>This is (maybe) the site for you*!</p>
-<p><span class="text-sm">* Increased understanding and/or sense of gratification not guaranteed.&nbsp Any and all attempts to do so shall be without warranty, express or implied.</span></p>
+<p><span class="text-xs">* Increased understanding and/or sense of gratification not guaranteed.</span></p>
 
 <hr class="rounded">
 <h3 id='work'>Is the author looking for work?</h3>

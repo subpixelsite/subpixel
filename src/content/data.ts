@@ -1,6 +1,10 @@
 /* eslint-disable quotes */
 /* eslint-disable max-len */
-import { PostData } from './post_data.js';
+import { unmarshall, NativeAttributeValue } from '@aws-sdk/util-dynamodb';
+import { ElementData, ElementType, ElementStatus, elementToDBData, recordToElementData } from './post_data.js';
+import { getPostByName, DEBUG_DB_GET } from '../db/read.js';
+import { setPostByName, DEBUG_DB_PUT } from '../db/write.js';
+import { DBClient } from '../db/table.js';
 
 export class Database
 {
@@ -14,45 +18,136 @@ export class Database
 		return Database.instance;
 	}
 
-	private data: { [key: string]: PostData } = {};
+	private devData: { [key: string]: ElementData } = {};
 
-	getPostData( key: string ): PostData | undefined
+	public getPostData( name: string, onResult: ( post: ElementData | undefined ) => void, status?: ElementStatus )
 	{
-		// ACTUALLY FETCH FROM THE DB!!!
+		if ( DEBUG_DB_GET > 0 )
+			// eslint-disable-next-line no-console
+			console.log( `Fetching post '${name}'` );
 
-		return this.data[key];
+		getPostByName( name )
+			.then( result =>
+			{
+				let post: ElementData | undefined;
+
+				if ( result !== undefined )
+				{
+					if ( DEBUG_DB_GET > 2 )
+						// eslint-disable-next-line no-console
+						console.log( `DB raw result for '${name}': ${JSON.stringify( result, null, 2 )}` );
+
+					const { Item } = result;
+					const item = unmarshall( Item! );
+					if ( item.tg !== undefined )
+						item.tg = [...item.tg];
+					else
+						item.tg = [];
+
+					if ( DEBUG_DB_GET > 1 )
+						// eslint-disable-next-line no-console
+						console.log( `DB fetch result for item '${name}': ${JSON.stringify( item, null, 2 )}` );
+
+					// Fill in the primary compound key, which is missing from the returned results
+					const record = item as Record<string, NativeAttributeValue>;
+
+					post = recordToElementData( record, name, `${ElementType.Post}` );
+				}
+
+				if ( DEBUG_DB_GET > 1 )
+					// eslint-disable-next-line no-console
+					console.log( `DB fetch result for '${name}': ${JSON.stringify( post, null, 2 )}` );
+
+				onResult( post );
+			} )
+			.catch( error =>
+			{
+				if ( process.env.NODE_ENV === 'development' )
+					// eslint-disable-next-line no-console
+					console.error( `DB fetch error for ${name} with status ${status}:\n${error}` );
+				else
+					// eslint-disable-next-line no-console
+					console.error( `Error fetching post ${name} from database` );
+
+				onResult( undefined );
+			} );
 	}
 
-	setPostData( key: string, datum: PostData )
+	public setPostData( datum: ElementData, onResult: ( error?: string ) => void )
 	{
-		// ACTUALLY SUBMIT TO THE DB!!!
+		const key = datum.name;
 
-		this.data[key] = { ...datum };
+		if ( DEBUG_DB_PUT > 0 )
+			// eslint-disable-next-line no-console
+			console.log( `Setting post '${key}'` );
+
+		// convert to PostDataDB
+		const db = elementToDBData( datum );
+		setPostByName( db )
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			.then( result =>
+			{
+				if ( DEBUG_DB_PUT > 1 )
+					// eslint-disable-next-line no-console
+					console.log( `DB put result: ${JSON.stringify( result, null, 2 )}` );
+
+				// No errors to report
+				onResult( undefined );
+			} )
+			.catch( err =>
+			{
+				// eslint-disable-next-line no-console
+				console.error( `DB put error for ${key}:\n${err}` );
+
+				// release the singleton and start over
+				DBClient.reset();
+
+				onResult( err );
+			} );
+
+		if ( process.env.NODE_ENV === 'development' )
+			// Make a shallow copy of the datum
+			this.devData[key] = { ...datum };
 	}
 
-	getPostsList(): PostData[]
+	// DEVELOPMENT ONLY METHODS ----------------------------------------------------------------------------------------------------------
+
+	getDevPostsList(): ElementData[]
 	{
-		return Object.values( this.data );
+		if ( process.env.NODE_ENV === 'development' )
+			// TODO: get this from the DB
+			return Object.values( this.devData );
+
+		return [];
+	}
+
+	setDevPostData( key: string, datum: ElementData )
+	{
+		if ( process.env.NODE_ENV === 'development' )
+			this.devData[key] = datum;
 	}
 
 	private constructor()
 	{
-		this.setPostData(
-			'mipmapping',
-			{
-				name: 'mipmapping',
-				status: 2,
-				title: 'Mipmapping',
-				author: 'Chris Lambert',
-				dateCreated: 1673735586720,
-				datePosted: 0,
-				dateModified: 1679359393464,
-				tags: 'Textures, Geometry',
-				hdrInline: '<div style="display:block;padding:10px">If this has no image it\'s just rendered as<i>inline</i> <a href="https://www.w3schools.com/html/"> HTML </a> in the image slot with an automatic background color.</div>',
-				hdrHref: '',
-				hdrAlt: '',
-				description: `What are mipmaps and why do we need them?  What is the difference between linear and anisotropic?`,
-				markdown: `<gl-code src="assets/test/webgl1.json"></gl-code>
+		if ( process.env.NODE_ENV === 'development' )
+		{
+			this.setDevPostData(
+				'mipmapping',
+				{
+					name: 'mipmapping',
+					type: ElementType.Post,
+					status: 2,
+					title: 'Mipmapping',
+					author: 'Chris Lambert',
+					dateCreated: 1673735586720,
+					datePosted: 0,
+					dateModified: 1679359393464,
+					tags: ['Textures', 'Geometry'],
+					hdrInline: '<div style="display:block;padding:10px">If this has no image it\'s just rendered as<i>inline</i> <a href="https://www.w3schools.com/html/"> HTML </a> in the image slot with an automatic background color.</div>',
+					hdrHref: '',
+					hdrAlt: '',
+					description: `What are mipmaps and why do we need them?  What is the difference between linear and anisotropic?`,
+					markdown: `<gl-code src="assets/test/webgl1.json"></gl-code>
 Test 
 Test 
 Test 
@@ -129,7 +224,7 @@ Test
 Test 
 Test 
 Test`,
-				content: `<p class="clearfix"><gl-code src="assets/test/webgl1.json"></gl-code><br>
+					content: `<p class="clearfix"><gl-code src="assets/test/webgl1.json"></gl-code><br>
 Test <br>
 Test <br>
 Test <br>
@@ -205,75 +300,81 @@ Test <br>
 Test <br>
 Test <br>
 Test <br>
-Test</p>`
-			}
-		);
+Test</p>`,
+					next: ''
+				}
+			);
 
-		this.setPostData(
-			'rasterization',
-			{
-				name: 'rasterization',
-				status: 1,
-				title: 'Rasterization',
-				author: 'Chris Lambert',
-				dateCreated: 1678923694583,
-				datePosted: 0,
-				dateModified: 1678923694583,
-				tags: '',
-				hdrInline: '',
-				hdrHref: '',
-				hdrAlt: '',
-				description:
-					'This is a WIP post and shouldn\'t show up in the list yet.',
-				markdown: '',
-				content: ''
-			}
-		);
+			this.setDevPostData(
+				'rasterization',
+				{
+					name: 'rasterization',
+					type: ElementType.Post,
+					status: 1,
+					title: 'Rasterization',
+					author: 'Chris Lambert',
+					dateCreated: 1678923694583,
+					datePosted: 0,
+					dateModified: 1678923694583,
+					tags: [],
+					hdrInline: '',
+					hdrHref: '',
+					hdrAlt: '',
+					description:
+						'This is a WIP post and shouldn\'t show up in the list yet.',
+					markdown: '',
+					content: '',
+					next: ''
+				}
+			);
 
-		this.setPostData(
-			'lod',
-			{
-				name: 'lod',
-				status: 2,
-				title: 'Level of Detail',
-				author: 'Chris Lambert',
-				dateCreated: 1673721586720,
-				datePosted: 1673725586720,
-				dateModified: 1673725586720,
-				tags: 'Geometry',
-				hdrInline: '',
-				hdrAlt: '',
-				hdrHref: 'assets/test/webgl1.json',
-				description:
-					'Why do I see low-resolution models pop in and out sometimes?  Why do we need them anyway?  Are there ways to avoid the pop?',
-				markdown: '',
-				content: ''
-			}
-		);
+			this.setDevPostData(
+				'lod',
+				{
+					name: 'lod',
+					type: ElementType.Post,
+					status: 2,
+					title: 'Level of Detail',
+					author: 'Chris Lambert',
+					dateCreated: 1673721586720,
+					datePosted: 1673725586720,
+					dateModified: 1673725586720,
+					tags: ['Geometry'],
+					hdrInline: '',
+					hdrAlt: '',
+					hdrHref: 'assets/test/webgl1.json',
+					description:
+						'Why do I see low-resolution models pop in and out sometimes?  Why do we need them anyway?  Are there ways to avoid the pop?',
+					markdown: '',
+					content: '',
+					next: ''
+				}
+			);
 
-		this.setPostData(
-			'texturefilters',
-			{
-				name: 'texturefilters',
-				status: 2,
-				title: 'Texture Filtering',
-				author: 'Chris Lambert',
-				dateCreated: 1673525586720,
-				datePosted: 1673755586720,
-				dateModified: 1673755586720,
-				tags: 'Textures, Geometry',
-				hdrInline: `
+			this.setDevPostData(
+				'texturefilters',
+				{
+					name: 'texturefilters',
+					type: ElementType.Post,
+					status: 2,
+					title: 'Texture Filtering',
+					author: 'Chris Lambert',
+					dateCreated: 1673525586720,
+					datePosted: 1673755586720,
+					dateModified: 1673755586720,
+					tags: ['Textures', 'Geometry'],
+					hdrInline: `
 			<svg width="100%" height="100%">
 				<rect width="100%" height="100%" fill="white"/>
 				<rect x="25%" y="25%" width="50%" height="50%" fill="#ff0000" />
 				<line x1="0" y1="0" x2="100%" y2="100%" style="stroke:rgb(0,0,255);stroke-width:2" />
 				<rect x="0" y="0" width="100%" height="100%" style="fill-opacity:0;stroke:black;" stroke-dasharray="8" />
 			</svg>`,
-				hdrHref: '',
-				hdrAlt: 'A red box with a blue slash across it, signifying nothing',
-				description:
-					'What is the purpose of texture filtering?  Why would I ever choose blurry over sharp?',
-				markdown: `
+					hdrHref: '',
+					hdrAlt: 'A red box with a blue slash across it, signifying nothing',
+					description:
+						'What is the purpose of texture filtering?  Why would I ever choose blurry over sharp?',
+					markdown: `
 # Header 1 
 Man I hope this works. 
 - maybe a list? 
@@ -282,81 +383,87 @@ Man I hope this works.
 
 *__SERIOUSLY FUCKED__* 
 			`,
-				content: ''
-			}
-		);
+					content: '',
+					next: ''
+				}
+			);
 
-		this.setPostData(
-			'antialiasing',
-			{
-				name: 'antialiasing',
-				status: 2,
-				title: 'Antialiasing',
-				author: 'Chris Lambert',
-				dateCreated: 1672725586720,
-				datePosted: 1678932726683,
-				dateModified: 1678956465937,
-				tags: 'Postprocessing',
-				hdrInline: '',
-				hdrHref: 'https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80',
-				hdrAlt: 'A cat wondering when this is going to get done',
-				description: `Why do we need it?  What is the best kind, and why can't we always do that?`,
-				markdown: `**WebGL Test**  
+			this.setDevPostData(
+				'antialiasing',
+				{
+					name: 'antialiasing',
+					type: ElementType.Post,
+					status: 2,
+					title: 'Antialiasing',
+					author: 'Chris Lambert',
+					dateCreated: 1672725586720,
+					datePosted: 1678932726683,
+					dateModified: 1678956465937,
+					tags: ['Postprocessing'],
+					hdrInline: '',
+					hdrHref: 'https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80',
+					hdrAlt: 'A cat wondering when this is going to get done',
+					description: `Why do we need it?  What is the best kind, and why can't we always do that?`,
+					markdown: `**WebGL Test**  
 
 <web-gl fontsize="24" width="100px" margin="10px" src="assets/test/webgl1.json"> </web-gl> 
 
 <web-gl fontsize="24" src="assets/test/webgl1.json"> </web-gl> 
 `,
-				content: `<p class="clearfix"><strong>WebGL Test</strong>  </p><web-gl class="webglembed" fontsize="24" width="100px" margin="10px" padding="20px" src="assets/test/webgl1.json"> </web-gl><web-gl class="webglembed" fontsize="24" src="assets/test/webgl1.json"> </web-gl>`
-			}
-		);
+					content: `<p class="clearfix"><strong>WebGL Test</strong>  </p><web-gl class="webglembed" fontsize="24" width="100px" margin="10px" padding="20px" src="assets/test/webgl1.json"> </web-gl><web-gl class="webglembed" fontsize="24" src="assets/test/webgl1.json"> </web-gl>`,
+					next: ''
+				}
+			);
 
-		this.setPostData(
-			'anisotropy',
-			{
-				name: 'anisotropy',
-				status: 2,
-				title: 'Anisotropy',
-				author: 'Chris Lambert',
-				dateCreated: 1673635586720,
-				datePosted: 1673775586720,
-				dateModified: 1673775586720,
-				tags: 'Textures, Geometry',
-				hdrInline: '',
-				hdrAlt: '',
-				hdrHref: '',
-				description:
-					"What is it?  How do you control it, and why don't you always use it?",
-				markdown: `**WebGL Test**  
+			this.setDevPostData(
+				'anisotropy',
+				{
+					name: 'anisotropy',
+					type: ElementType.Post,
+					status: 2,
+					title: 'Anisotropy',
+					author: 'Chris Lambert',
+					dateCreated: 1673635586720,
+					datePosted: 1673775586720,
+					dateModified: 1673775586720,
+					tags: ['Textures', 'Geometry'],
+					hdrInline: '',
+					hdrAlt: '',
+					hdrHref: '',
+					description:
+						"What is it?  How do you control it, and why don't you always use it?",
+					markdown: `**WebGL Test**  
 
 <web-gl src="assets/test/webgl2.json"></web-gl> 
 
 `,
-				content: `<b>WebGL Test</b><p> 
+					content: `<b>WebGL Test</b><p> 
 
 <web-gl class="webglembed" src="assets/test/webgl2.json"></web-gl> 
 
-`
-			}
-		);
+`,
+					next: ''
+				}
+			);
 
-		this.setPostData(
+			this.setDevPostData(
 
-			'diffusespecular',
-			{
-				name: 'diffusespecular',
-				status: 2,
-				title: 'Basic Shading: Diffuse and Specular',
-				author: 'Chris Lambert',
-				dateCreated: 1678949649635,
-				datePosted: 0,
-				dateModified: 1679525277861,
-				tags: 'Shaders, Lighting',
-				hdrInline: '',
-				hdrHref: 'assets/test/webgl1.json',
-				hdrAlt: '',
-				description: `What do diffuse and specular shading mean?  What is the difference?  How do they work?`,
-				markdown: `How do you know what shape a 3D object is on a 2D screen?  Our brains already have a technique for this, say, in case you lost an eye in a fight with a porcupine.  They use motion or shading.
+				'diffusespecular',
+				{
+					name: 'diffusespecular',
+					type: ElementType.Post,
+					status: 2,
+					title: 'Basic Shading: Diffuse and Specular',
+					author: 'Chris Lambert',
+					dateCreated: 1678949649635,
+					datePosted: 0,
+					dateModified: 1679525277861,
+					tags: ['Shaders', 'Lighting'],
+					hdrInline: '',
+					hdrHref: 'assets/test/webgl1.json',
+					hdrAlt: '',
+					description: `What do diffuse and specular shading mean?  What is the difference?  How do they work?`,
+					markdown: `How do you know what shape a 3D object is on a 2D screen?  Our brains already have a technique for this, say, in case you lost an eye in a fight with a porcupine.  They use motion or shading.
 
 As an example, let's look at a simple stationary cube without any visual features:
 
@@ -446,7 +553,7 @@ Moving work from the Vertex Shader to the Fragment Shader is actually pretty sim
 
 Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the [Performance](posts/2) post for more about this. 
 `,
-				content: `<p class="clearfix">How do you know what shape a 3D object is on a 2D screen?  Our brains already have a technique for this, say, in case you lost an eye in a fight with a porcupine.  They use motion or shading.</p>
+					content: `<p class="clearfix">How do you know what shape a 3D object is on a 2D screen?  Our brains already have a technique for this, say, in case you lost an eye in a fight with a porcupine.  They use motion or shading.</p>
 <p class="clearfix">As an example, let's look at a simple stationary cube without any visual features:</p>
 <p class="clearfix"><web-gl id="1" class="webglembed webglpost" src="assets/test/unshaded-box.json"></web-gl></p>
 <p class="clearfix">Between motion and shading, motion is the simpler option.  You have to do some math to get the object into the right place on screen, and it's very little extra work to add a change over time to the base transformation.  As an alternative, you could move the camera, which would be like limping around the carcass of your defeated porcupine foe.</p>
@@ -493,9 +600,11 @@ Note the fps and frame duration differences between the Vertex Shader and Fragme
 <p class="clearfix">You can see the shape for sure, but you can also see the how it's interpolating between vertices.  As the light source moves around, you can really see the artifacts of Gouraud interpolation on a low-polygon object show up.  You can get around this with more triangles, or by moving the calculation to run per-fragment in a Fragment Shader instead. </p>
 <p class="clearfix">Moving work from the Vertex Shader to the Fragment Shader is actually pretty simple.  We just have to make sure the Vertex Shader outputs anything the Fragment Shader needs to do the work, and that the Fragment Shader has access to any constant data (see <a href="posts/3">GPU Memory</a>).  In this case, the Vertex Shader outputs the world-space position and world-space normal to the Fragment Shader by assigning them to specially marked variables that were registered as part of the declaration of these shaders.  The GPU will dutifully interpolate these vectors and the Fragment Shader takes the results, performing the same calculations with the same constants.  The results, however, are much nicer: they should be, since instead of running on a few dozen vertices, they're running for thousands of pixels! </p>
 <p class="clearfix"><gl-code id="8" src="assets/test/spec-diff-fs.json"></gl-code> </p>
-<p class="clearfix">Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the <a href="posts/2">Performance</a> post for more about this. </p>`
-			}
-		);
+<p class="clearfix">Note the fps and frame duration differences between the Vertex Shader and Fragment Shader Specular examples.  While for any given render the Vertex Shader expense scales with vertex count, Fragment Shader expense scales with size on screen and screen resolution.  Essentially, the more pixels that are eventually covered by an object, then the more times the GPU will have to run the Fragment Shader.  See the <a href="posts/2">Performance</a> post for more about this. </p>`,
+					next: ''
+				}
+			);
+		}
 	}
 }
 

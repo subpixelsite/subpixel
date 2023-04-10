@@ -3,10 +3,14 @@
 
 == TODO
 
+* Check in changes
+* Finish basic shading post
+# Fragment shader line height is bigger than vertex shader line height...
+* Disable 'texture' tab?
 # Post-list doesn't always format correctly on back button from FAQ (doesn't pick up class on post-list - async fetch?)
 + # Validate datePosted logic -- seems to be doing weird things
 = Backend first pass
-	- Research how AWS would work
+	- Set up AWS
 		> Even if I go with SSR for the site, I need client-side for editor...
 		+ Set up domain with Route 43 or whatever
 		+ Set up S3 bucket
@@ -14,21 +18,29 @@
 		- Set up Lambda calls to access where necessary
 			- Install serverless
 		- Database
-			! DynamoDB setup is a nightmare -- switch to Webpack 4 first?
-				? Actually... commonDB should fix this, hopefully
+			x ! DynamoDB setup is a nightmare -- switch to Webpack 4 first?
+				+ ? Actually... commonDB should fix this, hopefully
 			x Find relevant Aurora Serverless v1 SPA/blog resources
 				x Aurora Serverless an option with my editor situation?
 				> Maybe not... DynamoDB can be made to work for tags, probably
 			- Design DB access patterns
-				- Write down what queries I need to make, and when
-			- Set up posts table
-			- Set up tabs table
+				* Finish setting up new GET and PUT queries with new DB layout (fix the errors and test on Dev with new data)
+				+ Write down what queries I need to make, and when
+			+ Set up posts table
+			? Set up tabs table
 			? Set up quips table
 				> This might be better as a local content file so that I can keep it doing serverless rendering with runtime JS
 			- Set up threads table
+				> This might actually be part of the same table as a secondary index
 		- Set up Cognito for security
+			+ Set up role for public access with read-only
+			+ Set up role for private access with write
+			* Set up authentication for editor private role access
+				- Use amazon-cognito-identity-js npm package?  Seems to require user pools
+				? Do I have to use a Cognito User Pool to make this work?  How would I limit it to just my own approved users?
+		- Hook up DB fetch and write to existing post set/get functions
 	- Make plan - DB, HTML/SVG/JSON/texture files
-	- Integrate Showdown for Markdown conversion on the server side
+	+ Integrate Showdown for Markdown conversion on the server side
 = MVP 2
 	+ Responsive format for public-facing site
 		- FAQ header center

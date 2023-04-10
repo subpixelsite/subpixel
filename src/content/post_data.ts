@@ -1,7 +1,17 @@
+import { marshall, unmarshall, NativeAttributeValue } from '@aws-sdk/util-dynamodb';
 import { DEFAULT_VARIANT } from './alert.js';
 
+// eslint-disable-next-line no-shadow
+export enum ElementType
+{
+	Invalid = 0,
+	Post = 1,
+	Tag = 2,
+	Thread = 3
+}
+
 /* eslint-disable no-shadow */
-export enum PostStatus
+export enum ElementStatus
 {
 	Invalid = 0,
 	Hidden = 1,
@@ -9,27 +19,121 @@ export enum PostStatus
 }
 
 /* eslint-disable dot-notation */
-export class PostData
+export class ElementData
 {
-	name: string = '';					// partition key
-	status: number = PostStatus.Hidden;	// sort key - PostStatus
+	name: string = '';						// partition key - 							entity identifier/url
+	type: number = ElementType.Post;		// sort key - 		GSI_TY partition key -	enum - 0 is invalid
+	status: number = ElementStatus.Hidden;	// 					GSI_TY sort key - 		PostStatus
 	title: string = '';
 	author: string = 'Chris Lambert';
-	dateCreated: number = Date.now();	// set on creation only
-	datePosted: number = 0;				// set on save when status changes to VISIBLE
-	dateModified: number = Date.now();	// set on save
-	tags: string = '';					// comma-delimited list of tags
-	hdrInline: string = '';				// inline header HTML data
-	hdrHref: string = ''; 				// URL to header visual
-	hdrAlt: string = ''; 				// Alt-text for header image
+	dateCreated: number = Date.now();		// set on creation only
+	datePosted: number = 0;					// set on save when status changes to VISIBLE
+	dateModified: number = Date.now();		// set on save
+	tags: string[] = [];					// array of tag strings
+	hdrInline: string = '';					// inline header HTML data
+	hdrHref: string = ''; 					// URL to header visual
+	hdrAlt: string = ''; 					// Alt-text for header image
 	description: string = '';
 	markdown: string = '';
 	content: string = '';
-	// thread_name: string = '';
-	// thread_title: string = '';
-	// thread_description: string = '';
-	// thread_next: string = '';
+	next: string = '';
 }
+
+export class ElementDataDB
+{
+	pk: string = '';
+	sk: string = '';
+	st: string = '';
+	ti: string = '';
+	au: string = '';
+	dc: string = '';
+	dp: string = '';
+	dm: string = '';
+	tg: Record<string, NativeAttributeValue> = {};
+	hi: string = '';
+	hr: string = '';
+	ha: string = '';
+	de: string = '';
+	md: string = '';
+	co: string = '';
+	ne: string = '';
+}
+
+export const recordToElementData = ( db: Record<string, NativeAttributeValue>, pk: string, sk?: string ): ElementData =>
+// eslint-disable-next-line arrow-body-style
+{
+	return {
+		name: pk,
+		type: parseInt( sk ?? '1', 10 ),
+		status: parseInt( db['st'] ?? '1', 10 ),
+		title: db['ti'] ?? '',
+		author: db['au'] ?? '',
+		dateCreated: parseInt( db['dc'] ?? '0', 10 ),
+		datePosted: parseInt( db['dp'] ?? '0', 10 ),
+		dateModified: parseInt( db['dm'] ?? '0', 10 ),
+		tags: db['tg'] !== undefined ? Array.from( db['tg'] ) : [],
+		hdrInline: db['hi'] ?? '',
+		hdrHref: db['hr'] ?? '',
+		hdrAlt: db['ha'] ?? '',
+		description: db['de'] ?? '',
+		markdown: db['md'] ?? '',
+		content: db['co'] ?? '',
+		next: db['ne'] ?? ''
+	};
+};
+
+export const dbToElementData = ( db: ElementDataDB ): ElementData =>
+{
+	// This function is not currently called
+
+	const post: ElementData = {
+		name: db.pk,
+		type: parseInt( db.sk, 10 ),
+		status: parseInt( db.st, 10 ),
+		title: db.ti,
+		author: db.au,
+		dateCreated: parseInt( db.dc, 10 ),
+		datePosted: parseInt( db.dp, 10 ),
+		dateModified: parseInt( db.dm, 10 ),
+		tags: [],		// This is currently incomplete
+		hdrInline: db.hi,
+		hdrHref: db.hr,
+		hdrAlt: db.ha,
+		description: db.de,
+		markdown: db.md,
+		content: db.co,
+		next: db.ne
+	};
+
+	const tg = unmarshall( db.tg );
+	console.log( `dbToElementData: tags Record: ${JSON.stringify( tg, null, 2 )}` );
+
+	return post;
+};
+
+export const elementToDBData = ( post: ElementData ): ElementDataDB =>
+{
+	const db: ElementDataDB = {
+		pk: post.name,
+		sk: `${post.type}`,
+		st: `${post.status}`,
+		ti: post.title,
+		au: post.author,
+		dc: `${post.dateCreated}`,
+		dp: `${post.datePosted}`,
+		dm: `${post.dateModified}`,
+		tg: marshall( post.tags ),
+		hi: post.hdrInline,
+		hr: post.hdrHref,
+		ha: post.hdrAlt,
+		de: post.description,
+		md: post.markdown,
+		co: post.content,
+		ne: post.next
+	};
+
+	return db;
+};
 
 declare global
 {

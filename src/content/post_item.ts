@@ -12,8 +12,8 @@ import '@shoelace-style/shoelace/dist/components/relative-time/relative-time.js'
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import './alert.js';
 import { AppElement } from '../appelement.js';
-import { Database, getTagsArray } from './data.js';
-import { PostData } from './post_data.js';
+import { Database } from './data.js';
+import { ElementData, ElementStatus } from './post_data.js';
 import { Colors, PostStyles } from '../styles.js';
 
 @customElement( 'lit-post' )
@@ -62,7 +62,10 @@ export class PostItem extends AppElement
 	`];
 
 	@property( { type: Object } )
-	post?: PostData;
+	post?: ElementData;
+
+	@state()
+	error: boolean = false;
 
 	render()
 	{
@@ -73,10 +76,10 @@ export class PostItem extends AppElement
 		} );
 		this.dispatchEvent( event );
 
-		if ( this.post === undefined )
+		if ( this.error === true )
 		{
 			return html`
-				<sl-alert class="block mt-10" variant="danger" open>
+				<sl-alert class="block mt-10 mb-1 mx-2" variant="danger" open>
 					<sl-icon slot="icon" name="emoji-frown"></sl-icon>
 					<strong>This space unintentionally left blank...</strong><br>
 					The requested post was not found.  Sorry about that.
@@ -89,9 +92,9 @@ export class PostItem extends AppElement
 				<div class="block pb-4">
 					<div class="header grid h-full">
 						<div class="col-start-1 col-span-1 flex flex-col">
-							<h1 class="text-4xl font-semibold px-1 lg:px-0 mt-8 pb-2 self-center text-gray-700">${this.post.title}</h1>
+							<h1 class="text-4xl font-semibold px-1 lg:px-0 mt-8 pb-2 self-center text-gray-700">${this.post?.title}</h1>
 							<div class="self-center mt-2">
-								<span class="text-base font-semibold text-gray-600 mt-1 pl-6">by ${this.post.author}</span> <sl-icon name="dot"></sl-icon> 
+								<span class="text-base font-semibold text-gray-600 mt-1 pl-6">by ${this.post?.author}</span> <sl-icon name="dot"></sl-icon> 
 								<span class="text-base font-light text-gray-500 mt-1">on ${this.getDateString()}</span>
 							</div>
 							<div class="mt-4 mb-12 pl-5 self-center">${this.getTagsHTML()}</div>
@@ -100,7 +103,7 @@ export class PostItem extends AppElement
 				</div>
 				<!-- <sl-divider style="border-top-width: 3px; border-top-color: var(--sl-color-gray-200);"></sl-divider> -->
 				<div class="post-content">
-				${unsafeHTML( this.post.content )}
+				${unsafeHTML( this.post?.content )}
 				</div>
 			</div>
 			`;
@@ -112,7 +115,9 @@ export class PostItem extends AppElement
 
 		if ( this.post !== undefined )
 		{
-			getTagsArray( this.post.tags ).forEach( tag =>
+			console.log( `getTagsHTML: ${this.post.tags}\n${JSON.stringify( this.post.tags, null, 2 )}` );
+
+			this.post.tags.forEach( tag =>
 			{
 				htmlString += `<sl-tag class="tag ml-1" size="medium" variant="neutral" pill>${tag}</sl-tag>`;
 			} );
@@ -124,7 +129,7 @@ export class PostItem extends AppElement
 	getDateObject(): Date
 	{
 		if ( this.post === undefined )
-			throw new Error( 'Should not have been able to call this with an undefined post' );
+			return new Date();
 
 		return new Date( this.post.dateCreated );
 	}
@@ -132,10 +137,27 @@ export class PostItem extends AppElement
 	getDateString(): string
 	{
 		if ( this.post === undefined )
-			throw new Error( 'Should not have been able to call this with an undefined post' );
+			return '';
 
 		const date = this.getDateObject();
 		return date.toLocaleDateString( undefined, { year: 'numeric', month: 'long', day: 'numeric' } );
+	}
+
+	private updatePostData( post: ElementData | undefined )
+	{
+		console.log( `SetPostData: post input ${JSON.stringify( post, null, 2 )}, error currently ${this.error}` );
+
+		if ( post === undefined )
+		{
+			// Show error page
+			this.error = true;
+		}
+		else
+		{
+			// deep copy post to page
+			this.post = JSON.parse( JSON.stringify( post ) );
+			this.error = false;
+		}
 	}
 
 	public onBeforeEnter( location: RouterLocation )
@@ -144,6 +166,6 @@ export class PostItem extends AppElement
 
 		const postName = location.params.name as string;
 		const db = Database.getDB();
-		this.post = db.getPostData( postName );
+		db.getPostData( postName, post => this.updatePostData( post ), ElementStatus.Visible );
 	}
 }

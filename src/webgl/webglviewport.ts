@@ -4,6 +4,7 @@
 import { createTexture, DrawObject, drawObjectList, m4, ProgramInfo, v3 } from 'twgl.js';
 import { WebGL } from './webgl.js';
 import { WebGLScene, webGLSceneDefault } from './webglscene.js';
+import { WebGLObjectTransform } from './webgldata.js';
 import { WebGLObject } from './webglobject.js';
 import { WebGLCube } from './webglcube.js';
 import { WebGLPlane } from './webglplane.js';
@@ -45,6 +46,7 @@ export class WebGLViewport
 	private camDegX: number = 0;
 	private camDegY: number = 0;
 	private camDistance: number = 10;
+	private orthoDelta: number = 0;
 	private camOffset: v3.Vec3 = [0, 0, 0];
 
 	private programInfo: Map<string, ProgramInfo> = new Map();
@@ -220,8 +222,17 @@ export class WebGLViewport
 		this.camDegX = Math.min( Math.max( degY, -89 ), 89 );
 	}
 
+	public addCameraDeltaOrthoScale( delta: number )
+	{
+		const mouseScale = 0.0025;
+
+		this.orthoDelta += delta * mouseScale;
+	}
+
 	public addCameraDeltaDist( delta: number )
 	{
+		this.addCameraDeltaOrthoScale( delta );
+
 		const mouseScale = 0.005;
 
 		this.camDistance += delta * mouseScale;
@@ -245,6 +256,7 @@ export class WebGLViewport
 		this.camDegX = 0;
 		this.camDegY = 0;
 		this.camDistance = 0;
+		this.orthoDelta = 0;
 		this.camOffset = [0, 0, 0];
 	}
 
@@ -385,6 +397,26 @@ export class WebGLViewport
 			this.container.children.item( i )?.remove();
 	}
 
+	applyXform( xform: WebGLObjectTransform, world: m4.Mat4 ): m4.Mat4
+	{
+		m4.translate( world, xform.pos ?? [0, 0, 0], world );
+
+		let scale: v3.Vec3 = [1, 1, 1];
+		if ( xform.scale !== undefined )
+		{
+			if ( typeof xform.scale === 'number' )
+				scale = [xform.scale, xform.scale, xform.scale];
+			else
+				scale = xform.scale;
+		}
+		m4.scale( world, scale, world );
+
+		if ( xform.rotAxis !== undefined && xform.rotDeg !== undefined )
+			m4.axisRotate( world, xform.rotAxis, ( xform.rotDeg * Math.PI ) / 180, world );
+
+		return world;
+	}
+
 	render( timeDeltaSecs: number, timeAccumSecs: number )
 	{
 		const webgl = WebGL.getInstance();
@@ -496,7 +528,8 @@ export class WebGLViewport
 		let projection;
 		if ( this.scene.orthoDiag !== undefined && this.scene.orthoDiag > 0 )
 		{
-			const rad = this.scene.orthoDiag * 0.5;
+			const orthoDiag = this.scene.orthoDiag + this.orthoDelta;
+			const rad = orthoDiag * 0.5;
 			let x;
 			let y;
 			if ( aspectRatio > 1 )
@@ -545,7 +578,7 @@ export class WebGLViewport
 		{
 			// const { datum } = object;
 			const { uniforms } = object;
-			const world = uniforms.u_world;
+			let world = uniforms.u_world;
 
 			m4.identity( world );
 
@@ -554,10 +587,10 @@ export class WebGLViewport
 			const xform = object.getTransform();
 			const colorObj = object.getColor();
 
-			if ( xform.rotAxis !== undefined && xform.rotDeg !== undefined )
-				m4.axisRotate( world, xform.rotAxis, ( xform.rotDeg * Math.PI ) / 180, world );
+			world = this.applyXform( xform, world );
 
-			m4.translate( world, xform.pos ?? [0, 0, 0], world );
+			if ( object.data.rootxform !== undefined )
+				world = this.applyXform( object.data.rootxform, world );
 
 			m4.transpose(
 				m4.inverse( world, uniforms.u_worldInverseTranspose ),

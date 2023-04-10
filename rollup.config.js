@@ -3,7 +3,6 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
 import html from '@web/rollup-plugin-html';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
-// import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import styles from 'rollup-plugin-styles';
@@ -12,7 +11,6 @@ import css from 'rollup-plugin-css-only';
 import json from '@rollup/plugin-json';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import copy from 'rollup-plugin-copy';
-// import path from 'path';
 
 const prod = process.env.BUILD === 'production';
 
@@ -74,9 +72,6 @@ const getPluginsConfig = () =>
 					keep_fnames: true
 				}
 			} ),
-		// css( {
-		// 	output: 'bundle.css'
-		// } ),
 		copy( {
 			copyOnce: true,
 			targets: [
@@ -114,17 +109,6 @@ const getPluginsConfig = () =>
 				}
 			]
 		} ),
-		// commonjs( {
-		// 	include: 'node_modules/**'
-		// } ),
-		/** Resolve bare module imports */
-		// nodeResolve( {
-		// 	jsnext: true,
-		// 	browser: true,
-		// 	extensions: ['.mjs', '.js', '.json', '.node']
-		// 	,
-		// 	preferBuiltins: false
-		// } ),
 		replace( {
 			preventAssignment: true,
 			'process.env.NODE_ENV': JSON.stringify( prod ? 'production' : 'development' ),
@@ -147,10 +131,6 @@ const getPluginsConfig = () =>
 		css( {
 			output: 'bundle.css'
 		} ),
-		/** Bundle assets references via import.meta.url */
-		// importMetaAssets( {
-		// 	exclude: 'node_modules/**'
-		// } ),
 		/** Compile JS to a lower language target */
 		babel( {
 			babelHelpers: 'bundled',
