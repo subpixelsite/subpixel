@@ -187,7 +187,7 @@ export class PostTile extends AppElement
 	private handleClick()
 	{
 		const event = new CustomEvent( 'readMore', {
-			detail: this.post,
+			detail: this.post?.name,
 			bubbles: true,
 			composed: true
 		} );

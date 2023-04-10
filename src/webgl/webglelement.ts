@@ -279,7 +279,6 @@ export class WebGLElement extends LitElement
 		this.addEventListener( 'mousedown', () => this.onMouseDown() );
 		this.addEventListener( 'mousemove', e => this.onMouseMove( e ) );
 		this.addEventListener( 'mouseup', e => this.onMouseUp( e ) );
-		this.addEventListener( 'wheel', e => this.handleWheel( e ) );
 		this.addEventListener( 'contextmenu', e => this.handleContextMenu( e ) );
 
 		// Fire off an initial resize event to get an SVG text update if needed
@@ -293,7 +292,6 @@ export class WebGLElement extends LitElement
 		this.removeEventListener( 'mousedown', () => this.onMouseDown() );
 		this.removeEventListener( 'mousemove', e => this.onMouseMove( e ) );
 		this.removeEventListener( 'mouseup', e => this.onMouseUp( e ) );
-		this.removeEventListener( 'wheel', e => this.handleWheel( e ) );
 		this.removeEventListener( 'contextmenu', e => this.handleContextMenu( e ) );
 	}
 

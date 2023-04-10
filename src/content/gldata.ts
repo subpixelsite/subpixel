@@ -149,10 +149,9 @@ export class GLData extends withTwind( LitElement )
 <sl-tab-group class='' size=small>
 	<sl-tab slot='nav' panel='vs'>Vertex Shader</sl-tab>
 	<sl-tab slot='nav' panel='fs'>Fragment Shader</sl-tab>
-	<sl-tab slot='nav' panel='tex'>Texture</sl-tab>
 
 	<sl-tab-panel name='vs'><div class='scrollbox'><pre class='line-numbers'><code>${unsafeHTML( this.vs )}</code></pre></div></sl-tab-panel>
-	<sl-tab-panel name='fs'><div class='scrollbox'><pre className='line-numbers'><code>${unsafeHTML( this.fs )}</code></pre></div></sl-tab-panel>
+	<sl-tab-panel name='fs'><div class='scrollbox'><pre class='line-numbers'><code>${unsafeHTML( this.fs )}</code></pre></div></sl-tab-panel>
 	<sl-tab-panel name='tex'><img url='${this.tex}'></sl-tab-panel>
 </sl-tab-group>
 			`;

@@ -1,0 +1,30 @@
+{
+	"fovYDeg": "45",
+	"camDist": "5",
+	"rotDeg": ["150", "30"],
+	"lookAt": ["0.0", "-0.2", "0.0"],
+	"objects": [
+		{
+			"vs": "pos.vs",
+			"fs": "col_pos.fs",
+			"anim": {
+				"blend": "1",
+				"loop": "1"
+			},
+			"xform": [
+				{
+					"pos": ["0.0", "0.0", "0.0"],
+					"rotAxis": ["0", "1", "0"],
+					"rotDeg": "0"
+				},
+				{
+					"rotDeg": "360",
+					"key": { "time": 4, "blendIn": "2" }
+				}
+			],
+			"cube": {
+				"size": "2"
+			}
+		}
+	]
+}

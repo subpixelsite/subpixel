@@ -34,9 +34,6 @@ export class PostItem extends AppElement
 		.post-footer {
 			text-align: right;
 		}
-		a {
-			color: #008cba;
-		}
 		h1 {
 			margin: 0;
 			font-size: 1.5rem;
@@ -115,7 +112,7 @@ export class PostItem extends AppElement
 
 		if ( this.post !== undefined )
 		{
-			console.log( `getTagsHTML: ${this.post.tags}\n${JSON.stringify( this.post.tags, null, 2 )}` );
+			// console.log( `getTagsHTML: ${this.post.tags}\n${JSON.stringify( this.post.tags, null, 2 )}` );
 
 			this.post.tags.forEach( tag =>
 			{
@@ -145,7 +142,7 @@ export class PostItem extends AppElement
 
 	private updatePostData( post: ElementData | undefined )
 	{
-		console.log( `SetPostData: post input ${JSON.stringify( post, null, 2 )}, error currently ${this.error}` );
+		// console.log( `SetPostData: post input ${JSON.stringify( post, null, 2 )}, error currently ${this.error}` );
 
 		if ( post === undefined )
 		{
@@ -166,6 +163,6 @@ export class PostItem extends AppElement
 
 		const postName = location.params.name as string;
 		const db = Database.getDB();
-		db.getPostData( postName, post => this.updatePostData( post ), ElementStatus.Visible );
+		db.getPostData( postName, false, post => this.updatePostData( post ), ElementStatus.Visible );
 	}
 }

@@ -3,7 +3,7 @@
 import { css, html } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { property, customElement, state } from 'lit/decorators.js';
-import { Router } from '@vaadin/router';
+import { Router, RouterLocation } from '@vaadin/router';
 import { AppElement } from '../appelement.js';
 import { Database } from '../content/data.js';
 import { ElementData, ElementStatus } from '../content/post_data.js';
@@ -69,7 +69,7 @@ export class EditList extends AppElement
 	@state()
 	activeRowIndex: number = -1;
 
-	@property( { type: Array } ) posts: ElementData[];
+	@property( { type: Array } ) posts?: ElementData[];
 
 	pageNavEvent( event: Event )
 	{
@@ -77,11 +77,31 @@ export class EditList extends AppElement
 		Router.go( `/admin/editor/${post.name}` );
 	}
 
-	constructor()
+	private updatePostData( posts: ElementData[] | undefined )
 	{
-		super();
+		// console.log( `SetPostData: post input ${JSON.stringify( post, null, 2 )}, error currently ${this.error}` );
+
+		if ( posts === undefined )
+		{
+			// Show error page
+			// this.error = true;
+		}
+		else
+		{
+			// deep copy post to page
+			this.posts = JSON.parse( JSON.stringify( posts ) );
+			// this.error = false;
+		}
+
+		this.requestUpdate();
+	}
+
+	public onBeforeEnter( location: RouterLocation )
+	{
+		super.onBeforeEnter( location );
+
 		const db = Database.getDB();
-		this.posts = db.getDevPostsList();
+		db.getPostsList( posts => this.updatePostData( posts ) );
 	}
 
 	connectedCallback(): void
@@ -164,7 +184,8 @@ export class EditList extends AppElement
 
 	private goToPostIndex( postIndex: number )
 	{
-		this.goToPostID( this.posts[postIndex].name );
+		if ( this.posts !== undefined )
+			this.goToPostID( this.posts[postIndex].name );
 	}
 
 	private goToPostID( postID: string )
@@ -192,10 +213,12 @@ export class EditList extends AppElement
 
 		let handled: boolean = false;
 
+		const maxPosts = this.posts !== undefined ? this.posts.length : 1;
+
 		if ( event.code === 'ArrowUp' )
 		{
 			if ( this.activeRowIndex === -1 )
-				this.activeRowIndex = this.posts.length;
+				this.activeRowIndex = maxPosts;
 
 			this.activeRowIndex = Math.max( 0, this.activeRowIndex - 1 );
 			handled = true;
@@ -203,13 +226,13 @@ export class EditList extends AppElement
 
 		if ( event.code === 'ArrowDown' )
 		{
-			this.activeRowIndex = Math.min( this.posts.length - 1, this.activeRowIndex + 1 );
+			this.activeRowIndex = Math.min( maxPosts - 1, this.activeRowIndex + 1 );
 			handled = true;
 		}
 
 		if ( event.code === 'Enter' )
 		{
-			if ( this.activeRowIndex >= 0 && this.activeRowIndex < this.posts.length )
+			if ( this.activeRowIndex >= 0 && this.activeRowIndex < maxPosts )
 				this.goToPostIndex( this.activeRowIndex );
 			handled = true;
 		}

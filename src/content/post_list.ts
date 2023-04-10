@@ -3,7 +3,7 @@
 import { css, html } from 'lit';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { property, customElement } from 'lit/decorators.js';
-import { Router } from '@vaadin/router';
+import { RouterLocation, Router } from '@vaadin/router';
 import { Geometry } from '../styles.js';
 import { AppElement } from '../appelement.js';
 import { Database } from './data.js';
@@ -21,10 +21,10 @@ export class PostList extends AppElement
 
 	@property( { type: Array } ) posts?: ElementData[];
 
-	pageNavEvent( event: Event )
+	goToPage( event: Event )
 	{
-		const post = ( event as CustomEvent ).detail as ElementData;
-		Router.go( `/posts/${post.name}` );
+		const post = ( event as CustomEvent ).detail as string;
+		Router.go( `/posts/${post}` );
 	}
 
 	constructor()
@@ -42,13 +42,32 @@ export class PostList extends AppElement
 	connectedCallback(): void
 	{
 		super.connectedCallback();
-		this.addEventListener( 'readMore', e => this.pageNavEvent( e ) );
+		this.addEventListener( 'readMore', e => this.goToPage( e ) );
 	}
 
 	disconnectedCallback(): void
 	{
 		super.disconnectedCallback();
-		this.removeEventListener( 'readMore', e => this.pageNavEvent( e ) );
+		this.removeEventListener( 'readMore', e => this.goToPage( e ) );
+	}
+
+	private updatePostData( posts: ElementData[] | undefined )
+	{
+		// console.log( `SetPostData: post input ${JSON.stringify( post, null, 2 )}, error currently ${this.error}` );
+
+		if ( posts === undefined )
+		{
+			// Show error page
+			// this.error = true;
+		}
+		else
+		{
+			// deep copy post to page
+			this.posts = JSON.parse( JSON.stringify( posts ) );
+			// this.error = false;
+		}
+
+		this.requestUpdate();
 	}
 
 	render()
@@ -60,19 +79,18 @@ export class PostList extends AppElement
 		} );
 		this.dispatchEvent( event );
 
-		const db = Database.getDB();
-		const posts = db.getDevPostsList();
-
 		return html`
-
 		<div class="flex flex-wrap justify-evenly p-[var(--post-gap)] gap-[var(--post-gap)]">
-		${posts?.map( post =>
-		{
-			if ( post.status === ElementStatus.Visible )
-				return html`<post-tile .post="${post}"></post-tile>`;
-			return '';
-		} )}
+			${this.posts?.map( post => html`<post-tile .post="${post}"></post-tile>` )}
 		</div>
     `;
+	}
+
+	public onBeforeEnter( location: RouterLocation )
+	{
+		super.onBeforeEnter( location );
+
+		const db = Database.getDB();
+		db.getPostsList( posts => this.updatePostData( posts ), ElementStatus.Visible );
 	}
 }

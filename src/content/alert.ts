@@ -40,7 +40,7 @@ export class Alert extends withTwind( LitElement )
 	{
 		padding: 0.75rem;
 		margin-left: 1rem;
-		line-height: 2em;
+		line-height: 1.5em;
 	}
 
 	`];

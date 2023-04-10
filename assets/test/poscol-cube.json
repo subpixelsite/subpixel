@@ -1,18 +1,18 @@
 {
-	"orthoDiag": "2",
+	"orthoDiag": "4",
 	"rotDeg": ["150", "30"],
-	"lookAt": ["0.5", "0.5", "0.5"],
+	"lookAt": ["0.0", "0.0", "0.0"],
 	"objects": [
 		{
 			"vs": "pos.vs",
 			"fs": "col_pos.fs",
 			"xform": [
 				{
-					"pos": ["0.5", "0.5", "0.5"]
+					"pos": ["0.0", "0.0", "0.0"]
 				}
 			],
 			"cube": {
-				"size": "1"
+				"size": "2"
 			}
 		}
 	]

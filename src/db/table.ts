@@ -7,6 +7,7 @@ export namespace DB
 {
 	export const region: string = 'us-east-1';
 	export const table: string = 'elements';
+	export const typeIndex: string = 'gsi_ty';
 
 	export const credentials = fromCognitoIdentityPool( {
 		client: new CognitoIdentityClient( { region: DB.region } ),

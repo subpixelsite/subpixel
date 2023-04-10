@@ -2,7 +2,7 @@
 /* eslint-disable max-len */
 import { unmarshall, NativeAttributeValue } from '@aws-sdk/util-dynamodb';
 import { ElementData, ElementType, ElementStatus, elementToDBData, recordToElementData } from './post_data.js';
-import { getPostByName, DEBUG_DB_GET } from '../db/read.js';
+import { getPostList, getPostByName, DEBUG_DB_GET } from '../db/read.js';
 import { setPostByName, DEBUG_DB_PUT } from '../db/write.js';
 import { DBClient } from '../db/table.js';
 
@@ -20,13 +20,13 @@ export class Database
 
 	private devData: { [key: string]: ElementData } = {};
 
-	public getPostData( name: string, onResult: ( post: ElementData | undefined ) => void, status?: ElementStatus )
+	public getPostData( name: string, forceConsistent: boolean, onResult: ( post: ElementData | undefined ) => void, status?: ElementStatus )
 	{
 		if ( DEBUG_DB_GET > 0 )
 			// eslint-disable-next-line no-console
 			console.log( `Fetching post '${name}'` );
 
-		getPostByName( name )
+		getPostByName( name, forceConsistent )
 			.then( result =>
 			{
 				let post: ElementData | undefined;
@@ -52,6 +52,15 @@ export class Database
 					const record = item as Record<string, NativeAttributeValue>;
 
 					post = recordToElementData( record, name, `${ElementType.Post}` );
+
+					if ( status !== undefined && status !== ElementStatus.Invalid && post.status !== status )
+					{
+						if ( DEBUG_DB_GET > 1 )
+							// eslint-disable-next-line no-console
+							console.log( `Element '${name}' found but status '${post.status}' doesn't match requested '${status}'` );
+
+						post = undefined;
+					}
 				}
 
 				if ( DEBUG_DB_GET > 1 )
@@ -108,6 +117,69 @@ export class Database
 		if ( process.env.NODE_ENV === 'development' )
 			// Make a shallow copy of the datum
 			this.devData[key] = { ...datum };
+	}
+
+	getPostsList( onResult: ( posts: ElementData[] | undefined ) => void, status?: ElementStatus )
+	{
+		let posts: ElementData[] = [];
+
+		getPostList( status )
+			.then( result =>
+			{
+				// let posts: ElementData[] | undefined;
+
+				if ( result !== undefined )
+				{
+					if ( DEBUG_DB_GET > 2 )
+						// eslint-disable-next-line no-console
+						console.log( `DB raw result for getPostList: ${JSON.stringify( result, null, 4 )}` );
+
+					const { Count, Items } = result;
+
+					if ( Count !== undefined && Items !== undefined )
+					{
+						if ( DEBUG_DB_GET > 1 )
+							// eslint-disable-next-line no-console
+							console.log( `Retrieved ${Count} posts with status ${status}` );
+
+						for ( let i = 0; i < Count; i++ )
+						{
+							const item = unmarshall( Items[i]! );
+							if ( item.tg !== undefined )
+								item.tg = [...item.tg];
+							else
+								item.tg = [];
+
+							// Fill in the primary compound key, which is missing from the returned results
+							const record = item as Record<string, NativeAttributeValue>;
+
+							posts.push( recordToElementData( record, item.pk, `${ElementType.Post}` ) );
+						}
+					}
+				}
+				else
+				{
+					// eslint-disable-next-line no-lonely-if
+					if ( DEBUG_DB_GET > 2 )
+						// eslint-disable-next-line no-console
+						console.log( `DB no post list result for status '${status}'` );
+				}
+
+				posts = posts.concat( this.getDevPostsList() );
+
+				onResult( posts );
+			} )
+			.catch( error =>
+			{
+				if ( process.env.NODE_ENV === 'development' )
+					// eslint-disable-next-line no-console
+					console.error( `DB fetch error for getPostList with status ${status}:\n${error}` );
+				else
+					// eslint-disable-next-line no-console
+					console.error( `Error fetching post list from database` );
+
+				onResult( undefined );
+			} );
 	}
 
 	// DEVELOPMENT ONLY METHODS ----------------------------------------------------------------------------------------------------------

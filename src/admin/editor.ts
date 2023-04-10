@@ -181,6 +181,10 @@ export class EditorPage extends AppElement
 		if ( previewArea === null )
 			throw new Error( 'Couldn\'t find preview area DOM element' );
 
+		// Process to replace any bad characters, in case of copy/paste or insert from DB
+		textArea.value = textArea.value.replace( /\\n/g, '\n' );
+		textArea.value = textArea.value.replace( /\\/g, '' );
+
 		previewArea.innerHTML = convertMDtoHTML( textArea.value );
 
 		this.lastConvert = Date.now();
@@ -210,8 +214,8 @@ export class EditorPage extends AppElement
 		this.post = new ElementData();
 
 		const name = location.params.name as string;
-		if ( name.length > 0 )
-			db.getPostData( name, post => this.onPostFetched( post ) );
+		if ( name?.length > 0 )
+			db.getPostData( name, true, post => this.onPostFetched( post ) );
 	}
 
 	setVisible( event: Event )
@@ -276,14 +280,12 @@ export class EditorPage extends AppElement
 	{
 		if ( title !== undefined || text !== undefined )
 		{
-			console.log( `SetDialog: '${title}' - '${text}'` );
 			this.dialogTitle = title ?? '';
 			this.dialogText = text ?? '';
 			this.showDialog = true;
 		}
 		else
 		{
-			console.log( `SetDialog hide: '${title}' - '${text}'` );
 			this.dialogTitle = undefined;
 			this.dialogText = undefined;
 			this.showDialog = false;
@@ -344,8 +346,6 @@ export class EditorPage extends AppElement
 		textArea.textContent = '';
 		if ( this.post !== undefined )
 		{
-			this.post.markdown = this.post.markdown.replace( /\\n/g, '\n' );
-			this.post.markdown = this.post.markdown.replace( /\\/g, '' );
 			textArea.value = this.post.markdown;
 			this.doConversion();
 		}
@@ -407,7 +407,6 @@ export class EditorPage extends AppElement
 
 	private handleCommitResult( error: string | undefined )
 	{
-		console.log( `setPostData returned '${error}'` );
 		if ( error !== undefined )
 			this.setDialog( 'Save Post Error', error );
 	}
@@ -446,6 +445,10 @@ export class EditorPage extends AppElement
 		// In case of DB failure, dump the new post to the console.
 		// eslint-disable-next-line no-console
 		console.log( `${JSON.stringify( this.post, null, 4 )}` );
+		// eslint-disable-next-line no-console
+		console.log( `\n\nMARKDOWN:\n---\n${this.post.markdown}\n---` );
+		// eslint-disable-next-line no-console
+		console.log( `\n\nCONTENT:\n---\n${this.post.content}\n---` );
 
 		// save the post
 		const db = Database.getDB();

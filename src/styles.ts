@@ -141,6 +141,10 @@ export const PostStyles = css`
 		--sm-vis-padded-height: calc(var(--vis-height) + (var(--vis-padding) * 2));
 	}
 
+	a {
+		color: revert !important;
+	}
+
 	.post-content {
 		font-size: 18px;
 		line-height: 1.625;
@@ -210,6 +214,10 @@ export const PostStyles = css`
 
 	.line-numbers {
 		line-height: 16px;
+	}
+
+	.code {
+		font-size: 0.95em;
 	}
 `;
 

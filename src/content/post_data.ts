@@ -1,4 +1,4 @@
-import { marshall, unmarshall, NativeAttributeValue } from '@aws-sdk/util-dynamodb';
+import { marshall, NativeAttributeValue } from '@aws-sdk/util-dynamodb';
 import { DEFAULT_VARIANT } from './alert.js';
 
 // eslint-disable-next-line no-shadow
@@ -95,7 +95,7 @@ export const dbToElementData = ( db: ElementDataDB ): ElementData =>
 		dateCreated: parseInt( db.dc, 10 ),
 		datePosted: parseInt( db.dp, 10 ),
 		dateModified: parseInt( db.dm, 10 ),
-		tags: [],		// This is currently incomplete
+		tags: [], // unmarshall( db.tg ),		// This is currently incomplete
 		hdrInline: db.hi,
 		hdrHref: db.hr,
 		hdrAlt: db.ha,
@@ -104,9 +104,6 @@ export const dbToElementData = ( db: ElementDataDB ): ElementData =>
 		content: db.co,
 		next: db.ne
 	};
-
-	const tg = unmarshall( db.tg );
-	console.log( `dbToElementData: tags Record: ${JSON.stringify( tg, null, 2 )}` );
 
 	return post;
 };
@@ -280,7 +277,7 @@ export function initPostData()
 			}
 
 			const content = s.match( /<alert[^>]*>(.*)<\/alert>/gi ) ?? '';
-			return `<lit-alert variant=${variant}>${content}</lit-alert>`;
+			return `<lit-alert class='alert' variant=${variant}>${content}</lit-alert>`;
 		}
 	};
 
